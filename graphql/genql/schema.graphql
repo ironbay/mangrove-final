@@ -13,6 +13,7 @@ type Comment {
 type Mutation {
   addComment(articleID: String!, text: String!): Comment!
   createArticle(title: String!, url: String!): Article!
+  removeComment(id: String!): Comment!
 }
 
 type Query {

@@ -31,6 +31,19 @@ export async function addComment(articleID: string, text: string) {
     .executeTakeFirstOrThrow();
 }
 
+export async function removeComment(id: string) {
+  const comment = await SQL.DB.selectFrom("comments")
+    .selectAll()
+    .where("id", "=", id)
+    .executeTakeFirstOrThrow();
+
+  await SQL.DB.deleteFrom("comments")
+    .where("id", "=", id)
+    .executeTakeFirstOrThrow();
+
+  return comment;
+}
+
 export async function comments(articleID: string) {
   return await SQL.DB.selectFrom("comments")
     .selectAll()
