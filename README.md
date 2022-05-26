@@ -30,3 +30,4 @@ web
 - `graphql` - The new API route for graphql will handle codegeneration from pothos definitions and this is the folder it goes into. It's currently setup to generate a [genql](https://genql.vercel.app/) client for use in tests and the frontend but you can configure whatever codegen steps you want.
 - `web` - A standard React application created with [vite](https://vitejs.dev/) configured with URQL to use as the GraphQL client. It has helpers in there to bring typesafety features through genql.
 # mangrove-final
+# mangrove-final
