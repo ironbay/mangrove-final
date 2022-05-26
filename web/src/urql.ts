@@ -7,8 +7,8 @@ import {
   QueryRequest,
   QueryResult,
   MutationRequest,
-  MutationResult
-} from "@my-sst-app/graphql/genql";
+  MutationResult,
+} from "@mangrove/graphql/genql";
 
 export function useTypedQuery<Query extends QueryRequest>(opts: {
   query: Query;
@@ -20,7 +20,7 @@ export function useTypedQuery<Query extends QueryRequest>(opts: {
   return useQuery<QueryResult<Query>>({
     ...opts,
     query,
-    variables
+    variables,
   });
 }
 

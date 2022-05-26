@@ -1,10 +1,10 @@
-import { SQL } from "@my-sst-app/core/sql";
+import { SQL } from "@mangrove/core/sql";
 import { Generated } from "kysely";
 import { ulid } from "ulid";
 
 export * as Article from "./article";
 
-declare module "@my-sst-app/core/sql" {
+declare module "@mangrove/core/sql" {
   export interface Database {
     articles: {
       id: string;
@@ -52,4 +52,3 @@ export async function list() {
     .orderBy("created", "desc")
     .execute();
 }
-

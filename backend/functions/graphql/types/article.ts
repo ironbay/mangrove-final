@@ -1,5 +1,5 @@
-import { Article } from "@my-sst-app/core/article";
-import { SQL } from "@my-sst-app/core/sql";
+import { Article } from "@mangrove/core/article";
+import { SQL } from "@mangrove/core/sql";
 import { builder } from "../builder";
 
 const ArticleType = builder

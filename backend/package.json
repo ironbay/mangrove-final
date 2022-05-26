@@ -1,5 +1,5 @@
 {
-  "name": "@my-sst-app/backend",
+  "name": "@mangrove/backend",
   "version": "0.0.0",
   "type": "module",
   "scripts": {},

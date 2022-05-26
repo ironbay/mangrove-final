@@ -1,12 +1,12 @@
 {
-  "name": "my-sst-app",
+  "name": "mangrove",
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "sst start",
+    "start": "sst start --profile=ironbay-dev",
     "build": "sst build",
-    "deploy": "sst deploy",
-    "remove": "sst remove",
+    "deploy": "sst deploy --profile=ironbay-dev",
+    "remove": "sst remove --profile=ironbay-dev",
     "console": "sst console",
     "typecheck": "tsc --noEmit"
   },
