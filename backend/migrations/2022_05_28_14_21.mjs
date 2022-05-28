@@ -11,7 +11,6 @@ export async function up(db) {
     .addColumn("url", "text")
     .addColumn("created", "timestamp", col => col.defaultTo("now()"))
     .execute();
-
   await db.schema
     .createIndex("idx_articles_created")
     .on("articles")
