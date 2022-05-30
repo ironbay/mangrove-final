@@ -1,7 +1,7 @@
 import { Pipe } from "@mangrove/core/pipe";
+import { PlaidConnection } from "@mangrove/core/plaid_connection";
 import { builder } from "../builder";
 import { SQL } from "@mangrove/core/sql";
-import { SqlList } from "aws-sdk/clients/redshiftdata";
 
 const PipeType = builder.objectRef<SQL.Row["pipes"]>("Pipe").implement({
   fields: t => ({
@@ -30,6 +30,10 @@ const NumberFilterType = builder
       id: t.exposeID("id"),
       value: t.exposeFloat("value"),
       operand: t.exposeString("operand"),
+      account: t.field({
+        type: PlaidAccountType,
+        resolve: t => PlaidConnection.account(t.connection_id, t.account_id),
+      }),
     }),
   });
 
@@ -48,5 +52,15 @@ const SlackDestinationType = builder
   .implement({
     fields: t => ({
       id: t.exposeID("id"),
+    }),
+  });
+
+const PlaidAccountType = builder
+  .objectRef<PlaidConnection.Account>("PlaidAccount")
+  .implement({
+    fields: t => ({
+      id: t.exposeID("id"),
+      name: t.exposeString("name"),
+      kind: t.exposeString("kind"),
     }),
   });
