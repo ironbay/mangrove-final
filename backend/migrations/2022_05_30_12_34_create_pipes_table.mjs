@@ -5,12 +5,16 @@ import { Kysely } from "kysely";
  */
 export async function up(db) {
   await db.schema
-    .createTable("numberfilters")
+    .createTable("pipes")
     .addColumn("id", "text", col => col.primaryKey())
+    .addColumn("user_id", "text")
     .addColumn("enabled", "boolean")
-    .addColumn("value", "numeric")
-    .addColumn("connectionID", "text")
-    .addColumn("accountID", "text")
+    .execute();
+
+  await db.schema
+    .createIndex("idx_pipes_user_id")
+    .on("pipes")
+    .column("user_id")
     .execute();
 }
 
@@ -18,5 +22,6 @@ export async function up(db) {
  * @param db {Kysely<any>}
  */
 export async function down(db) {
-  await db.schema.dropTable("numberFilters").execute();
+  await db.schema.dropIndex("idx_pipes_user_id").execute();
+  await db.schema.dropTable("pipes").execute();
 }
