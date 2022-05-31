@@ -2,6 +2,7 @@ import { Pipe } from "@mangrove/core/pipe";
 import { PlaidConnection } from "@mangrove/core/plaid_connection";
 import { builder } from "../builder";
 import { SQL } from "@mangrove/core/sql";
+import { ConnectionBuilder } from "kysely";
 
 const PipeType = builder.objectRef<SQL.Row["pipes"]>("Pipe").implement({
   fields: t => ({
@@ -32,7 +33,12 @@ const NumberFilterType = builder
       operand: t.exposeString("operand"),
       account: t.field({
         type: PlaidAccountType,
-        resolve: t => PlaidConnection.account(t.connection_id, t.account_id),
+        resolve: t =>
+          PlaidConnection.get_account(t.connection_id, t.account_id),
+      }),
+      connection: t.field({
+        type: PlaidConnectionType,
+        resolve: t => PlaidConnection.from_id(t.connection_id),
       }),
     }),
   });
@@ -62,5 +68,20 @@ const PlaidAccountType = builder
       id: t.exposeID("id"),
       name: t.exposeString("name"),
       kind: t.exposeString("kind"),
+    }),
+  });
+
+const PlaidConnectionType = builder
+  .objectRef<PlaidConnection.Connection>("PlaidConnection")
+  .implement({
+    fields: t => ({
+      id: t.exposeID("id"),
+      institution_name: t.exposeString("institution_name"),
+      institution_color: t.exposeString("institution_color"),
+      institution_logo: t.exposeString("logo"),
+      accounts: t.field({
+        type: [PlaidAccountType],
+        resolve: t => PlaidConnection.get_accounts(t.id),
+      }),
     }),
   });

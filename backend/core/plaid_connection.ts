@@ -1,5 +1,5 @@
 export * as PlaidConnection from "./plaid_connection";
-import { Configuration, PlaidApi, PlaidEnvironments } from "plaid";
+import { Configuration, PlaidApi, PlaidEnvironments, AccountBase } from "plaid";
 import { SQL } from "@mangrove/core/sql";
 
 declare module "@mangrove/core/sql" {
@@ -8,6 +8,10 @@ declare module "@mangrove/core/sql" {
       id: string;
       user_id: string;
       access_token: string;
+      institution_name: string;
+      institution_color: string;
+      logo: string;;
+      color: string;
     };
   }
 }
@@ -30,7 +34,14 @@ export interface Account {
   kind: string;
 }
 
-export async function account(
+export interface Connection {
+  id: string;
+  institution_name: string;
+  institution_color: string;
+  logo: string;
+}
+
+export async function get_account(
   connection_id: string,
   account_id: string
 ): Promise<Account> {
@@ -50,11 +61,29 @@ export async function account(
   };
 }
 
-async function from_id(connection_id: string) {
+export async function get_accounts(connection_id: string) {
+  const connection = await from_id(connection_id);
+
+  return await client
+    .accountsGet({
+      access_token: connection.access_token,
+    })
+    .then(resp => resp.data.accounts.map(raw => format_account(raw)));
+}
+
+export async function from_id(connection_id: string) {
   return await SQL.DB.selectFrom("plaid_connections")
     .selectAll()
     .where("id", "=", connection_id)
     .executeTakeFirstOrThrow();
+}
+
+function format_account(raw: AccountBase) {
+  return {
+    id: raw!.account_id!,
+    name: raw!.official_name!,
+    kind: raw!.type,
+  };
 }
 
 // declare module "@mangrove/core/plaid_connection" {
