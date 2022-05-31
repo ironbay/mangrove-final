@@ -2,7 +2,6 @@ import { Pipe } from "@mangrove/core/pipe";
 import { PlaidConnection } from "@mangrove/core/plaid_connection";
 import { builder } from "../builder";
 import { SQL } from "@mangrove/core/sql";
-import { ConnectionBuilder } from "kysely";
 
 const PipeType = builder.objectRef<SQL.Row["pipes"]>("Pipe").implement({
   fields: t => ({
@@ -85,3 +84,33 @@ const PlaidConnectionType = builder
       }),
     }),
   });
+
+builder.queryFields(t => ({
+  pipes: t.field({
+    type: [PipeType],
+    resolve: _ => Pipe.list(),
+  }),
+}));
+
+const NumberFilterInputType = builder.inputType("NumberFilterInputType", {
+  fields: t => ({
+    value: t.float({ required: true }),
+    operand: t.string({ required: true }),
+  }),
+});
+
+builder.mutationFields(t => ({
+  addPipe: t.field({
+    type: PipeType,
+    args: {
+      name: t.arg.string({ required: true }),
+      enabled: t.arg.boolean({ required: true }),
+      number_filters: t.arg({
+        type: [NumberFilterInputType],
+        required: true,
+      }),
+    },
+    resolve: (_, args) =>
+      Pipe.addPipe(args.name, args.enabled, args.number_filters),
+  }),
+}));
