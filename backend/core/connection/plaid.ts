@@ -1,4 +1,4 @@
-export * as PlaidConnection from "./plaid_connection";
+export * as PlaidConnection from "./plaid";
 import { Configuration, PlaidApi, PlaidEnvironments, AccountBase } from "plaid";
 import { SQL } from "@mangrove/core/sql";
 
@@ -10,10 +10,23 @@ declare module "@mangrove/core/sql" {
       access_token: string;
       institution_name: string;
       institution_color: string;
-      logo: string;;
-      color: string;
+      logo: string;
     };
   }
+}
+
+export interface Account {
+  id: string;
+  name: string;
+  kind: string;
+}
+
+export interface Connection {
+  id: string;
+  institution_name: string;
+  institution_color: string;
+  logo: string;
+  accounts: Account[];
 }
 
 const configuration = new Configuration({
@@ -27,19 +40,6 @@ const configuration = new Configuration({
 });
 
 const client = new PlaidApi(configuration);
-
-export interface Account {
-  id: string;
-  name: string;
-  kind: string;
-}
-
-export interface Connection {
-  id: string;
-  institution_name: string;
-  institution_color: string;
-  logo: string;
-}
 
 export async function get_account(
   connection_id: string,

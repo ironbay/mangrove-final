@@ -1,7 +1,12 @@
 import { Pipe } from "@mangrove/core/pipe";
-import { PlaidConnection } from "@mangrove/core/plaid_connection";
+import { PlaidConnection } from "@mangrove/core/connection/plaid";
 import { builder } from "../builder";
 import { SQL } from "@mangrove/core/sql";
+import {
+  PlaidConnectionType,
+  PlaidAccountType,
+  SlackDestinationType,
+} from "./connection";
 
 const PipeType = builder.objectRef<SQL.Row["pipes"]>("Pipe").implement({
   fields: t => ({
@@ -49,39 +54,6 @@ const StringFilterType = builder
       id: t.exposeID("id"),
       value: t.exposeString("value"),
       operand: t.exposeString("operand"),
-    }),
-  });
-
-const SlackDestinationType = builder
-  .objectRef<SQL.Row["slack_destinations"]>("SlackDestination")
-  .implement({
-    fields: t => ({
-      id: t.exposeID("id"),
-    }),
-  });
-
-const PlaidAccountType = builder
-  .objectRef<PlaidConnection.Account>("PlaidAccount")
-  .implement({
-    fields: t => ({
-      id: t.exposeID("id"),
-      name: t.exposeString("name"),
-      kind: t.exposeString("kind"),
-    }),
-  });
-
-const PlaidConnectionType = builder
-  .objectRef<PlaidConnection.Connection>("PlaidConnection")
-  .implement({
-    fields: t => ({
-      id: t.exposeID("id"),
-      institution_name: t.exposeString("institution_name"),
-      institution_color: t.exposeString("institution_color"),
-      institution_logo: t.exposeString("logo"),
-      accounts: t.field({
-        type: [PlaidAccountType],
-        resolve: t => PlaidConnection.get_accounts(t.id),
-      }),
     }),
   });
 
