@@ -5,13 +5,13 @@ import { builder } from "../builder";
 const ArticleType = builder
   .objectRef<SQL.Row["articles"]>("Article")
   .implement({
-    fields: (t) => ({
+    fields: t => ({
       id: t.exposeID("id"),
       title: t.exposeID("title"),
       url: t.exposeID("url"),
       comments: t.field({
         type: [CommentType],
-        resolve: (article) => Article.comments(article.id),
+        resolve: article => Article.comments(article.id),
       }),
     }),
   });
@@ -19,20 +19,20 @@ const ArticleType = builder
 const CommentType = builder
   .objectRef<SQL.Row["comments"]>("Comment")
   .implement({
-    fields: (t) => ({
+    fields: t => ({
       id: t.exposeString("id"),
       text: t.exposeString("text"),
     }),
   });
 
-builder.queryFields((t) => ({
+builder.queryFields(t => ({
   articles: t.field({
     type: [ArticleType],
     resolve: () => Article.list(),
   }),
 }));
 
-builder.mutationFields((t) => ({
+builder.mutationFields(t => ({
   addComment: t.field({
     type: CommentType,
     args: {
