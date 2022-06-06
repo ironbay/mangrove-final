@@ -26,7 +26,6 @@ export interface Connection {
   institution_name: string;
   institution_color: string;
   logo: string;
-  accounts: Account[];
 }
 
 const configuration = new Configuration({
@@ -69,6 +68,10 @@ export async function get_accounts(connection_id: string) {
       access_token: connection.access_token,
     })
     .then(resp => resp.data.accounts.map(raw => format_account(raw)));
+}
+
+export async function list(user_id: string) {
+  return await SQL.DB.selectFrom("plaid_connections").selectAll().execute();
 }
 
 export async function from_id(connection_id: string) {
