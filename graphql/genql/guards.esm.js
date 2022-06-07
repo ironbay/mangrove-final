@@ -23,8 +23,48 @@ export var isMutation = function(obj) {
 
 
 
+var PlaidAccount_possibleTypes = ['PlaidAccount']
+export var isPlaidAccount = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isPlaidAccount"')
+  return PlaidAccount_possibleTypes.includes(obj.__typename)
+}
+
+
+
+var PlaidConnection_possibleTypes = ['PlaidConnection']
+export var isPlaidConnection = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isPlaidConnection"')
+  return PlaidConnection_possibleTypes.includes(obj.__typename)
+}
+
+
+
 var Query_possibleTypes = ['Query']
 export var isQuery = function(obj) {
   if (!obj || !obj.__typename) throw new Error('__typename is missing in "isQuery"')
   return Query_possibleTypes.includes(obj.__typename)
+}
+
+
+
+var SlackChannel_possibleTypes = ['SlackChannel']
+export var isSlackChannel = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isSlackChannel"')
+  return SlackChannel_possibleTypes.includes(obj.__typename)
+}
+
+
+
+var SlackConnection_possibleTypes = ['SlackConnection']
+export var isSlackConnection = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isSlackConnection"')
+  return SlackConnection_possibleTypes.includes(obj.__typename)
+}
+
+
+
+var SlackDestination_possibleTypes = ['SlackDestination']
+export var isSlackDestination = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isSlackDestination"')
+  return SlackDestination_possibleTypes.includes(obj.__typename)
 }

@@ -16,6 +16,39 @@ type Mutation {
   removeComment(id: String!): Comment!
 }
 
+type PlaidAccount {
+  id: ID!
+  kind: String!
+  name: String!
+}
+
+type PlaidConnection {
+  accounts: [PlaidAccount!]!
+  id: ID!
+  institution_color: String!
+  institution_logo: String!
+  institution_name: String!
+}
+
 type Query {
   articles: [Article!]!
+  plaidConnection(id: String!): PlaidConnection!
+  plaidConnections: [PlaidConnection!]!
+  slackConnections: [SlackConnection!]!
+}
+
+type SlackChannel {
+  id: ID!
+  is_private: Boolean!
+  name: String!
+}
+
+type SlackConnection {
+  id: ID!
+}
+
+type SlackDestination {
+  channel: [SlackChannel!]!
+  connection: SlackConnection!
+  id: ID!
 }

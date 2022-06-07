@@ -11,10 +11,10 @@ export const PlaidConnectionType = builder
       institution_name: t.exposeString("institution_name"),
       institution_color: t.exposeString("institution_color"),
       institution_logo: t.exposeString("logo"),
-        accounts: t.field({
-          type: [PlaidAccountType],
-          resolve: async t => PlaidConnection.get_accounts(t.id);
-        }),
+      accounts: t.field({
+        type: [PlaidAccountType],
+        resolve: async connection => PlaidConnection.accounts(connection.id),
+      }),
     }),
   });
 
@@ -63,15 +63,19 @@ export const SlackDestinationType = builder
   });
 
 builder.queryFields(t => ({
-  plaid_connections: t.field({
+  plaidConnections: t.field({
     type: [PlaidConnectionType],
-    resolve: async (_parent, _args) => PlaidConnection.list("usr123")
+    resolve: async (_, _args) => PlaidConnection.list("usr123"),
   }),
-  plaid_connection: t.field({
-      type: PlaidConnectionType, 
-      args: {
-          id: t.arg.string({required: true}), 
-      }, 
-      resolve: async (_parent, args)  => PlaidConnection.from_id(args.id)
-  })
+  plaidConnection: t.field({
+    type: PlaidConnectionType,
+    args: {
+      id: t.arg.string({ required: true }),
+    },
+    resolve: async (_, args) => PlaidConnection.from_id(args.id),
+  }),
+  slackConnections: t.field({
+    type: [SlackConnectionType],
+    resolve: async (_, args) => SlackConnection.list("usr123"),
+  }),
 }));
