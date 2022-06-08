@@ -11,10 +11,10 @@ export const PlaidConnectionType = builder
       institution_name: t.exposeString("institution_name"),
       institution_color: t.exposeString("institution_color"),
       institution_logo: t.exposeString("logo"),
-        accounts: t.field({
-          type: [PlaidAccountType],
-          resolve: async t => PlaidConnection.get_accounts(t.id);
-        }),
+      accounts: t.field({
+        type: [PlaidAccountType],
+        resolve: async connection => PlaidConnection.accounts(connection.id),
+      }),
     }),
   });
 
@@ -29,10 +29,16 @@ export const PlaidAccountType = builder
   });
 
 export const SlackConnectionType = builder
-  .objectRef<SlackConnection.Connection>("SlackConnection")
+  .objectRef<SQL.Row["slack_connections"]>("SlackConnection")
   .implement({
     fields: t => ({
       id: t.exposeID("id"),
+      name: t.exposeString("team_name"),
+      logo: t.exposeString("logo"),
+      channels: t.field({
+        type: [SlackChannelType],
+        resolve: async parent => SlackConnection.channels(parent.access_token),
+      }),
     }),
   });
 
@@ -42,7 +48,6 @@ export const SlackChannelType = builder
     fields: t => ({
       id: t.exposeID("id"),
       name: t.exposeString("name"),
-      is_private: t.exposeBoolean("is_private"),
     }),
   });
 
@@ -63,15 +68,26 @@ export const SlackDestinationType = builder
   });
 
 builder.queryFields(t => ({
-  plaid_connections: t.field({
+  plaidConnections: t.field({
     type: [PlaidConnectionType],
-    resolve: async (_parent, _args) => PlaidConnection.list("usr123")
+    resolve: async (_, _args) => PlaidConnection.list("usr123"),
   }),
-  plaid_connection: t.field({
-      type: PlaidConnectionType, 
-      args: {
-          id: t.arg.string({required: true}), 
-      }, 
-      resolve: async (_parent, args)  => PlaidConnection.from_id(args.id)
-  })
+  plaidConnection: t.field({
+    type: PlaidConnectionType,
+    args: {
+      id: t.arg.string({ required: true }),
+    },
+    resolve: async (_, args) => PlaidConnection.from_id(args.id),
+  }),
+  slackConnections: t.field({
+    type: [SlackConnectionType],
+    resolve: async () => SlackConnection.list(),
+  }),
+  slackConnecion: t.field({
+    type: SlackConnectionType,
+    args: {
+      id: t.arg.string({ required: true }),
+    },
+    resolve: async () => SlackConnection.from_id(args.id),
+  }),
 }));

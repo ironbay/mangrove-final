@@ -45,6 +45,7 @@ export async function get_account(
   account_id: string
 ): Promise<Account> {
   const connection = await from_id(connection_id);
+
   const account = await client
     .accountsGet({
       access_token: connection.access_token,
@@ -60,7 +61,7 @@ export async function get_account(
   };
 }
 
-export async function get_accounts(connection_id: string) {
+export async function accounts(connection_id: string) {
   const connection = await from_id(connection_id);
 
   return await client

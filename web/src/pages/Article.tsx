@@ -29,6 +29,25 @@ export function List() {
     },
   });
 
+  const id = "12";
+
+  const plaidConnection = useTypedQuery({
+    query: {
+      plaidConnection: [
+        { id: id },
+        {
+          id: true,
+          institution_name: true,
+          accounts: {
+            id: true,
+            name: true,
+            kind: true,
+          },
+        },
+      ],
+    },
+  });
+
   const [, createArticle] = useTypedMutation((opts: ArticleForm) => ({
     createArticle: [
       opts,
@@ -65,7 +84,7 @@ export function List() {
       <h2>Articles</h2>
       <h3>Submit</h3>
       <form
-        onSubmit={(e) => {
+        onSubmit={e => {
           e.preventDefault();
           const fd = new FormData(e.currentTarget);
           createArticle({
@@ -81,7 +100,7 @@ export function List() {
       </form>
       <h3>Latest</h3>
       <ol>
-        {articles.data?.articles.map((article) => (
+        {articles.data?.articles.map(article => (
           <li>
             <div>
               <div>
@@ -90,7 +109,7 @@ export function List() {
               <div>
                 <strong>Comments</strong>
                 <ol>
-                  {article.comments.map((comment) => (
+                  {article.comments.map(comment => (
                     <div onClick={() => removeComment({ id: comment.id })}>
                       <li>{comment.text}</li>
                     </div>
@@ -98,7 +117,7 @@ export function List() {
                 </ol>
               </div>
               <form
-                onSubmit={async (e) => {
+                onSubmit={async e => {
                   const fd = new FormData(e.currentTarget);
                   addComment({
                     text: fd.get("text")!.toString(),

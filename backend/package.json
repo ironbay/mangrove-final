@@ -6,6 +6,7 @@
   "dependencies": {
     "@pothos/core": "^3.11.0",
     "@serverless-stack/node": "^1.1.1",
+    "@slack/web-api": "^6.7.1",
     "aws-sdk": "^2.1135.0",
     "kysely": "^0.19.2",
     "kysely-data-api": "^0.0.9",
