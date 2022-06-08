@@ -29,10 +29,16 @@ export const PlaidAccountType = builder
   });
 
 export const SlackConnectionType = builder
-  .objectRef<SlackConnection.Connection>("SlackConnection")
+  .objectRef<SQL.Row["slack_connections"]>("SlackConnection")
   .implement({
     fields: t => ({
       id: t.exposeID("id"),
+      name: t.exposeString("team_name"),
+      logo: t.exposeString("logo"),
+      channels: t.field({
+        type: [SlackChannelType],
+        resolve: async parent => SlackConnection.channels(parent.access_token),
+      }),
     }),
   });
 
@@ -42,7 +48,6 @@ export const SlackChannelType = builder
     fields: t => ({
       id: t.exposeID("id"),
       name: t.exposeString("name"),
-      is_private: t.exposeBoolean("is_private"),
     }),
   });
 
