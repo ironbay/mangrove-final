@@ -1,5 +1,6 @@
 export * as SlackConnection from "./slack";
 import { WebClient as Client } from "@slack/web-api";
+import { SQL } from "@mangrove/core/sql";
 
 declare module "@mangrove/core/sql" {
   export interface Database {
@@ -17,6 +18,19 @@ export type Channel = {
   id: string;
   name: string;
 };
+
+export async function list() {
+  return SQL.DB.selectFrom("slack_connections").selectAll().execute();
+}
+
+export async function from_id(id: string) {
+  const alan = SQL.DB.selectFrom("slack_connections")
+    .selectAll()
+    .where("id", "=", id)
+    .executeTakeFirstOrThrow();
+
+  return alan;
+}
 
 export async function channels(access_token: string) {
   const client = new Client(access_token);

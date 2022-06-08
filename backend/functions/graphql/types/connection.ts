@@ -81,6 +81,13 @@ builder.queryFields(t => ({
   }),
   slackConnections: t.field({
     type: [SlackConnectionType],
-    resolve: async (_, args) => SlackConnection.list("usr123"),
+    resolve: async () => SlackConnection.list(),
+  }),
+  slackConnecion: t.field({
+    type: SlackConnectionType,
+    args: {
+      id: t.arg.string({ required: true }),
+    },
+    resolve: async () => SlackConnection.from_id(args.id),
   }),
 }));
