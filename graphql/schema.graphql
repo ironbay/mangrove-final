@@ -34,17 +34,20 @@ type Query {
   articles: [Article!]!
   plaidConnection(id: String!): PlaidConnection!
   plaidConnections: [PlaidConnection!]!
+  slackConnecion(id: String!): SlackConnection!
   slackConnections: [SlackConnection!]!
 }
 
 type SlackChannel {
   id: ID!
-  is_private: Boolean!
   name: String!
 }
 
 type SlackConnection {
+  channels: [SlackChannel!]!
   id: ID!
+  logo: String!
+  name: String!
 }
 
 type SlackDestination {

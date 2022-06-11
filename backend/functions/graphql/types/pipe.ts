@@ -62,6 +62,20 @@ builder.queryFields(t => ({
     type: [PipeType],
     resolve: _ => Pipe.list(),
   }),
+  pipesFromSlackConnection: t.field({
+    args: {
+      id: t.arg.string({ required: true }),
+    },
+    type: [PipeType],
+    resolve: async (_, args) => Pipe.from_slack_connection(args.id),
+  }),
+  pipesFromPlaidConnection: t.field({
+    args: {
+      id: t.arg.string({ required: true }),
+    },
+    type: [PipeType],
+    resolve: async (_, args) => Pipe.from_slack_connection(args.id),
+  }),
 }));
 
 const NumberFilterInputType = builder.inputType("NumberFilterInputType", {
