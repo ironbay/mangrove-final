@@ -2,7 +2,7 @@ export default {
     "scalars": [
         1,
         3,
-        9
+        11
     ],
     "types": {
         "Article": {
@@ -125,8 +125,17 @@ export default {
             "plaidConnections": [
                 6
             ],
+            "slackConnecion": [
+                9,
+                {
+                    "id": [
+                        3,
+                        "String!"
+                    ]
+                }
+            ],
             "slackConnections": [
-                10
+                9
             ],
             "__typename": [
                 3
@@ -136,9 +145,6 @@ export default {
             "id": [
                 1
             ],
-            "is_private": [
-                9
-            ],
             "name": [
                 3
             ],
@@ -146,10 +152,18 @@ export default {
                 3
             ]
         },
-        "Boolean": {},
         "SlackConnection": {
+            "channels": [
+                8
+            ],
             "id": [
                 1
+            ],
+            "logo": [
+                3
+            ],
+            "name": [
+                3
             ],
             "__typename": [
                 3
@@ -160,7 +174,7 @@ export default {
                 8
             ],
             "connection": [
-                10
+                9
             ],
             "id": [
                 1
@@ -168,6 +182,7 @@ export default {
             "__typename": [
                 3
             ]
-        }
+        },
+        "Boolean": {}
     }
 }

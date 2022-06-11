@@ -47,19 +47,22 @@ export interface Query {
     articles: Article[]
     plaidConnection: PlaidConnection
     plaidConnections: PlaidConnection[]
+    slackConnecion: SlackConnection
     slackConnections: SlackConnection[]
     __typename: 'Query'
 }
 
 export interface SlackChannel {
     id: Scalars['ID']
-    is_private: Scalars['Boolean']
     name: Scalars['String']
     __typename: 'SlackChannel'
 }
 
 export interface SlackConnection {
+    channels: SlackChannel[]
     id: Scalars['ID']
+    logo: Scalars['String']
+    name: Scalars['String']
     __typename: 'SlackConnection'
 }
 
@@ -116,6 +119,7 @@ export interface QueryRequest{
     articles?: ArticleRequest
     plaidConnection?: [{id: Scalars['String']},PlaidConnectionRequest]
     plaidConnections?: PlaidConnectionRequest
+    slackConnecion?: [{id: Scalars['String']},SlackConnectionRequest]
     slackConnections?: SlackConnectionRequest
     __typename?: boolean | number
     __scalar?: boolean | number
@@ -123,14 +127,16 @@ export interface QueryRequest{
 
 export interface SlackChannelRequest{
     id?: boolean | number
-    is_private?: boolean | number
     name?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
 
 export interface SlackConnectionRequest{
+    channels?: SlackChannelRequest
     id?: boolean | number
+    logo?: boolean | number
+    name?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -283,6 +289,7 @@ export interface QueryPromiseChain{
     articles: ({get: <R extends ArticleRequest>(request: R, defaultValue?: FieldsSelection<Article, R>[]) => Promise<FieldsSelection<Article, R>[]>}),
     plaidConnection: ((args: {id: Scalars['String']}) => PlaidConnectionPromiseChain & {get: <R extends PlaidConnectionRequest>(request: R, defaultValue?: FieldsSelection<PlaidConnection, R>) => Promise<FieldsSelection<PlaidConnection, R>>}),
     plaidConnections: ({get: <R extends PlaidConnectionRequest>(request: R, defaultValue?: FieldsSelection<PlaidConnection, R>[]) => Promise<FieldsSelection<PlaidConnection, R>[]>}),
+    slackConnecion: ((args: {id: Scalars['String']}) => SlackConnectionPromiseChain & {get: <R extends SlackConnectionRequest>(request: R, defaultValue?: FieldsSelection<SlackConnection, R>) => Promise<FieldsSelection<SlackConnection, R>>}),
     slackConnections: ({get: <R extends SlackConnectionRequest>(request: R, defaultValue?: FieldsSelection<SlackConnection, R>[]) => Promise<FieldsSelection<SlackConnection, R>[]>})
 }
 
@@ -290,27 +297,32 @@ export interface QueryObservableChain{
     articles: ({get: <R extends ArticleRequest>(request: R, defaultValue?: FieldsSelection<Article, R>[]) => Observable<FieldsSelection<Article, R>[]>}),
     plaidConnection: ((args: {id: Scalars['String']}) => PlaidConnectionObservableChain & {get: <R extends PlaidConnectionRequest>(request: R, defaultValue?: FieldsSelection<PlaidConnection, R>) => Observable<FieldsSelection<PlaidConnection, R>>}),
     plaidConnections: ({get: <R extends PlaidConnectionRequest>(request: R, defaultValue?: FieldsSelection<PlaidConnection, R>[]) => Observable<FieldsSelection<PlaidConnection, R>[]>}),
+    slackConnecion: ((args: {id: Scalars['String']}) => SlackConnectionObservableChain & {get: <R extends SlackConnectionRequest>(request: R, defaultValue?: FieldsSelection<SlackConnection, R>) => Observable<FieldsSelection<SlackConnection, R>>}),
     slackConnections: ({get: <R extends SlackConnectionRequest>(request: R, defaultValue?: FieldsSelection<SlackConnection, R>[]) => Observable<FieldsSelection<SlackConnection, R>[]>})
 }
 
 export interface SlackChannelPromiseChain{
     id: ({get: (request?: boolean|number, defaultValue?: Scalars['ID']) => Promise<Scalars['ID']>}),
-    is_private: ({get: (request?: boolean|number, defaultValue?: Scalars['Boolean']) => Promise<Scalars['Boolean']>}),
     name: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Promise<Scalars['String']>})
 }
 
 export interface SlackChannelObservableChain{
     id: ({get: (request?: boolean|number, defaultValue?: Scalars['ID']) => Observable<Scalars['ID']>}),
-    is_private: ({get: (request?: boolean|number, defaultValue?: Scalars['Boolean']) => Observable<Scalars['Boolean']>}),
     name: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Observable<Scalars['String']>})
 }
 
 export interface SlackConnectionPromiseChain{
-    id: ({get: (request?: boolean|number, defaultValue?: Scalars['ID']) => Promise<Scalars['ID']>})
+    channels: ({get: <R extends SlackChannelRequest>(request: R, defaultValue?: FieldsSelection<SlackChannel, R>[]) => Promise<FieldsSelection<SlackChannel, R>[]>}),
+    id: ({get: (request?: boolean|number, defaultValue?: Scalars['ID']) => Promise<Scalars['ID']>}),
+    logo: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Promise<Scalars['String']>}),
+    name: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Promise<Scalars['String']>})
 }
 
 export interface SlackConnectionObservableChain{
-    id: ({get: (request?: boolean|number, defaultValue?: Scalars['ID']) => Observable<Scalars['ID']>})
+    channels: ({get: <R extends SlackChannelRequest>(request: R, defaultValue?: FieldsSelection<SlackChannel, R>[]) => Observable<FieldsSelection<SlackChannel, R>[]>}),
+    id: ({get: (request?: boolean|number, defaultValue?: Scalars['ID']) => Observable<Scalars['ID']>}),
+    logo: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Observable<Scalars['String']>}),
+    name: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Observable<Scalars['String']>})
 }
 
 export interface SlackDestinationPromiseChain{
