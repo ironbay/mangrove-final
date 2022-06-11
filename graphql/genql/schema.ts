@@ -4,6 +4,7 @@ export type Scalars = {
     ID: string,
     String: string,
     Boolean: boolean,
+    Float: number,
 }
 
 export interface Article {
@@ -20,11 +21,38 @@ export interface Comment {
     __typename: 'Comment'
 }
 
+export interface CustomDataTimes {
+    created: Scalars['String']
+    updated: Scalars['String']
+    __typename: 'CustomDataTimes'
+}
+
 export interface Mutation {
     addComment: Comment
+    addPipe: Pipe
     createArticle: Article
     removeComment: Comment
     __typename: 'Mutation'
+}
+
+export interface NumberFilter {
+    account: PlaidAccount
+    connection: PlaidConnection
+    id: Scalars['ID']
+    operand: Scalars['String']
+    value: Scalars['Float']
+    __typename: 'NumberFilter'
+}
+
+export interface Pipe {
+    enabled: Scalars['Boolean']
+    id: Scalars['ID']
+    name: Scalars['String']
+    number_filters: NumberFilter[]
+    slack_destinations: SlackDestination[]
+    string_filters: StringFilter[]
+    times: CustomDataTimes
+    __typename: 'Pipe'
 }
 
 export interface PlaidAccount {
@@ -45,6 +73,9 @@ export interface PlaidConnection {
 
 export interface Query {
     articles: Article[]
+    pipes: Pipe[]
+    pipesFromPlaidConnection: Pipe[]
+    pipesFromSlackConnection: Pipe[]
     plaidConnection: PlaidConnection
     plaidConnections: PlaidConnection[]
     slackConnecion: SlackConnection
@@ -73,6 +104,13 @@ export interface SlackDestination {
     __typename: 'SlackDestination'
 }
 
+export interface StringFilter {
+    id: Scalars['ID']
+    operand: Scalars['String']
+    value: Scalars['String']
+    __typename: 'StringFilter'
+}
+
 export interface ArticleRequest{
     comments?: CommentRequest
     id?: boolean | number
@@ -89,10 +127,42 @@ export interface CommentRequest{
     __scalar?: boolean | number
 }
 
+export interface CustomDataTimesRequest{
+    created?: boolean | number
+    updated?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
 export interface MutationRequest{
     addComment?: [{articleID: Scalars['String'],text: Scalars['String']},CommentRequest]
+    addPipe?: [{enabled: Scalars['Boolean'],name: Scalars['String'],number_filters: NumberFilterInputType[]},PipeRequest]
     createArticle?: [{title: Scalars['String'],url: Scalars['String']},ArticleRequest]
     removeComment?: [{id: Scalars['String']},CommentRequest]
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface NumberFilterRequest{
+    account?: PlaidAccountRequest
+    connection?: PlaidConnectionRequest
+    id?: boolean | number
+    operand?: boolean | number
+    value?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface NumberFilterInputType {operand: Scalars['String'],value: Scalars['Float']}
+
+export interface PipeRequest{
+    enabled?: boolean | number
+    id?: boolean | number
+    name?: boolean | number
+    number_filters?: NumberFilterRequest
+    slack_destinations?: SlackDestinationRequest
+    string_filters?: StringFilterRequest
+    times?: CustomDataTimesRequest
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -117,6 +187,9 @@ export interface PlaidConnectionRequest{
 
 export interface QueryRequest{
     articles?: ArticleRequest
+    pipes?: PipeRequest
+    pipesFromPlaidConnection?: [{id: Scalars['String']},PipeRequest]
+    pipesFromSlackConnection?: [{id: Scalars['String']},PipeRequest]
     plaidConnection?: [{id: Scalars['String']},PlaidConnectionRequest]
     plaidConnections?: PlaidConnectionRequest
     slackConnecion?: [{id: Scalars['String']},SlackConnectionRequest]
@@ -149,6 +222,14 @@ export interface SlackDestinationRequest{
     __scalar?: boolean | number
 }
 
+export interface StringFilterRequest{
+    id?: boolean | number
+    operand?: boolean | number
+    value?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
 
 const Article_possibleTypes: string[] = ['Article']
 export const isArticle = (obj?: { __typename?: any } | null): obj is Article => {
@@ -166,10 +247,34 @@ export const isComment = (obj?: { __typename?: any } | null): obj is Comment => 
 
 
 
+const CustomDataTimes_possibleTypes: string[] = ['CustomDataTimes']
+export const isCustomDataTimes = (obj?: { __typename?: any } | null): obj is CustomDataTimes => {
+  if (!obj?.__typename) throw new Error('__typename is missing in "isCustomDataTimes"')
+  return CustomDataTimes_possibleTypes.includes(obj.__typename)
+}
+
+
+
 const Mutation_possibleTypes: string[] = ['Mutation']
 export const isMutation = (obj?: { __typename?: any } | null): obj is Mutation => {
   if (!obj?.__typename) throw new Error('__typename is missing in "isMutation"')
   return Mutation_possibleTypes.includes(obj.__typename)
+}
+
+
+
+const NumberFilter_possibleTypes: string[] = ['NumberFilter']
+export const isNumberFilter = (obj?: { __typename?: any } | null): obj is NumberFilter => {
+  if (!obj?.__typename) throw new Error('__typename is missing in "isNumberFilter"')
+  return NumberFilter_possibleTypes.includes(obj.__typename)
+}
+
+
+
+const Pipe_possibleTypes: string[] = ['Pipe']
+export const isPipe = (obj?: { __typename?: any } | null): obj is Pipe => {
+  if (!obj?.__typename) throw new Error('__typename is missing in "isPipe"')
+  return Pipe_possibleTypes.includes(obj.__typename)
 }
 
 
@@ -221,6 +326,14 @@ export const isSlackDestination = (obj?: { __typename?: any } | null): obj is Sl
 }
 
 
+
+const StringFilter_possibleTypes: string[] = ['StringFilter']
+export const isStringFilter = (obj?: { __typename?: any } | null): obj is StringFilter => {
+  if (!obj?.__typename) throw new Error('__typename is missing in "isStringFilter"')
+  return StringFilter_possibleTypes.includes(obj.__typename)
+}
+
+
 export interface ArticlePromiseChain{
     comments: ({get: <R extends CommentRequest>(request: R, defaultValue?: FieldsSelection<Comment, R>[]) => Promise<FieldsSelection<Comment, R>[]>}),
     id: ({get: (request?: boolean|number, defaultValue?: Scalars['ID']) => Promise<Scalars['ID']>}),
@@ -245,16 +358,64 @@ export interface CommentObservableChain{
     text: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Observable<Scalars['String']>})
 }
 
+export interface CustomDataTimesPromiseChain{
+    created: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Promise<Scalars['String']>}),
+    updated: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Promise<Scalars['String']>})
+}
+
+export interface CustomDataTimesObservableChain{
+    created: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Observable<Scalars['String']>}),
+    updated: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Observable<Scalars['String']>})
+}
+
 export interface MutationPromiseChain{
     addComment: ((args: {articleID: Scalars['String'],text: Scalars['String']}) => CommentPromiseChain & {get: <R extends CommentRequest>(request: R, defaultValue?: FieldsSelection<Comment, R>) => Promise<FieldsSelection<Comment, R>>}),
+    addPipe: ((args: {enabled: Scalars['Boolean'],name: Scalars['String'],number_filters: NumberFilterInputType[]}) => PipePromiseChain & {get: <R extends PipeRequest>(request: R, defaultValue?: FieldsSelection<Pipe, R>) => Promise<FieldsSelection<Pipe, R>>}),
     createArticle: ((args: {title: Scalars['String'],url: Scalars['String']}) => ArticlePromiseChain & {get: <R extends ArticleRequest>(request: R, defaultValue?: FieldsSelection<Article, R>) => Promise<FieldsSelection<Article, R>>}),
     removeComment: ((args: {id: Scalars['String']}) => CommentPromiseChain & {get: <R extends CommentRequest>(request: R, defaultValue?: FieldsSelection<Comment, R>) => Promise<FieldsSelection<Comment, R>>})
 }
 
 export interface MutationObservableChain{
     addComment: ((args: {articleID: Scalars['String'],text: Scalars['String']}) => CommentObservableChain & {get: <R extends CommentRequest>(request: R, defaultValue?: FieldsSelection<Comment, R>) => Observable<FieldsSelection<Comment, R>>}),
+    addPipe: ((args: {enabled: Scalars['Boolean'],name: Scalars['String'],number_filters: NumberFilterInputType[]}) => PipeObservableChain & {get: <R extends PipeRequest>(request: R, defaultValue?: FieldsSelection<Pipe, R>) => Observable<FieldsSelection<Pipe, R>>}),
     createArticle: ((args: {title: Scalars['String'],url: Scalars['String']}) => ArticleObservableChain & {get: <R extends ArticleRequest>(request: R, defaultValue?: FieldsSelection<Article, R>) => Observable<FieldsSelection<Article, R>>}),
     removeComment: ((args: {id: Scalars['String']}) => CommentObservableChain & {get: <R extends CommentRequest>(request: R, defaultValue?: FieldsSelection<Comment, R>) => Observable<FieldsSelection<Comment, R>>})
+}
+
+export interface NumberFilterPromiseChain{
+    account: (PlaidAccountPromiseChain & {get: <R extends PlaidAccountRequest>(request: R, defaultValue?: FieldsSelection<PlaidAccount, R>) => Promise<FieldsSelection<PlaidAccount, R>>}),
+    connection: (PlaidConnectionPromiseChain & {get: <R extends PlaidConnectionRequest>(request: R, defaultValue?: FieldsSelection<PlaidConnection, R>) => Promise<FieldsSelection<PlaidConnection, R>>}),
+    id: ({get: (request?: boolean|number, defaultValue?: Scalars['ID']) => Promise<Scalars['ID']>}),
+    operand: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Promise<Scalars['String']>}),
+    value: ({get: (request?: boolean|number, defaultValue?: Scalars['Float']) => Promise<Scalars['Float']>})
+}
+
+export interface NumberFilterObservableChain{
+    account: (PlaidAccountObservableChain & {get: <R extends PlaidAccountRequest>(request: R, defaultValue?: FieldsSelection<PlaidAccount, R>) => Observable<FieldsSelection<PlaidAccount, R>>}),
+    connection: (PlaidConnectionObservableChain & {get: <R extends PlaidConnectionRequest>(request: R, defaultValue?: FieldsSelection<PlaidConnection, R>) => Observable<FieldsSelection<PlaidConnection, R>>}),
+    id: ({get: (request?: boolean|number, defaultValue?: Scalars['ID']) => Observable<Scalars['ID']>}),
+    operand: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Observable<Scalars['String']>}),
+    value: ({get: (request?: boolean|number, defaultValue?: Scalars['Float']) => Observable<Scalars['Float']>})
+}
+
+export interface PipePromiseChain{
+    enabled: ({get: (request?: boolean|number, defaultValue?: Scalars['Boolean']) => Promise<Scalars['Boolean']>}),
+    id: ({get: (request?: boolean|number, defaultValue?: Scalars['ID']) => Promise<Scalars['ID']>}),
+    name: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Promise<Scalars['String']>}),
+    number_filters: ({get: <R extends NumberFilterRequest>(request: R, defaultValue?: FieldsSelection<NumberFilter, R>[]) => Promise<FieldsSelection<NumberFilter, R>[]>}),
+    slack_destinations: ({get: <R extends SlackDestinationRequest>(request: R, defaultValue?: FieldsSelection<SlackDestination, R>[]) => Promise<FieldsSelection<SlackDestination, R>[]>}),
+    string_filters: ({get: <R extends StringFilterRequest>(request: R, defaultValue?: FieldsSelection<StringFilter, R>[]) => Promise<FieldsSelection<StringFilter, R>[]>}),
+    times: (CustomDataTimesPromiseChain & {get: <R extends CustomDataTimesRequest>(request: R, defaultValue?: FieldsSelection<CustomDataTimes, R>) => Promise<FieldsSelection<CustomDataTimes, R>>})
+}
+
+export interface PipeObservableChain{
+    enabled: ({get: (request?: boolean|number, defaultValue?: Scalars['Boolean']) => Observable<Scalars['Boolean']>}),
+    id: ({get: (request?: boolean|number, defaultValue?: Scalars['ID']) => Observable<Scalars['ID']>}),
+    name: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Observable<Scalars['String']>}),
+    number_filters: ({get: <R extends NumberFilterRequest>(request: R, defaultValue?: FieldsSelection<NumberFilter, R>[]) => Observable<FieldsSelection<NumberFilter, R>[]>}),
+    slack_destinations: ({get: <R extends SlackDestinationRequest>(request: R, defaultValue?: FieldsSelection<SlackDestination, R>[]) => Observable<FieldsSelection<SlackDestination, R>[]>}),
+    string_filters: ({get: <R extends StringFilterRequest>(request: R, defaultValue?: FieldsSelection<StringFilter, R>[]) => Observable<FieldsSelection<StringFilter, R>[]>}),
+    times: (CustomDataTimesObservableChain & {get: <R extends CustomDataTimesRequest>(request: R, defaultValue?: FieldsSelection<CustomDataTimes, R>) => Observable<FieldsSelection<CustomDataTimes, R>>})
 }
 
 export interface PlaidAccountPromiseChain{
@@ -287,6 +448,9 @@ export interface PlaidConnectionObservableChain{
 
 export interface QueryPromiseChain{
     articles: ({get: <R extends ArticleRequest>(request: R, defaultValue?: FieldsSelection<Article, R>[]) => Promise<FieldsSelection<Article, R>[]>}),
+    pipes: ({get: <R extends PipeRequest>(request: R, defaultValue?: FieldsSelection<Pipe, R>[]) => Promise<FieldsSelection<Pipe, R>[]>}),
+    pipesFromPlaidConnection: ((args: {id: Scalars['String']}) => {get: <R extends PipeRequest>(request: R, defaultValue?: FieldsSelection<Pipe, R>[]) => Promise<FieldsSelection<Pipe, R>[]>}),
+    pipesFromSlackConnection: ((args: {id: Scalars['String']}) => {get: <R extends PipeRequest>(request: R, defaultValue?: FieldsSelection<Pipe, R>[]) => Promise<FieldsSelection<Pipe, R>[]>}),
     plaidConnection: ((args: {id: Scalars['String']}) => PlaidConnectionPromiseChain & {get: <R extends PlaidConnectionRequest>(request: R, defaultValue?: FieldsSelection<PlaidConnection, R>) => Promise<FieldsSelection<PlaidConnection, R>>}),
     plaidConnections: ({get: <R extends PlaidConnectionRequest>(request: R, defaultValue?: FieldsSelection<PlaidConnection, R>[]) => Promise<FieldsSelection<PlaidConnection, R>[]>}),
     slackConnecion: ((args: {id: Scalars['String']}) => SlackConnectionPromiseChain & {get: <R extends SlackConnectionRequest>(request: R, defaultValue?: FieldsSelection<SlackConnection, R>) => Promise<FieldsSelection<SlackConnection, R>>}),
@@ -295,6 +459,9 @@ export interface QueryPromiseChain{
 
 export interface QueryObservableChain{
     articles: ({get: <R extends ArticleRequest>(request: R, defaultValue?: FieldsSelection<Article, R>[]) => Observable<FieldsSelection<Article, R>[]>}),
+    pipes: ({get: <R extends PipeRequest>(request: R, defaultValue?: FieldsSelection<Pipe, R>[]) => Observable<FieldsSelection<Pipe, R>[]>}),
+    pipesFromPlaidConnection: ((args: {id: Scalars['String']}) => {get: <R extends PipeRequest>(request: R, defaultValue?: FieldsSelection<Pipe, R>[]) => Observable<FieldsSelection<Pipe, R>[]>}),
+    pipesFromSlackConnection: ((args: {id: Scalars['String']}) => {get: <R extends PipeRequest>(request: R, defaultValue?: FieldsSelection<Pipe, R>[]) => Observable<FieldsSelection<Pipe, R>[]>}),
     plaidConnection: ((args: {id: Scalars['String']}) => PlaidConnectionObservableChain & {get: <R extends PlaidConnectionRequest>(request: R, defaultValue?: FieldsSelection<PlaidConnection, R>) => Observable<FieldsSelection<PlaidConnection, R>>}),
     plaidConnections: ({get: <R extends PlaidConnectionRequest>(request: R, defaultValue?: FieldsSelection<PlaidConnection, R>[]) => Observable<FieldsSelection<PlaidConnection, R>[]>}),
     slackConnecion: ((args: {id: Scalars['String']}) => SlackConnectionObservableChain & {get: <R extends SlackConnectionRequest>(request: R, defaultValue?: FieldsSelection<SlackConnection, R>) => Observable<FieldsSelection<SlackConnection, R>>}),
@@ -335,4 +502,16 @@ export interface SlackDestinationObservableChain{
     channel: ({get: <R extends SlackChannelRequest>(request: R, defaultValue?: FieldsSelection<SlackChannel, R>[]) => Observable<FieldsSelection<SlackChannel, R>[]>}),
     connection: (SlackConnectionObservableChain & {get: <R extends SlackConnectionRequest>(request: R, defaultValue?: FieldsSelection<SlackConnection, R>) => Observable<FieldsSelection<SlackConnection, R>>}),
     id: ({get: (request?: boolean|number, defaultValue?: Scalars['ID']) => Observable<Scalars['ID']>})
+}
+
+export interface StringFilterPromiseChain{
+    id: ({get: (request?: boolean|number, defaultValue?: Scalars['ID']) => Promise<Scalars['ID']>}),
+    operand: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Promise<Scalars['String']>}),
+    value: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Promise<Scalars['String']>})
+}
+
+export interface StringFilterObservableChain{
+    id: ({get: (request?: boolean|number, defaultValue?: Scalars['ID']) => Observable<Scalars['ID']>}),
+    operand: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Observable<Scalars['String']>}),
+    value: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Observable<Scalars['String']>})
 }

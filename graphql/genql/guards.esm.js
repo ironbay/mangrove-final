@@ -15,10 +15,34 @@ export var isComment = function(obj) {
 
 
 
+var CustomDataTimes_possibleTypes = ['CustomDataTimes']
+export var isCustomDataTimes = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isCustomDataTimes"')
+  return CustomDataTimes_possibleTypes.includes(obj.__typename)
+}
+
+
+
 var Mutation_possibleTypes = ['Mutation']
 export var isMutation = function(obj) {
   if (!obj || !obj.__typename) throw new Error('__typename is missing in "isMutation"')
   return Mutation_possibleTypes.includes(obj.__typename)
+}
+
+
+
+var NumberFilter_possibleTypes = ['NumberFilter']
+export var isNumberFilter = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isNumberFilter"')
+  return NumberFilter_possibleTypes.includes(obj.__typename)
+}
+
+
+
+var Pipe_possibleTypes = ['Pipe']
+export var isPipe = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isPipe"')
+  return Pipe_possibleTypes.includes(obj.__typename)
 }
 
 
@@ -67,4 +91,12 @@ var SlackDestination_possibleTypes = ['SlackDestination']
 export var isSlackDestination = function(obj) {
   if (!obj || !obj.__typename) throw new Error('__typename is missing in "isSlackDestination"')
   return SlackDestination_possibleTypes.includes(obj.__typename)
+}
+
+
+
+var StringFilter_possibleTypes = ['StringFilter']
+export var isStringFilter = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isStringFilter"')
+  return StringFilter_possibleTypes.includes(obj.__typename)
 }

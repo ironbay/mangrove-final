@@ -1,4 +1,4 @@
-import { Pipe } from "@mangrove/core/pipe";
+import { number_filters, Pipe } from "@mangrove/core/pipe";
 import { PlaidConnection } from "@mangrove/core/connection/plaid";
 import { builder } from "../builder";
 import { SQL } from "@mangrove/core/sql";
@@ -8,11 +8,17 @@ import {
   SlackDestinationType,
 } from "./connection";
 
+import { CommonDataTimesType } from "./custom";
+
 const PipeType = builder.objectRef<SQL.Row["pipes"]>("Pipe").implement({
   fields: t => ({
     id: t.exposeID("id"),
     name: t.exposeString("name"),
     enabled: t.exposeBoolean("enabled"),
+    times: t.field({
+      type: CommonDataTimesType,
+      resolve: p => p,
+    }),
     number_filters: t.field({
       type: [NumberFilterType],
       resolve: pipe => Pipe.number_filters(pipe.id),

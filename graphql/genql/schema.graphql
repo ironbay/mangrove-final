@@ -10,10 +10,39 @@ type Comment {
   text: String!
 }
 
+type CustomDataTimes {
+  created: String!
+  updated: String!
+}
+
 type Mutation {
   addComment(articleID: String!, text: String!): Comment!
+  addPipe(enabled: Boolean!, name: String!, number_filters: [NumberFilterInputType!]!): Pipe!
   createArticle(title: String!, url: String!): Article!
   removeComment(id: String!): Comment!
+}
+
+type NumberFilter {
+  account: PlaidAccount!
+  connection: PlaidConnection!
+  id: ID!
+  operand: String!
+  value: Float!
+}
+
+input NumberFilterInputType {
+  operand: String!
+  value: Float!
+}
+
+type Pipe {
+  enabled: Boolean!
+  id: ID!
+  name: String!
+  number_filters: [NumberFilter!]!
+  slack_destinations: [SlackDestination!]!
+  string_filters: [StringFilter!]!
+  times: CustomDataTimes!
 }
 
 type PlaidAccount {
@@ -32,6 +61,9 @@ type PlaidConnection {
 
 type Query {
   articles: [Article!]!
+  pipes: [Pipe!]!
+  pipesFromPlaidConnection(id: String!): [Pipe!]!
+  pipesFromSlackConnection(id: String!): [Pipe!]!
   plaidConnection(id: String!): PlaidConnection!
   plaidConnections: [PlaidConnection!]!
   slackConnecion(id: String!): SlackConnection!
@@ -54,4 +86,10 @@ type SlackDestination {
   channel: [SlackChannel!]!
   connection: SlackConnection!
   id: ID!
+}
+
+type StringFilter {
+  id: ID!
+  operand: String!
+  value: String!
 }
