@@ -9,6 +9,8 @@ declare module "@mangrove/core/sql" {
       id: string;
       enabled: boolean;
       name: string;
+      times_created: string;
+      times_updated: string;
     };
     number_filters: {
       id: string;
@@ -51,6 +53,8 @@ export async function addPipe(
       id: ulid(),
       name,
       enabled,
+      times_created: new Date().toISOString(),
+      times_updated: new Date().toISOString(),
     })
     .returningAll()
     .executeTakeFirstOrThrow();
@@ -84,36 +88,36 @@ export async function slack_destinations(pipe_id: string) {
     .execute();
 }
 
+async function from_child(
+  connection_id: string,
+  kind: "number_filters" | "string_filters" | "slack_destinations"
+) {
+  return await SQL.DB.selectFrom(kind)
+    .innerJoin("pipes", "id", "pipe_id")
+    .where("connection_id", "=", connection_id)
+    .groupBy("pipes.id")
+    .select([
+      "pipes.id",
+      "pipes.name",
+      "pipes.enabled",
+      "pipes.times_created",
+      "pipes.times_updated",
+    ])
+    .execute();
+}
+
 export async function from_plaid_connection(connection_id: string) {
-  const number_filter_matches = await SQL.DB.selectFrom("number_filters")
-    .innerJoin("pipes", "id", "pipe_id")
-    .where("connection_id", "=", connection_id)
-    .groupBy("pipes.id")
-    .select(["pipes.id", "pipes.name", "pipes.enabled"])
-    .execute();
-  const string_filter_matches = await SQL.DB.selectFrom("string_filters")
-    .innerJoin("pipes", "id", "pipe_id")
-    .where("connection_id", "=", connection_id)
-    .groupBy("pipes.id")
-    .select(["pipes.id", "pipes.name", "pipes.enabled"])
-    .execute();
+  const from_number_filters = await from_child(connection_id, "number_filters");
+  const from_string_filters = await from_child(connection_id, "string_filters");
 
   return Object.values(
-    [...number_filter_matches, ...string_filter_matches].reduce(
-      (coll, curr) => {
-        if (!coll[curr.id]) coll[curr.id] = curr;
-        return coll;
-      },
-      {} as { [key: string]: SQL.Row["pipes"] }
-    )
+    [...from_number_filters, ...from_string_filters].reduce((coll, curr) => {
+      if (!coll[curr.id]) coll[curr.id] = curr;
+      return coll;
+    }, {} as { [key: string]: SQL.Row["pipes"] })
   );
 }
 
 export async function from_slack_connection(connection_id: string) {
-  return await SQL.DB.selectFrom("slack_destinations")
-    .innerJoin("pipes", "id", "pipe_id")
-    .where("connection_id", "=", connection_id)
-    .groupBy("pipes.id")
-    .select(["pipes.id", "pipes.name", "pipes.enabled"])
-    .execute();
+  return await from_child(connection_id, "slack_destinations");
 }
