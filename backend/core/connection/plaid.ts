@@ -1,7 +1,14 @@
 export * as PlaidConnection from "./plaid";
-import { Configuration, PlaidApi, PlaidEnvironments, AccountBase } from "plaid";
+import {
+  Configuration,
+  PlaidApi,
+  PlaidEnvironments,
+  AccountBase,
+  Transaction,
+} from "plaid";
 import { SQL } from "@mangrove/core/sql";
 import { DateTime } from "luxon";
+import { Location } from "aws-sdk";
 
 declare module "@mangrove/core/sql" {
   export interface Database {
@@ -12,6 +19,23 @@ declare module "@mangrove/core/sql" {
       institution_name: string;
       institution_color: string;
       logo: string;
+    };
+    plaid_transactions: {
+      id: string;
+      user_id: string;
+      connection_id: string;
+      account_id: string;
+      date: string;
+      name: string;
+      pending: boolean;
+      category: string | null;
+      merchant?: string | null;
+      channel: string;
+      location_address: string | null;
+      location_city: string | null;
+      location_region: string | null;
+      location_postal: string | null;
+      location_country: string | null;
     };
   }
 }
@@ -100,13 +124,26 @@ function format_account(raw: AccountBase) {
   };
 }
 
-function get_tx(conn_id: string) {
+export async function list_transactions(
+  conn_id: string,
+  start: string,
+  finish: string
+) {
+  return SQL.DB.selectFrom("plaid_transactions")
+    .selectAll()
+    .where("connection_id", "=", conn_id)
+    .where("date", ">=", start)
+    .where("date", "<=", finish)
+    .execute();
+}
+
+async function tx(conn_id: string) {
   const conn = await from_id(conn_id);
 
   const start = DateTime.now().minus({ days: 7 }).toFormat("yyyy-MM-dd");
-  const finish = DateTime.now().add({ days: 1 }).toFormat("yyyy-MM-dd");
+  const finish = DateTime.now().plus({ days: 1 }).toFormat("yyyy-MM-dd");
 
-  async function fetch(offset = 0) {
+  async function fetch(offset = 0): Promise<Transaction[]> {
     const resp = await client.transactionsGet({
       access_token: conn.id,
       start_date: start,
@@ -122,8 +159,53 @@ function get_tx(conn_id: string) {
         ...(await fetch(offset + resp.data.transactions.length)),
       ];
     }
+
     return resp.data.transactions;
   }
+
+  function translate(transaction: Transaction): SQL.Row["plaid_transactions"] {
+    const { merchant_name, pending, category, date, name, account_id } =
+      transaction;
+    const { address, city, region, postal, country } = transaction.location;
+
+    return {
+      id: transaction.transaction_id,
+      connection_id: conn_id,
+      user_id: conn.user_id,
+      account_id,
+      name,
+      date,
+      pending,
+      category: category ? category.join(",") : null,
+      merchant: merchant_name,
+      channel: transaction.payment_channel,
+      location_address: address,
+      location_city: city,
+      location_region: region,
+      location_postal: postal,
+      location_country: country,
+    };
+  }
+
+  const translated = fetch().then(resp => resp.map(t => translate(t)));
+
+  const [existing, next] = await Promise.all([
+    list_transactions(conn_id, start, finish),
+    translated,
+  ]);
+
+  const map = existing.reduce((coll, row) => {
+    coll[row.id] = true;
+    return coll;
+  }, {} as Record<string, boolean>);
+
+  const diff = next.filter(tx => !map[tx.id]);
+
+  const write = await SQL.DB.insertInto("plaid_transactions")
+    .values(diff)
+    .execute();
+
+  // write to bus
 }
 
 // declare module "@mangrove/core/plaid_connection" {
