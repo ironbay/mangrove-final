@@ -55,7 +55,7 @@ export function Bus(ctx: StackContext) {
 
   subscribe({
     id: "PlaidTxHandler",
-    types: ["plaid.tx"],
+    types: ["plaid.tx.available"],
     function: {
       handler: "functions/plaid/events.handler",
       permissions: [eventBus, database],

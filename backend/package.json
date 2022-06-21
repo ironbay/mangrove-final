@@ -10,10 +10,12 @@
     "aws-sdk": "^2.1135.0",
     "kysely": "^0.19.2",
     "kysely-data-api": "^0.0.9",
+    "luxon": "^2.4.0",
     "plaid": "^10.4.0",
     "ulid": "^2.3.0"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.97"
+    "@types/aws-lambda": "^8.10.97",
+    "@types/luxon": "^2.3.2"
   }
 }
