@@ -36,7 +36,7 @@ export default {
             ]
         },
         "String": {},
-        "CustomDataTimes": {
+        "CommonDataTimes": {
             "created": [
                 3
             ],

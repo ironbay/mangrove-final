@@ -9,6 +9,7 @@ import {
 import { SQL } from "@mangrove/core/sql";
 import { DateTime } from "luxon";
 import { Location } from "aws-sdk";
+import { Bus } from "@mangrove/core/bus";
 
 declare module "@mangrove/core/sql" {
   export interface Database {
@@ -68,6 +69,11 @@ declare module "@mangrove/core/bus" {
     "plaid.tx.available": {
       id: string;
       num_transactions: number;
+    };
+    // "plaid.tx.new": SQL.Row["plaid_transactions"];
+    "plaid.tx.new": { id: string; amount: number };
+    "plaid.tx.test": {
+      id: string;
     };
   }
 }
@@ -137,6 +143,18 @@ export async function list_transactions(
     .execute();
 }
 
+export async function sync(conn_id: string) {
+  const resp = await Bus.publish("plaid.tx.new", { id: "123", amount: 93 });
+  console.log(resp);
+  return "ok";
+}
+
+export async function pipes() {
+  setTimeout(() => {
+    console.log("blasting the pipes");
+  }, 2000);
+}
+
 async function tx(conn_id: string) {
   const conn = await from_id(conn_id);
 
@@ -201,11 +219,12 @@ async function tx(conn_id: string) {
 
   const diff = next.filter(tx => !map[tx.id]);
 
-  const write = await SQL.DB.insertInto("plaid_transactions")
+  const db_write = SQL.DB.insertInto("plaid_transactions")
     .values(diff)
     .execute();
 
-  // write to bus
+  const publish = Promise.all(diff.map(t => Bus.publish("plaid.tx.new", t)));
+  return Promise.all([db_write, publish]);
 }
 
 // declare module "@mangrove/core/plaid_connection" {

@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {},
   "dependencies": {
+    "@aws-sdk/client-eventbridge": "^3.112.0",
     "@pothos/core": "^3.11.0",
     "@serverless-stack/node": "^1.1.1",
     "@slack/web-api": "^6.7.1",

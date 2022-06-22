@@ -10,7 +10,7 @@ type Comment {
   text: String!
 }
 
-type CustomDataTimes {
+type CommonDataTimes {
   created: String!
   updated: String!
 }
@@ -42,7 +42,7 @@ type Pipe {
   number_filters: [NumberFilter!]!
   slack_destinations: [SlackDestination!]!
   string_filters: [StringFilter!]!
-  times: CustomDataTimes!
+  times: CommonDataTimes!
 }
 
 type PlaidAccount {
