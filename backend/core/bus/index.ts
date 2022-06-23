@@ -22,7 +22,6 @@ export async function publish<Type extends EventType>(
   type: Type,
   properties: Events[Type]
 ) {
-  console.log(type);
   const resp = await client.send(
     new PutEventsCommand({
       Entries: [
@@ -42,7 +41,6 @@ export function createHandler<T extends EventType>(
 ) {
   const result = async (event: SQSEvent) => {
     const promises = [];
-    console.log(event);
     for (const record of event.Records) {
       const msg = JSON.parse(record.body);
       async function run() {

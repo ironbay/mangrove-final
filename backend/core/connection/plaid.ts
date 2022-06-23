@@ -145,14 +145,11 @@ export async function list_transactions(
 
 export async function sync(conn_id: string) {
   const resp = await Bus.publish("plaid.tx.new", { id: "123", amount: 93 });
-  console.log(resp);
   return "ok";
 }
 
 export async function pipes() {
-  setTimeout(() => {
-    console.log("blasting the pipes");
-  }, 2000);
+  setTimeout(() => {}, 2000);
 }
 
 async function tx(conn_id: string) {
