@@ -13,6 +13,14 @@ export function Bus(ctx: StackContext) {
   const eventBus = new EventBus(ctx.stack, "Bus");
   const BUS_NAME = new Parameter(ctx.stack, "BUS_NAME", eventBus.eventBusName);
 
+  new Function(ctx.stack, "tesfunction", {
+    handler: "functions/plaid/events.test",
+    permissions: [eventBus],
+    environment: {
+      BUS_NAME: eventBus.eventBusName,
+    },
+  });
+
   type SubscribeOpts = {
     id: string;
     function: FunctionDefinition;
@@ -54,10 +62,22 @@ export function Bus(ctx: StackContext) {
   const database = use(Database);
 
   subscribe({
-    id: "PlaidTxHandler",
-    types: ["plaid.tx"],
+    id: "PlaidTxAvailable",
+    types: ["plaid.tx.available"],
     function: {
-      handler: "functions/plaid/events.handler",
+      handler: "functions/plaid/events.tx_available",
+      permissions: [eventBus, database],
+      environment: {
+        BUS_NAME: eventBus.eventBusName,
+      },
+    },
+  });
+
+  subscribe({
+    id: "PlaidTxNew",
+    types: ["plaid.tx.new"],
+    function: {
+      handler: "functions/plaid/events.tx_new",
       permissions: [eventBus, database],
     },
   });

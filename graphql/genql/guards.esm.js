@@ -15,10 +15,10 @@ export var isComment = function(obj) {
 
 
 
-var CustomDataTimes_possibleTypes = ['CustomDataTimes']
-export var isCustomDataTimes = function(obj) {
-  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isCustomDataTimes"')
-  return CustomDataTimes_possibleTypes.includes(obj.__typename)
+var CommonDataTimes_possibleTypes = ['CommonDataTimes']
+export var isCommonDataTimes = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isCommonDataTimes"')
+  return CommonDataTimes_possibleTypes.includes(obj.__typename)
 }
 
 

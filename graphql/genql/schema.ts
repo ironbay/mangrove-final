@@ -21,10 +21,10 @@ export interface Comment {
     __typename: 'Comment'
 }
 
-export interface CustomDataTimes {
+export interface CommonDataTimes {
     created: Scalars['String']
     updated: Scalars['String']
-    __typename: 'CustomDataTimes'
+    __typename: 'CommonDataTimes'
 }
 
 export interface Mutation {
@@ -51,7 +51,7 @@ export interface Pipe {
     number_filters: NumberFilter[]
     slack_destinations: SlackDestination[]
     string_filters: StringFilter[]
-    times: CustomDataTimes
+    times: CommonDataTimes
     __typename: 'Pipe'
 }
 
@@ -127,7 +127,7 @@ export interface CommentRequest{
     __scalar?: boolean | number
 }
 
-export interface CustomDataTimesRequest{
+export interface CommonDataTimesRequest{
     created?: boolean | number
     updated?: boolean | number
     __typename?: boolean | number
@@ -162,7 +162,7 @@ export interface PipeRequest{
     number_filters?: NumberFilterRequest
     slack_destinations?: SlackDestinationRequest
     string_filters?: StringFilterRequest
-    times?: CustomDataTimesRequest
+    times?: CommonDataTimesRequest
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -247,10 +247,10 @@ export const isComment = (obj?: { __typename?: any } | null): obj is Comment => 
 
 
 
-const CustomDataTimes_possibleTypes: string[] = ['CustomDataTimes']
-export const isCustomDataTimes = (obj?: { __typename?: any } | null): obj is CustomDataTimes => {
-  if (!obj?.__typename) throw new Error('__typename is missing in "isCustomDataTimes"')
-  return CustomDataTimes_possibleTypes.includes(obj.__typename)
+const CommonDataTimes_possibleTypes: string[] = ['CommonDataTimes']
+export const isCommonDataTimes = (obj?: { __typename?: any } | null): obj is CommonDataTimes => {
+  if (!obj?.__typename) throw new Error('__typename is missing in "isCommonDataTimes"')
+  return CommonDataTimes_possibleTypes.includes(obj.__typename)
 }
 
 
@@ -358,12 +358,12 @@ export interface CommentObservableChain{
     text: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Observable<Scalars['String']>})
 }
 
-export interface CustomDataTimesPromiseChain{
+export interface CommonDataTimesPromiseChain{
     created: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Promise<Scalars['String']>}),
     updated: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Promise<Scalars['String']>})
 }
 
-export interface CustomDataTimesObservableChain{
+export interface CommonDataTimesObservableChain{
     created: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Observable<Scalars['String']>}),
     updated: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Observable<Scalars['String']>})
 }
@@ -405,7 +405,7 @@ export interface PipePromiseChain{
     number_filters: ({get: <R extends NumberFilterRequest>(request: R, defaultValue?: FieldsSelection<NumberFilter, R>[]) => Promise<FieldsSelection<NumberFilter, R>[]>}),
     slack_destinations: ({get: <R extends SlackDestinationRequest>(request: R, defaultValue?: FieldsSelection<SlackDestination, R>[]) => Promise<FieldsSelection<SlackDestination, R>[]>}),
     string_filters: ({get: <R extends StringFilterRequest>(request: R, defaultValue?: FieldsSelection<StringFilter, R>[]) => Promise<FieldsSelection<StringFilter, R>[]>}),
-    times: (CustomDataTimesPromiseChain & {get: <R extends CustomDataTimesRequest>(request: R, defaultValue?: FieldsSelection<CustomDataTimes, R>) => Promise<FieldsSelection<CustomDataTimes, R>>})
+    times: (CommonDataTimesPromiseChain & {get: <R extends CommonDataTimesRequest>(request: R, defaultValue?: FieldsSelection<CommonDataTimes, R>) => Promise<FieldsSelection<CommonDataTimes, R>>})
 }
 
 export interface PipeObservableChain{
@@ -415,7 +415,7 @@ export interface PipeObservableChain{
     number_filters: ({get: <R extends NumberFilterRequest>(request: R, defaultValue?: FieldsSelection<NumberFilter, R>[]) => Observable<FieldsSelection<NumberFilter, R>[]>}),
     slack_destinations: ({get: <R extends SlackDestinationRequest>(request: R, defaultValue?: FieldsSelection<SlackDestination, R>[]) => Observable<FieldsSelection<SlackDestination, R>[]>}),
     string_filters: ({get: <R extends StringFilterRequest>(request: R, defaultValue?: FieldsSelection<StringFilter, R>[]) => Observable<FieldsSelection<StringFilter, R>[]>}),
-    times: (CustomDataTimesObservableChain & {get: <R extends CustomDataTimesRequest>(request: R, defaultValue?: FieldsSelection<CustomDataTimes, R>) => Observable<FieldsSelection<CustomDataTimes, R>>})
+    times: (CommonDataTimesObservableChain & {get: <R extends CommonDataTimesRequest>(request: R, defaultValue?: FieldsSelection<CommonDataTimes, R>) => Observable<FieldsSelection<CommonDataTimes, R>>})
 }
 
 export interface PlaidAccountPromiseChain{
