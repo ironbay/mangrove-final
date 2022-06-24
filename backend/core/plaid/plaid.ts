@@ -4,7 +4,7 @@ import {
   PlaidApi,
   PlaidEnvironments,
   AccountBase,
-  Transaction,
+  Transaction as PlaidTransaction,
 } from "plaid";
 import { SQL } from "@mangrove/core/sql";
 import { DateTime } from "luxon";
@@ -24,6 +24,7 @@ declare module "@mangrove/core/sql" {
     plaid_transactions: {
       id: string;
       user_id: string;
+      amount: number;
       connection_id: string;
       account_id: string;
       date: string;
@@ -67,7 +68,7 @@ const configuration = new Configuration({
 declare module "@mangrove/core/bus" {
   export interface Events {
     "plaid.tx.available": {
-      id: string;
+      connID: string;
       num_transactions: number;
     };
     // "plaid.tx.new": SQL.Row["plaid_transactions"];
@@ -115,7 +116,7 @@ export async function list(user_id: string) {
   return await SQL.DB.selectFrom("plaid_connections").selectAll().execute();
 }
 
-export async function from_id(connection_id: string) {
+export async function fromID(connection_id: string) {
   return await SQL.DB.selectFrom("plaid_connections")
     .selectAll()
     .where("id", "=", connection_id)
@@ -130,7 +131,7 @@ function format_account(raw: AccountBase) {
   };
 }
 
-export async function list_transactions(
+export async function transactions(
   conn_id: string,
   start: string,
   finish: string
@@ -143,22 +144,17 @@ export async function list_transactions(
     .execute();
 }
 
-export async function sync(conn_id: string) {
-  const resp = await Bus.publish("plaid.tx.new", { id: "123", amount: 93 });
-  return "ok";
-}
-
 export async function pipes() {
   setTimeout(() => {}, 2000);
 }
 
-async function tx(conn_id: string) {
-  const conn = await from_id(conn_id);
+export async function syncTX(connID: string) {
+  const conn = await fromID(connID);
 
   const start = DateTime.now().minus({ days: 7 }).toFormat("yyyy-MM-dd");
   const finish = DateTime.now().plus({ days: 1 }).toFormat("yyyy-MM-dd");
 
-  async function fetch(offset = 0): Promise<Transaction[]> {
+  async function fetch(offset = 0): Promise<SQL.Row["plaid_transactions"][]> {
     const resp = await client.transactionsGet({
       access_token: conn.id,
       start_date: start,
@@ -170,43 +166,21 @@ async function tx(conn_id: string) {
 
     if (resp.data.transactions.length < resp.data.total_transactions) {
       return [
-        ...resp.data.transactions,
+        ...resp.data.transactions.map(tx =>
+          formatTransaction(conn.user_id, conn.id, tx)
+        ),
         ...(await fetch(offset + resp.data.transactions.length)),
       ];
     }
 
-    return resp.data.transactions;
+    return resp.data.transactions.map(tx =>
+      formatTransaction(conn.user_id, conn.id, tx)
+    );
   }
-
-  function translate(transaction: Transaction): SQL.Row["plaid_transactions"] {
-    const { merchant_name, pending, category, date, name, account_id } =
-      transaction;
-    const { address, city, region, postal, country } = transaction.location;
-
-    return {
-      id: transaction.transaction_id,
-      connection_id: conn_id,
-      user_id: conn.user_id,
-      account_id,
-      name,
-      date,
-      pending,
-      category: category ? category.join(",") : null,
-      merchant: merchant_name,
-      channel: transaction.payment_channel,
-      location_address: address,
-      location_city: city,
-      location_region: region,
-      location_postal: postal,
-      location_country: country,
-    };
-  }
-
-  const translated = fetch().then(resp => resp.map(t => translate(t)));
 
   const [existing, next] = await Promise.all([
-    list_transactions(conn_id, start, finish),
-    translated,
+    transactions(connID, start, finish),
+    fetch(),
   ]);
 
   const map = existing.reduce((coll, row) => {
@@ -214,29 +188,37 @@ async function tx(conn_id: string) {
     return coll;
   }, {} as Record<string, boolean>);
 
-  const diff = next.filter(tx => !map[tx.id]);
+  const freshTX = next.filter(tx => !map[tx.id]);
 
   const db_write = SQL.DB.insertInto("plaid_transactions")
-    .values(diff)
+    .values(freshTX)
     .execute();
 
-  const publish = Promise.all(diff.map(t => Bus.publish("plaid.tx.new", t)));
+  const publish = Promise.all(freshTX.map(t => Bus.publish("plaid.tx.new", t)));
   return Promise.all([db_write, publish]);
 }
 
-// declare module "@mangrove/core/plaid_connection" {
-//   export interface Plaid {
-//     account: {
-//       id: string;
-//       name: string;
-//       kind: string;
-//       subkind: string;
-//     };
-//     institution: {
-//       id: string;
-//       name: string;
-//       color: string;
-//       logo: string;
-//     };
-//   }
-// }
+function formatTransaction(
+  userID: string,
+  connID: string,
+  tx: PlaidTransaction
+): SQL.Row["plaid_transactions"] {
+  return {
+    id: tx.transaction_id,
+    user_id: userID,
+    connection_id: connID,
+    account_id: tx.account_id,
+    amount: tx.amount,
+    name: tx.name,
+    date: tx.date,
+    pending: tx.pending,
+    category: tx.category?.join(",") || null,
+    merchant: tx.merchant_name,
+    channel: tx.payment_channel,
+    location_address: tx.location.address,
+    location_city: tx.location.city,
+    location_region: tx.location.region,
+    location_postal: tx.location.postal,
+    location_country: tx.location.country,
+  };
+}
