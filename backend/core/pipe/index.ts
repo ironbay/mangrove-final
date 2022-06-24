@@ -1,4 +1,4 @@
-export * as Pipe from "./pipe";
+export * as Pipe from ".";
 import { SQL } from "@mangrove/core/sql";
 import { PlaidAccountType } from "functions/graphql/types/connection";
 import { ulid } from "ulid";
@@ -121,3 +121,5 @@ export async function from_plaid_connection(connection_id: string) {
 export async function from_slack_connection(connection_id: string) {
   return await from_child(connection_id, "slack_destinations");
 }
+
+export async function run(tx: SQL.Row["plaid_connections"]) {}
