@@ -1,5 +1,5 @@
 import { RDSDataService } from "aws-sdk";
-import { Kysely, Selectable } from "kysely";
+import { CamelCasePlugin, Kysely, Selectable } from "kysely";
 import { DataApiDialect } from "kysely-data-api";
 
 export interface Database {}
@@ -14,6 +14,7 @@ export const DB = new Kysely<Database>({
       client: new RDSDataService(),
     },
   }),
+  plugins: [new CamelCasePlugin()],
 });
 
 export type Row = {

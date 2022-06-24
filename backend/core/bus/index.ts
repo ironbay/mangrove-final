@@ -33,7 +33,7 @@ async function doPublish(event: Event) {
       Entries: [
         {
           DetailType: event.type,
-          Detail: JSON.stringify(event.properties),
+          Detail: JSON.stringify(event),
           Source: "mangrove",
           EventBusName: process.env.BUS_NAME,
         },
