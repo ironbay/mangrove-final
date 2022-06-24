@@ -3,8 +3,6 @@ import {
   EventBridgeClient,
   PutEventsCommand,
 } from "@aws-sdk/client-eventbridge";
-import { Config } from "@serverless-stack/node/config";
-import { ConfigurationServicePlaceholders } from "aws-sdk/lib/config_service_placeholders";
 import { ulid } from "ulid";
 
 const client = new EventBridgeClient({});
