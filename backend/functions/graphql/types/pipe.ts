@@ -1,108 +1,172 @@
-import { number_filters, Pipe } from "@mangrove/core/pipe";
-import { PlaidConnection } from "@mangrove/core/connection/plaid";
 import { builder } from "../builder";
-import { SQL } from "@mangrove/core/sql";
-import {
-  PlaidConnectionType,
-  PlaidAccountType,
-  SlackDestinationType,
-} from "./connection";
+import { Pipe, PipeEntity } from "@mangrove/core/pipe";
+import { Source } from "plaid";
 
-import { CommonDataTimesType } from "./custom";
+export const PipeType = builder.objectRef<Pipe.PipeEntityType>("Pipe");
 
-const PipeType = builder.objectRef<SQL.Row["pipes"]>("Pipe").implement({
+PipeType.implement({
   fields: t => ({
-    id: t.exposeID("id"),
+    id: t.exposeID("pipeID"),
     name: t.exposeString("name"),
     enabled: t.exposeBoolean("enabled"),
-    times: t.field({
-      type: CommonDataTimesType,
-      resolve: p => p,
-    }),
-    number_filters: t.field({
-      type: [NumberFilterType],
-      resolve: pipe => Pipe.number_filters(pipe.id),
-    }),
-    string_filters: t.field({
-      type: [StringFilterType],
-      resolve: pipe => Pipe.string_filters(pipe.id),
-    }),
-    slack_destinations: t.field({
-      type: [SlackDestinationType],
-      resolve: pipe => Pipe.slack_destinations(pipe.id),
+    sources: t.field({
+      type: [SourceType],
+      resolve: async pipe => Pipe.sources(pipe.pipeID),
     }),
   }),
 });
 
-const NumberFilterType = builder
-  .objectRef<SQL.Row["number_filters"]>("NumberFilter")
-  .implement({
-    fields: t => ({
-      id: t.exposeID("id"),
-      value: t.exposeFloat("value"),
-      operand: t.exposeString("operand"),
-      account: t.field({
-        type: PlaidAccountType,
-        resolve: t =>
-          PlaidConnection.get_account(t.connection_id, t.account_id),
-      }),
-      connection: t.field({
-        type: PlaidConnectionType,
-        resolve: t => PlaidConnection.from_id(t.connection_id),
-      }),
-    }),
-  });
+export const SourceType = builder.objectRef<Pipe.SourceEntityType>("Source");
 
-const StringFilterType = builder
-  .objectRef<SQL.Row["string_filters"]>("StringFilter")
-  .implement({
-    fields: t => ({
-      id: t.exposeID("id"),
-      value: t.exposeString("value"),
-      operand: t.exposeString("operand"),
-    }),
-  });
-
-builder.queryFields(t => ({
-  pipes: t.field({
-    type: [PipeType],
-    resolve: _ => Pipe.list(),
-  }),
-  pipesFromSlackConnection: t.field({
-    args: {
-      id: t.arg.string({ required: true }),
-    },
-    type: [PipeType],
-    resolve: async (_, args) => Pipe.from_slack_connection(args.id),
-  }),
-  pipesFromPlaidConnection: t.field({
-    args: {
-      id: t.arg.string({ required: true }),
-    },
-    type: [PipeType],
-    resolve: async (_, args) => Pipe.from_slack_connection(args.id),
-  }),
-}));
-
-const NumberFilterInputType = builder.inputType("NumberFilterInputType", {
+SourceType.implement({
   fields: t => ({
-    value: t.float({ required: true }),
-    operand: t.string({ required: true }),
+    id: t.exposeID("sourceID"),
+    filters: t.field({
+      type: [FilterType],
+      resolve: source => Pipe.filtersForSource(source.sourceID),
+    }),
   }),
 });
 
-builder.mutationFields(t => ({
-  addPipe: t.field({
-    type: PipeType,
-    args: {
-      name: t.arg.string({ required: true }),
-      enabled: t.arg.boolean({ required: true }),
-      number_filters: t.arg({
-        type: [NumberFilterInputType],
-        required: true,
-      }),
-    },
-    resolve: (_, args) =>
-      Pipe.addPipe(args.name, args.enabled, args.number_filters),
+const NumberFilterType = builder.objectType("NumberFilter", {
+  fields: t => ({
+    id: t.exposeID("filterID"),
+    value: t.exposeInt("value"),
+    op: t.exposeString("op"),
   }),
-}));
+});
+
+const TextFilterType = builder.objectType("TextFilter", {
+  fields: t => ({
+    id: t.exposeID("filterID"),
+    value: t.exposeString("value"),
+    op: t.exposeString("op"),
+  }),
+});
+
+const TextFilterContainsType = builder.objectType("TextContainsFilter", {
+  fields: t => ({
+    id: t.exposeID("filterID"),
+    value: t.exposeStringList("value"),
+    op: t.exposeString("op"),
+  }),
+});
+
+const FilterType = builder.unionType("FilterType", {
+  types: [NumberFilterType, TextFilterType, TextFilterContainsType],
+  resolveType: filter => {
+    switch (filter.kind) {
+      case "numberFilter":
+        return NumberFilterType;
+      case "textFilter":
+        return TextFilterType;
+      case "textFilterContains":
+        return TextFilterContainsType;
+    }
+  },
+});
+
+// NumberFilterType.implement({
+//   fields: t => ({
+//     id: t.exposeID("filterID"),
+//     value: t.exposeInt("value"),
+//     op: t.exposeString("op"),
+//   }),
+// });
+
+// const PipeType = builder.objectRef<SQL.Row["pipes"]>("Pipe").implement({
+//   fields: t => ({
+//     id: t.exposeID("id"),
+//     name: t.exposeString("name"),
+//     enabled: t.exposeBoolean("enabled"),
+//     times: t.field({
+//       type: CommonDataTimesType,
+//       resolve: p => p,
+//     }),
+//     number_filters: t.field({
+//       type: [NumberFilterType],
+//       resolve: pipe => Pipe.number_filters(pipe.id),
+//     }),
+//     string_filters: t.field({
+//       type: [StringFilterType],
+//       resolve: pipe => Pipe.string_filters(pipe.id),
+//     }),
+//     slack_destinations: t.field({
+//       type: [SlackDestinationType],
+//       resolve: pipe => Pipe.slack_destinations(pipe.id),
+//     }),
+//   }),
+// });
+
+// const NumberFilterType = builder
+//   .objectRef<SQL.Row["number_filters"]>("NumberFilter")
+//   .implement({
+//     fields: t => ({
+//       id: t.exposeID("id"),
+//       value: t.exposeFloat("value"),
+//       operand: t.exposeString("operand"),
+//       account: t.field({
+//         type: PlaidAccountType,
+//         resolve: t =>
+//           PlaidConnection.get_account(t.connection_id, t.account_id),
+//       }),
+//       connection: t.field({
+//         type: PlaidConnectionType,
+//         resolve: t => PlaidConnection.from_id(t.connection_id),
+//       }),
+//     }),
+//   });
+
+// const StringFilterType = builder
+//   .objectRef<SQL.Row["string_filters"]>("StringFilter")
+//   .implement({
+//     fields: t => ({
+//       id: t.exposeID("id"),
+//       value: t.exposeString("value"),
+//       operand: t.exposeString("operand"),
+//     }),
+//   });
+
+// builder.queryFields(t => ({
+//   pipes: t.field({
+//     type: [PipeType],
+//     resolve: _ => Pipe.list(),
+//   }),
+//   pipesFromSlackConnection: t.field({
+//     args: {
+//       id: t.arg.string({ required: true }),
+//     },
+//     type: [PipeType],
+//     resolve: async (_, args) => Pipe.from_slack_connection(args.id),
+//   }),
+//   pipesFromPlaidConnection: t.field({
+//     args: {
+//       id: t.arg.string({ required: true }),
+//     },
+//     type: [PipeType],
+//     resolve: async (_, args) => Pipe.from_slack_connection(args.id),
+//   }),
+// }));
+
+// const NumberFilterInputType = builder.inputType("NumberFilterInputType", {
+//   fields: t => ({
+//     value: t.float({ required: true }),
+//     operand: t.string({ required: true }),
+//   }),
+// });
+
+// builder.mutationFields(t => ({
+//   addPipe: t.field({
+//     type: PipeType,
+//     args: {
+//       name: t.arg.string({ required: true }),
+//       enabled: t.arg.boolean({ required: true }),
+//       number_filters: t.arg({
+//         type: [NumberFilterInputType],
+//         required: true,
+//       }),
+//     },
+//     resolve: (_, args) =>
+//       Pipe.addPipe(args.name, args.enabled, args.number_filters),
+//   }),
+// }));
