@@ -1,6 +1,5 @@
-import { Entity, EntityItem } from "electrodb";
-import { FilterNode } from "kysely";
-import { Dynamo, MangroveService } from "../dynamo";
+import { Entity } from "electrodb";
+import { Dynamo } from "../dynamo";
 
 export const NumberFilterEntity = new Entity(
   {
@@ -32,11 +31,6 @@ export const NumberFilterEntity = new Entity(
       },
       value: {
         type: "number",
-        required: true,
-        readOnly: false,
-      },
-      kind: {
-        type: "string",
         required: true,
         readOnly: false,
       },
@@ -111,11 +105,6 @@ export const TextFilterEntity = new Entity(
         readOnly: false,
       },
       value: {
-        type: "string",
-        required: true,
-        readOnly: false,
-      },
-      kind: {
         type: "string",
         required: true,
         readOnly: false,
@@ -198,11 +187,6 @@ export const TextContainsFilterEntity = new Entity(
         required: true,
         readOnly: false,
       },
-      kind: {
-        type: "string",
-        required: true,
-        readOnly: false,
-      },
     },
     indexes: {
       filter: {
@@ -268,14 +252,9 @@ export const SourceEntity = new Entity(
         required: true,
         readOnly: true,
       },
-      bingo: {
-        type: "string",
-        required: true,
-        readOnly: true,
-      },
       accountID: {
         type: "string",
-        required: true,
+        requried: true,
         readOnly: false,
       },
     },
@@ -291,7 +270,7 @@ export const SourceEntity = new Entity(
           composite: [],
         },
       },
-      pipe: {
+      assigned: {
         collection: "pipes",
         index: "gsi1",
         pk: {
@@ -308,133 +287,26 @@ export const SourceEntity = new Entity(
   Dynamo.Configuration
 );
 
-export const SlackDestinationEntity = new Entity(
-  {
-    model: {
-      entity: "SlackDestination",
-      version: "1",
-      service: "mangrove",
-    },
-    attributes: {
-      destinationID: {
-        type: "string",
-        required: true,
-        readOnly: true,
-      },
-      pipeID: {
-        type: "string",
-        required: true,
-        readOnly: true,
-      },
-      teamID: {
-        type: "string",
-        required: true,
-        readOnly: false,
-      },
-      channelID: {
-        type: "string",
-        required: true,
-        readOnly: false,
-      },
-    },
-    indexes: {
-      destination: {
-        pk: {
-          field: "pk",
-          composite: ["destinationID"],
-        },
-        sk: {
-          field: "sk",
-          composite: [],
-        },
-      },
-      pipe: {
-        collection: "pipes",
-        index: "gsi1pk",
-        pk: {
-          field: "gsi1pk",
-          composite: ["pipeID"],
-        },
-        sk: {
-          field: "gsi1sk",
-          composite: ["destinationID"],
-        },
-      },
-    },
-  },
-  Dynamo.Configuration
-);
+type NumberFilter<T extends string> = {
+  id: string;
+  sourceID: string;
+  kind: T;
+  op: "eq" | "lt" | "gt";
+  value: number;
+};
 
-export const PipeEntity = new Entity(
-  {
-    model: {
-      entity: "Pipe",
-      version: "1",
-      service: "mangrove",
-    },
-    attributes: {
-      pipeID: {
-        type: "string",
-        required: true,
-        readOnly: true,
-      },
-      userID: {
-        type: "string",
-        required: true,
-        readOnly: true,
-      },
-      name: {
-        type: "string",
-        required: true,
-        readOnly: false,
-      },
-      enabled: {
-        type: "boolean",
-        required: true,
-        readOnly: false,
-      },
-    },
-    indexes: {
-      pipe: {
-        collection: "pipes",
-        pk: {
-          field: "pk",
-          composite: ["pipeID"],
-        },
-        sk: {
-          field: "sk",
-          composite: ["userID"],
-        },
-      },
-    },
-  },
-  Dynamo.Configuration
-);
-
-export async function sources(pipeID: string) {
-  return SourceEntity.query.pipe({ pipeID }).go();
-}
-
-export async function filtersForSource(sourceID: string) {
-  return Promise.all([
-    NumberFilterEntity.query.source({ sourceID }).go(),
-    TextFilterEntity.query.source({ sourceID }).go(),
-    TextContainsFilterEntity.query.source({ sourceID }).go(),
-  ]).then(resp => resp.flat());
-}
-
-export async function destinations(pipeID: string) {
-  return SlackDestinationEntity.query.pipe({ pipeID }).go();
-}
-
-export type NumberFilterEntityType = EntityItem<typeof NumberFilterEntity>;
-export type PipeEntityType = EntityItem<typeof PipeEntity>;
-export type TextFilterEntityType = EntityItem<typeof TextFilterEntity>;
-export type TextContainsFilterEntityType = EntityItem<
-  typeof TextContainsFilterEntity
->;
-export type SourceEntityType = EntityItem<typeof SourceEntity>;
-export type SlackDestinationType = EntityItem<typeof SlackDestinationEntity>;
-export function create() {}
-
-export * as Pipe from ".";
+type TextFilter<T extends string> =
+  | {
+      id: string;
+      sourceID: string;
+      kind: T;
+      op: "eq" | "contains";
+      value: string;
+    }
+  | {
+      id: string;
+      sourceID: string;
+      kind: T;
+      op: "in";
+      value: string[];
+    };
