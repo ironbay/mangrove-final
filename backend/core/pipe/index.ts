@@ -268,9 +268,14 @@ export const SourceEntity = new Entity(
         required: true,
         readOnly: true,
       },
+      bingo: {
+        type: "string",
+        required: true,
+        readOnly: true,
+      },
       accountID: {
         type: "string",
-        requried: true,
+        required: true,
         readOnly: false,
       },
     },
@@ -296,6 +301,63 @@ export const SourceEntity = new Entity(
         sk: {
           field: "gsi1sk",
           composite: ["sourceID"],
+        },
+      },
+    },
+  },
+  Dynamo.Configuration
+);
+
+export const SlackDestinationEntity = new Entity(
+  {
+    model: {
+      entity: "SlackDestination",
+      version: "1",
+      service: "mangrove",
+    },
+    attributes: {
+      destinationID: {
+        type: "string",
+        required: true,
+        readOnly: true,
+      },
+      pipeID: {
+        type: "string",
+        required: true,
+        readOnly: true,
+      },
+      teamID: {
+        type: "string",
+        required: true,
+        readOnly: false,
+      },
+      channelID: {
+        type: "string",
+        required: true,
+        readOnly: false,
+      },
+    },
+    indexes: {
+      destination: {
+        pk: {
+          field: "pk",
+          composite: ["destinationID"],
+        },
+        sk: {
+          field: "sk",
+          composite: [],
+        },
+      },
+      pipe: {
+        collection: "pipes",
+        index: "gsi1pk",
+        pk: {
+          field: "gsi1pk",
+          composite: ["pipeID"],
+        },
+        sk: {
+          field: "gsi1sk",
+          composite: ["destinationID"],
         },
       },
     },
@@ -361,6 +423,10 @@ export async function filtersForSource(sourceID: string) {
   ]).then(resp => resp.flat());
 }
 
+export async function destinations(pipeID: string) {
+  return SlackDestinationEntity.query.pipe({ pipeID }).go();
+}
+
 export type NumberFilterEntityType = EntityItem<typeof NumberFilterEntity>;
 export type PipeEntityType = EntityItem<typeof PipeEntity>;
 export type TextFilterEntityType = EntityItem<typeof TextFilterEntity>;
@@ -368,6 +434,7 @@ export type TextContainsFilterEntityType = EntityItem<
   typeof TextContainsFilterEntity
 >;
 export type SourceEntityType = EntityItem<typeof SourceEntity>;
+export type SlackDestinationType = EntityItem<typeof SlackDestinationEntity>;
 export function create() {}
 
 export * as Pipe from ".";

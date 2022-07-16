@@ -1,6 +1,5 @@
 import { builder } from "../builder";
 import { Pipe, PipeEntity } from "@mangrove/core/pipe";
-import { Source } from "plaid";
 
 export const PipeType = builder.objectRef<Pipe.PipeEntityType>("Pipe");
 
@@ -13,6 +12,10 @@ PipeType.implement({
       type: [SourceType],
       resolve: async pipe => Pipe.sources(pipe.pipeID),
     }),
+    destinations: t.field({
+      type: [SlackDestinationType],
+      resolve: async pipe => Pipe.destinations(pipe.pipeID),
+    }),
   }),
 });
 
@@ -21,6 +24,8 @@ export const SourceType = builder.objectRef<Pipe.SourceEntityType>("Source");
 SourceType.implement({
   fields: t => ({
     id: t.exposeID("sourceID"),
+    kind: t.exposeString("kind"),
+    accountID: t.exposeString("accountID"),
     filters: t.field({
       type: [FilterType],
       resolve: source => Pipe.filtersForSource(source.sourceID),
@@ -64,6 +69,17 @@ const FilterType = builder.unionType("FilterType", {
         return TextFilterContainsType;
     }
   },
+});
+
+export const SlackDestinationType =
+  builder.objectRef<Pipe.SlackDestinationType>("SlackDestination");
+
+SlackDestinationType.implement({
+  fields: t => ({
+    id: t.exposeID("destinationID"),
+    teamID: t.exposeString("teamID"),
+    channelID: t.exposeString("channelID"),
+  }),
 });
 
 // NumberFilterType.implement({
