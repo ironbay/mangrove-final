@@ -1,2 +1,2 @@
-export * as Plaid from "./index";
+export * as Slack from "./index";
 export * as Connection from "./connection";

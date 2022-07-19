@@ -1,4 +1,3 @@
-export * as Connection from "./connection";
 import { Configuration, PlaidApi, PlaidEnvironments, AccountBase } from "plaid";
 import { SQL } from "@mangrove/core/sql";
 
@@ -95,8 +94,6 @@ const configuration = new Configuration({
 
 const client = new PlaidApi(configuration);
 
-export * as PlaidConnection from ".";
-
 async function fromID(connectionID: string) {
   const [result] = await PlaidConnectionEntity.query
     .connection({ connectionID })
@@ -112,3 +109,9 @@ export async function accounts(connectionID: string) {
 
   return resp.data.accounts;
 }
+
+export type PlaidConnectionEntityType = EntityItem<
+  typeof PlaidConnectionEntity
+>;
+
+export * as Connection from ".";
