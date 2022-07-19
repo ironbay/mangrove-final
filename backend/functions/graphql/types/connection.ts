@@ -2,29 +2,53 @@ import { SlackConnection } from "@mangrove/core/connection/slack";
 import { PlaidConnection } from "@mangrove/core/connection/plaid";
 import { builder } from "../builder";
 import { SQL } from "@mangrove/core/sql";
+import { Plaid } from "@mangrove/core/plaid";
 
 export const PlaidConnectionType = builder
   .objectRef<PlaidConnection.Connection>("PlaidConnection")
   .implement({
     fields: t => ({
       id: t.exposeID("id"),
-      institution_name: t.exposeString("institution_name"),
-      institution_color: t.exposeString("institution_color"),
-      institution_logo: t.exposeString("logo"),
+      institution: t.field({
+        type: PlaidInstitutionType,
+        resolve: t => ({
+          instName: t.instName,
+          instColor: t.instColor,
+          instLogo: t.instLogo,
+        }),
+      }),
       accounts: t.field({
         type: [PlaidAccountType],
-        resolve: async connection => PlaidConnection.accounts(connection.id),
+        resolve: t => Plaid.Connection.accounts(t.connectionID),
       }),
     }),
   });
 
-export const PlaidAccountType = builder
-  .objectRef<PlaidConnection.Account>("PlaidAccount")
+export const PlaidInstitutionType = builder
+  .objectRef<{
+    instName: string;
+    instColor: string;
+    instLogo: string;
+  }>("PlaidInstitution")
   .implement({
     fields: t => ({
-      id: t.exposeID("id"),
+      name: t.exposeString("instName", { nullable: true }),
+      color: t.exposeString("instName", { nullable: true }),
+      logo: t.exposeString("instName", { nullable: true }),
+    }),
+  });
+
+export const PlaidAccountType = builder
+  .objectRef<{
+    account_id: string;
+    name: string;
+    type: string;
+  }>("PlaidAccount")
+  .implement({
+    fields: t => ({
+      id: t.exposeID("account_id"),
       name: t.exposeString("name"),
-      kind: t.exposeString("kind"),
+      kind: t.exposeString("type"),
     }),
   });
 
