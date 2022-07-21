@@ -403,13 +403,32 @@ export const PipeEntity = new Entity(
         },
         sk: {
           field: "sk",
+          composite: [],
+        },
+      },
+      user: {
+        pk: {
+          field: "gsi1pk",
           composite: ["userID"],
+        },
+        sk: {
+          field: "gsi1sk",
+          composite: [],
         },
       },
     },
   },
   Dynamo.Configuration
 );
+
+export async function fromID(pipeID: string) {
+  const [pipe] = await PipeEntity.query.pipe({ pipeID }).go();
+  return pipe;
+}
+
+export async function list(userID: string) {
+  return PipeEntity.query.user({ userID }).go();
+}
 
 export async function sources(pipeID: string) {
   return SourceEntity.query.pipe({ pipeID }).go();
