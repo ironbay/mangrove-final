@@ -19,11 +19,6 @@ export const SourceEntity = new Entity(
         required: true,
         readOnly: true,
       },
-      kind: {
-        type: "string",
-        required: true,
-        readOnly: false,
-      },
       accountID: {
         type: "string",
         required: true,
@@ -40,6 +35,11 @@ export const SourceEntity = new Entity(
         readOnly: false,
       },
       itemID: {
+        type: "string",
+        required: true,
+        readOnly: false,
+      },
+      kind: {
         type: "string",
         required: true,
         readOnly: false,

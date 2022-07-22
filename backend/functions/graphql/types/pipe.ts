@@ -12,14 +12,28 @@ PipeType.implement({
     enabled: t.exposeBoolean("enabled"),
     sources: t.field({
       type: [SourceType],
-      resolve: async parent => Source.fromPipe(parent.pipeID),
+      resolve: async parent => Source.forPipe(parent.pipeID),
     }),
-    filters: t.field({
-      type: [FilterType],
-      resolve: async parent => Pipe.Filter.fromPipe(parent.pipeID),
-    }),
+    // destinations: t.field({
+    //   type: [SlackDestinationType],
+    //   resolve: async pipe => Pipe.destinations(pipe.pipeID),
+    // }),
   }),
 });
+
+// export const SourceType = builder.objectRef<Pipe.SourceEntityType>("Source");
+
+// SourceType.implement({
+//   fields: t => ({
+//     id: t.exposeID("sourceID"),
+//     kind: t.exposeString("kind"),
+//     accountID: t.exposeString("accountID"),
+//     filters: t.field({
+//       type: [FilterType],
+//       resolve: source => Pipe.filtersForSource(source.sourceID),
+//     }),
+//   }),
+// });
 
 const NumberFilterType = builder.objectType("NumberFilter", {
   fields: t => ({
