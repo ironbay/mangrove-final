@@ -3,7 +3,6 @@ import { SQL } from "@mangrove/core/sql";
 
 import { Entity, EntityItem } from "electrodb";
 import { Dynamo } from "../dynamo";
-<<<<<<< HEAD
 
 export const PlaidConnectionEntity = new Entity(
   {
@@ -68,60 +67,6 @@ export const PlaidConnectionEntity = new Entity(
 export interface Institution {
   id: string;
   name: string;
-=======
-
-export const PlaidConnectionEntity = new Entity(
-  {
-    model: {
-      entity: "PlaidConnection",
-      version: "1",
-      service: "mangrove",
-    },
-    attributes: {
-      connectionID: {
-        type: "string",
-        required: true,
-        readOnly: true,
-      },
-      itemID: {
-        type: "string",
-        required: true,
-        readOnly: true,
-      },
-      userID: {
-        type: "string",
-        required: true,
-        readOnly: true,
-      },
-    },
-    indexes: {
-      connection: {
-        pk: {
-          field: "pk",
-          composite: ["connectionID"],
-        },
-        sk: {
-          field: "sk",
-          composite: [""],
-        },
-      },
-    },
-  },
-  Dynamo.Configuration
-);
-
-export interface Account {
-  type: "plaidAccount";
-  id: string;
-  name: string;
-  kind: string;
-  subkind: string;
-}
-
-export interface Institution {
-  id: string;
-  name: string;
->>>>>>> d690ee6 (model)
   color: string;
   logo: string;
 }
