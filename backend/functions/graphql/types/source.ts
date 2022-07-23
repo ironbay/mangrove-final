@@ -9,6 +9,7 @@ PlaidSourceType.implement({
     id: t.exposeString("sourceID"),
     pipeID: t.exposeString("pipeID"),
     itemID: t.exposeString("itemID"),
+    kind: t.exposeString("kind"),
     account: t.field({
       type: PlaidAccountType,
       resolve: parent => parent,

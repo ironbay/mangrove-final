@@ -1,14 +1,24 @@
 import { Entity, EntityItem } from "electrodb";
 import { Dynamo } from "../dynamo";
 
-export const SourceEntity = new Entity(
+export const FilterEntity = new Entity(
   {
     model: {
-      entity: "PlaidSource",
+      entity: "Filter",
       version: "1",
       service: "mangrove",
     },
     attributes: {
+      filterID: {
+        type: "string",
+        required: true,
+        readOnly: true,
+      },
+      kind: {
+        type: "string",
+        required: true,
+        readOnly: false,
+      },
       sourceID: {
         type: "string",
         required: true,
@@ -19,41 +29,26 @@ export const SourceEntity = new Entity(
         required: true,
         readOnly: true,
       },
-      kind: {
+      op: {
         type: "string",
         required: true,
         readOnly: false,
       },
-      accountID: {
-        type: "string",
-        required: true,
-        readOnly: false,
-      },
-      accountName: {
-        type: "string",
-        required: true,
-        readOnly: false,
-      },
-      accountKind: {
-        type: "string",
-        required: true,
-        readOnly: false,
-      },
-      itemID: {
-        type: "string",
+      value: {
+        type: "any",
         required: true,
         readOnly: false,
       },
     },
     indexes: {
-      source: {
+      filter: {
         pk: {
           field: "pk",
-          composite: ["sourceID"],
+          composite: ["filterID"],
         },
         sk: {
           field: "sk",
-          composite: ["pipeID"],
+          composite: [],
         },
       },
       pipe: {
@@ -64,7 +59,7 @@ export const SourceEntity = new Entity(
         },
         sk: {
           field: "gsi1sk",
-          composite: [],
+          composite: ["filterID"],
         },
       },
     },
@@ -72,5 +67,6 @@ export const SourceEntity = new Entity(
   Dynamo.Configuration
 );
 
-export type SourceEntityType = EntityItem<typeof SourceEntity>;
-export * as Source from ".";
+export function fromPipe(pipeID: string) {
+  return FilterEntity.query.pipe({ pipeID }).go();
+}
