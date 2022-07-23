@@ -94,6 +94,7 @@ const configuration = new Configuration({
 
 const client = new PlaidApi(configuration);
 
+<<<<<<< HEAD
 async function fromID(connectionID: string) {
   const [result] = await PlaidConnectionEntity.query
     .connection({ connectionID })
@@ -115,3 +116,74 @@ export type PlaidConnectionEntityType = EntityItem<
 >;
 
 export * as Connection from ".";
+=======
+export * as PlaidConnection from ".";
+
+// export async function get_account(
+//   connection_id: string,
+//   account_id: string
+// ): Promise<Account> {
+//   const connection = await fromID(connection_id);
+
+//   const account = await client
+//     .accountsGet({
+//       access_token: connection.accessToken,
+//     })
+//     .then(resp => {
+//       return resp.data.accounts.find(a => a.account_id === account_id);
+//     });
+
+//   return {
+//     id: account!.account_id!,
+//     name: account!.official_name!,
+//     kind: account!.type,
+//   };
+// }
+
+// export async function accounts(connection_id: string) {
+//   const connection = await fromID(connection_id);
+
+//   return await client
+//     .accountsGet({
+//       access_token: connection.accessToken,
+//     })
+//     .then(resp => resp.data.accounts.map(raw => format_account(raw)));
+// }
+
+// export async function list(userID: string) {
+//   return await SQL.DB.selectFrom("plaid_connections")
+//     .selectAll()
+//     .where("userID", "=", userID)
+//     .execute();
+// }
+
+// export async function fromID(connection_id: string) {
+//   const alan = await SQL.DB.selectFrom("plaid_connections")
+//     .selectAll()
+//     .where("id", "=", connection_id)
+//     .executeTakeFirstOrThrow();
+
+//   return alan;
+// }
+
+// function decode(row: SQL.Row["plaid_connections"]): PlaidConnection {
+//   return {
+//     ...row,
+//     userID: row.userID,
+//     accessToken: row.accessToken,
+//     institution: {
+//       name: row.institutionName,
+//       color: row.institutionColor,
+//       logo: row.logo,
+//     },
+//   };
+// }
+
+// function format_account(raw: AccountBase) {
+//   return {
+//     id: raw!.account_id!,
+//     name: raw!.official_name!,
+//     kind: raw!.type,
+//   };
+// }
+>>>>>>> d690ee6 (model)

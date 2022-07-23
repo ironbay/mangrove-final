@@ -1,5 +1,7 @@
 import { builder } from "../builder";
 import { Pipe, PipeEntity } from "@mangrove/core/pipe";
+import { SourceType } from "./source";
+import { Source } from "@mangrove/core/source";
 
 export const PipeType = builder.objectRef<Pipe.PipeEntityType>("Pipe");
 
@@ -10,25 +12,11 @@ PipeType.implement({
     enabled: t.exposeBoolean("enabled"),
     sources: t.field({
       type: [SourceType],
-      resolve: async pipe => Pipe.sources(pipe.pipeID),
+      resolve: async parent => Source.fromPipe(parent.pipeID),
     }),
-    destinations: t.field({
-      type: [SlackDestinationType],
-      resolve: async pipe => Pipe.destinations(pipe.pipeID),
-    }),
-  }),
-});
-
-export const SourceType = builder.objectRef<Pipe.SourceEntityType>("Source");
-
-SourceType.implement({
-  fields: t => ({
-    id: t.exposeID("sourceID"),
-    kind: t.exposeString("kind"),
-    accountID: t.exposeString("accountID"),
     filters: t.field({
       type: [FilterType],
-      resolve: source => Pipe.filtersForSource(source.sourceID),
+      resolve: async parent => Pipe.Filter.fromPipe(parent.pipeID),
     }),
   }),
 });
