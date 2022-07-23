@@ -17,32 +17,12 @@ export const PlaidConnectionEntity = new Entity(
         required: true,
         readOnly: true,
       },
-      userID: {
-        type: "string",
-        required: true,
-        readOnly: true,
-      },
       itemID: {
         type: "string",
         required: true,
         readOnly: true,
       },
-      instColor: {
-        type: "string",
-        required: true,
-        readOnly: true,
-      },
-      instLogo: {
-        type: "string",
-        required: true,
-        readOnly: true,
-      },
-      instName: {
-        type: "string",
-        required: true,
-        readOnly: true,
-      },
-      accessToken: {
+      userID: {
         type: "string",
         required: true,
         readOnly: true,
@@ -56,13 +36,21 @@ export const PlaidConnectionEntity = new Entity(
         },
         sk: {
           field: "sk",
-          composite: [],
+          composite: [""],
         },
       },
     },
   },
   Dynamo.Configuration
 );
+
+export interface Account {
+  type: "plaidAccount";
+  id: string;
+  name: string;
+  kind: string;
+  subkind: string;
+}
 
 export interface Institution {
   id: string;
@@ -94,6 +82,7 @@ const configuration = new Configuration({
 
 const client = new PlaidApi(configuration);
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 async function fromID(connectionID: string) {
   const [result] = await PlaidConnectionEntity.query
@@ -166,6 +155,57 @@ export * as PlaidConnection from ".";
 //   return alan;
 // }
 
+=======
+export * as PlaidConnection from ".";
+
+// export async function get_account(
+//   connection_id: string,
+//   account_id: string
+// ): Promise<Account> {
+//   const connection = await fromID(connection_id);
+
+//   const account = await client
+//     .accountsGet({
+//       access_token: connection.accessToken,
+//     })
+//     .then(resp => {
+//       return resp.data.accounts.find(a => a.account_id === account_id);
+//     });
+
+//   return {
+//     id: account!.account_id!,
+//     name: account!.official_name!,
+//     kind: account!.type,
+//   };
+// }
+
+// export async function accounts(connection_id: string) {
+//   const connection = await fromID(connection_id);
+
+//   return await client
+//     .accountsGet({
+//       access_token: connection.accessToken,
+//     })
+//     .then(resp => resp.data.accounts.map(raw => format_account(raw)));
+// }
+
+// export async function list(userID: string) {
+//   return await SQL.DB.selectFrom("plaid_connections")
+//     .selectAll()
+//     .where("userID", "=", userID)
+//     .execute();
+// }
+
+// export async function fromID(connection_id: string) {
+//   const alan = await SQL.DB.selectFrom("plaid_connections")
+//     .selectAll()
+//     .where("id", "=", connection_id)
+//     .executeTakeFirstOrThrow();
+
+//   return alan;
+// }
+
+>>>>>>> d690ee6 (model)
 // function decode(row: SQL.Row["plaid_connections"]): PlaidConnection {
 //   return {
 //     ...row,
@@ -186,4 +226,7 @@ export * as PlaidConnection from ".";
 //     kind: raw!.type,
 //   };
 // }
+<<<<<<< HEAD
+>>>>>>> d690ee6 (model)
+=======
 >>>>>>> d690ee6 (model)

@@ -2,6 +2,8 @@ import { builder } from "../builder";
 import { Pipe, PipeEntity } from "@mangrove/core/pipe";
 import { SourceType } from "./source";
 import { Source } from "@mangrove/core/source";
+import { Filter } from "@mangrove/core/filter";
+import { FilterType } from "./filter";
 
 export const PipeType = builder.objectRef<Pipe.PipeEntityType>("Pipe");
 
@@ -14,6 +16,14 @@ PipeType.implement({
       type: [SourceType],
       resolve: async parent => Source.forPipe(parent.pipeID),
     }),
+    filters: t.field({
+      type: [FilterType],
+      resolve: parent => Filter.forPipe(parent.pipeID),
+    }),
+    // sources: t.field({
+    //   type: [SourceType],
+    //   resolve: async pipe => Pipe.sources(pipe.pipeID),
+    // }),
     // destinations: t.field({
     //   type: [SlackDestinationType],
     //   resolve: async pipe => Pipe.destinations(pipe.pipeID),
@@ -35,54 +45,68 @@ PipeType.implement({
 //   }),
 // });
 
-const NumberFilterType = builder.objectType("NumberFilter", {
-  fields: t => ({
-    id: t.exposeID("filterID"),
-    value: t.exposeInt("value"),
-    op: t.exposeString("op"),
-  }),
-});
+// export const SourceType = builder.objectRef<Pipe.SourceEntityType>("Source");
 
-const TextFilterType = builder.objectType("TextFilter", {
-  fields: t => ({
-    id: t.exposeID("filterID"),
-    value: t.exposeString("value"),
-    op: t.exposeString("op"),
-  }),
-});
+// SourceType.implement({
+//   fields: t => ({
+//     id: t.exposeID("sourceID"),
+//     kind: t.exposeString("kind"),
+//     accountID: t.exposeString("accountID"),
+//     filters: t.field({
+//       type: [FilterType],
+//       resolve: source => Pipe.filtersForSource(source.sourceID),
+//     }),
+//   }),
+// });
 
-const TextFilterContainsType = builder.objectType("TextContainsFilter", {
-  fields: t => ({
-    id: t.exposeID("filterID"),
-    value: t.exposeStringList("value"),
-    op: t.exposeString("op"),
-  }),
-});
+// const NumberFilterType = builder.objectType("NumberFilter", {
+//   fields: t => ({
+//     id: t.exposeID("filterID"),
+//     value: t.exposeInt("value"),
+//     op: t.exposeString("op"),
+//   }),
+// });
 
-const FilterType = builder.unionType("FilterType", {
-  types: [NumberFilterType, TextFilterType, TextFilterContainsType],
-  resolveType: filter => {
-    switch (filter.kind) {
-      case "numberFilter":
-        return NumberFilterType;
-      case "textFilter":
-        return TextFilterType;
-      case "textFilterContains":
-        return TextFilterContainsType;
-    }
-  },
-});
+// const TextFilterType = builder.objectType("TextFilter", {
+//   fields: t => ({
+//     id: t.exposeID("filterID"),
+//     value: t.exposeString("value"),
+//     op: t.exposeString("op"),
+//   }),
+// });
 
-export const SlackDestinationType =
-  builder.objectRef<Pipe.SlackDestinationType>("SlackDestination");
+// const TextFilterContainsType = builder.objectType("TextContainsFilter", {
+//   fields: t => ({
+//     id: t.exposeID("filterID"),
+//     value: t.exposeStringList("value"),
+//     op: t.exposeString("op"),
+//   }),
+// });
 
-SlackDestinationType.implement({
-  fields: t => ({
-    id: t.exposeID("destinationID"),
-    teamID: t.exposeString("teamID"),
-    channelID: t.exposeString("channelID"),
-  }),
-});
+// const FilterType = builder.unionType("FilterType", {
+//   types: [NumberFilterType, TextFilterType, TextFilterContainsType],
+//   resolveType: filter => {
+//     switch (filter.kind) {
+//       case "numberFilter":
+//         return NumberFilterType;
+//       case "textFilter":
+//         return TextFilterType;
+//       case "textFilterContains":
+//         return TextFilterContainsType;
+//     }
+//   },
+// });
+
+// export const SlackDestinationType =
+//   builder.objectRef<Pipe.SlackDestinationType>("SlackDestination");
+
+// SlackDestinationType.implement({
+//   fields: t => ({
+//     id: t.exposeID("destinationID"),
+//     teamID: t.exposeString("teamID"),
+//     channelID: t.exposeString("channelID"),
+//   }),
+// });
 
 // NumberFilterType.implement({
 //   fields: t => ({
