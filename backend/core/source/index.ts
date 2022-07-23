@@ -1,4 +1,5 @@
 import * as Plaid from "./plaid";
+export * as Plaid from "./plaid";
 export * as Source from ".";
 
 export async function forPipe(pipeID: string) {

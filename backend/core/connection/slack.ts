@@ -1,4 +1,4 @@
-export * as SlackConnection from "./connection";
+export * as SlackConnection from "./";
 import { WebClient as Client } from "@slack/web-api";
 import { Entity, EntityItem } from "electrodb";
 import { Dynamo } from "../dynamo";
@@ -57,8 +57,34 @@ function client(accessToken: string) {
   return new Client(accessToken);
 }
 
+async function clientFromID(connectionID: string) {
+  const [conn] = await fromID(connectionID);
+  return client(conn.accessToken);
+}
+
 export async function fromID(connectionID: string) {
   return SlackConnectionEntity.query.connection({ connectionID }).go();
+}
+
+export async function teamForDestination(connID: string, teamID: string) {
+  const client = await clientFromID(connID);
+  const resp = await client.team.info({ team: teamID });
+
+  return {
+    id: resp.team!.id!,
+    name: resp.team!.name!,
+    icon: resp.team!.icon?.image_230,
+  };
+}
+
+export async function channelForDestination(connID: string, channelID: string) {
+  const client = await clientFromID(connID);
+  const resp = await client.conversations.info({ channel: channelID });
+
+  return {
+    id: resp.channel!.id!,
+    name: resp.channel!.name!,
+  };
 }
 
 export async function channels(connectionID: string) {
@@ -70,5 +96,3 @@ export async function channels(connectionID: string) {
 export type SlackConnectionEntityType = EntityItem<
   typeof SlackConnectionEntity
 >;
-
-export * as Connection from ".";
