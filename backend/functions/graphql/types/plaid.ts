@@ -48,3 +48,16 @@ export const PlaidAccountType = builder
       kind: t.exposeString("type"),
     }),
   });
+
+builder.queryFields(t => ({
+  plaidConnections: t.field({
+    type: [PlaidConnectionType],
+    args: {
+      userID: t.arg.string({ required: true }),
+    },
+    nullable: true,
+    resolve: async (_parent, args) => {
+      return Plaid.Connection.forUser(args.userID);
+    },
+  }),
+}));

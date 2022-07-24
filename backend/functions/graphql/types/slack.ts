@@ -40,3 +40,16 @@ export const SlackChannelType = builder
       name: t.exposeID("name"),
     }),
   });
+
+builder.queryFields(t => ({
+  slackConnections: t.field({
+    type: [SlackConnectionType],
+    args: {
+      userID: t.arg.string({ required: true }),
+    },
+    nullable: true,
+    resolve: async (_parent, args) => {
+      return Slack.Connection.forUser(args.userID);
+    },
+  }),
+}));

@@ -1,4 +1,3 @@
-export * as SlackConnection from "./";
 import { WebClient as Client } from "@slack/web-api";
 import { Entity, EntityItem } from "electrodb";
 import { Dynamo } from "../dynamo";
@@ -48,6 +47,18 @@ export const SlackConnectionEntity = new Entity(
           composite: ["userID"],
         },
       },
+      user: {
+        index: "gsi1",
+        pk: {
+          field: "gsi1pk",
+          composite: ["userID"],
+        },
+
+        sk: {
+          field: "gsi1sk",
+          composite: ["connectionID"],
+        },
+      },
     },
   },
   Dynamo.Configuration
@@ -60,6 +71,10 @@ function client(accessToken: string) {
 async function clientFromID(connectionID: string) {
   const [conn] = await fromID(connectionID);
   return client(conn.accessToken);
+}
+
+export async function forUser(userID: string) {
+  return SlackConnectionEntity.query.user({ userID }).go();
 }
 
 export async function fromID(connectionID: string) {
@@ -96,3 +111,5 @@ export async function channels(connectionID: string) {
 export type SlackConnectionEntityType = EntityItem<
   typeof SlackConnectionEntity
 >;
+
+export * as Connection from ".";
