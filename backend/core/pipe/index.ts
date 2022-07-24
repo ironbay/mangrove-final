@@ -2,6 +2,7 @@ import { Entity, EntityItem } from "electrodb";
 import { FilterNode } from "kysely";
 import { Dynamo, MangroveService } from "../dynamo";
 export * as Filter from "./filter";
+export * as Pipe from "./index";
 
 export const PipeEntity = new Entity(
   {
@@ -44,12 +45,29 @@ export const PipeEntity = new Entity(
           composite: ["userID"],
         },
       },
+      user: {
+        index: "gsi1",
+        pk: {
+          field: "gsi1pk",
+          composite: ["userID"],
+        },
+        sk: {
+          field: "gsi1sk",
+          composite: ["pipeID"],
+        },
+      },
     },
   },
   Dynamo.Configuration
 );
 
-export type PipeEntityType = EntityItem<typeof PipeEntity>;
-export function create() {}
+export async function forUser(userID: string) {
+  return PipeEntity.query.user({ userID }).go();
+}
 
-export * as Pipe from "./index";
+export async function fromID(pipeID: string) {
+  const [pipe] = await PipeEntity.query.pipe({ pipeID }).go();
+  return pipe;
+}
+
+export type PipeEntityType = EntityItem<typeof PipeEntity>;
