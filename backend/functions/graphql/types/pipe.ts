@@ -28,3 +28,25 @@ PipeType.implement({
     }),
   }),
 });
+
+builder.queryFields(t => ({
+  pipes: t.field({
+    type: [PipeType],
+    args: {
+      userID: t.arg.string({ required: true }),
+    },
+    nullable: true,
+    resolve: async (_parent, args) => {
+      return Pipe.forUser(args.userID);
+    },
+  }),
+  pipe: t.field({
+    type: PipeType,
+    args: {
+      pipeID: t.arg.string({ required: true }),
+    },
+    resolve: async (_parent, args) => {
+      return Pipe.fromID(args.pipeID);
+    },
+  }),
+}));
