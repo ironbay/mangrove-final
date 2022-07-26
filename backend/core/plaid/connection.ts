@@ -1,4 +1,13 @@
-import { Configuration, PlaidApi, PlaidEnvironments, AccountBase } from "plaid";
+import {
+  Configuration,
+  PlaidApi,
+  PlaidEnvironments,
+  AccountBase,
+  CountryCode,
+} from "plaid";
+
+import { ulid } from "ulid";
+
 import { SQL } from "@mangrove/core/sql";
 
 import { Entity, EntityItem } from "electrodb";
@@ -32,6 +41,11 @@ export const PlaidConnectionEntity = new Entity(
         required: true,
         readOnly: true,
       },
+      instID: {
+        type: "string",
+        required: true,
+        readOnly: true,
+      },
       instName: {
         type: "string",
         required: true,
@@ -39,12 +53,12 @@ export const PlaidConnectionEntity = new Entity(
       },
       instColor: {
         type: "string",
-        required: true,
+        required: false,
         readOnly: false,
       },
       instLogo: {
         type: "string",
-        required: true,
+        required: false,
         readOnly: false,
       },
     },
@@ -56,7 +70,7 @@ export const PlaidConnectionEntity = new Entity(
         },
         sk: {
           field: "sk",
-          composite: [""],
+          composite: [],
         },
       },
       user: {
@@ -131,6 +145,67 @@ export async function accounts(connectionID: string) {
   });
 
   return resp.data.accounts;
+}
+
+export async function create(userID: string, publicToken: string) {
+  const accessToken = await exchangeToken(publicToken);
+  const {
+    data: { item },
+  } = await client.itemGet({ access_token: accessToken });
+
+  const { instID, instName, instLogo, instColor } = await instFromID(
+    item.institution_id!
+  );
+
+  const base = await PlaidConnectionEntity.create({
+    connectionID: ulid(),
+    itemID: item.data.item.item_id,
+    userID,
+    accessToken,
+    instName,
+    instID,
+  }).go();
+
+  if (instColor) await addInstColor(base.connectionID, instColor);
+  if (instLogo) await addInstLogo(base.connectionID, instName);
+
+  const [created] = await PlaidConnectionEntity.query
+    .connection({
+      connectionID: base.connectionID,
+    })
+    .go();
+
+  return created;
+}
+
+async function exchangeToken(publicToken: string) {
+  const resp = await client.itemPublicTokenExchange({
+    public_token: publicToken,
+  });
+
+  return resp.data.access_token;
+}
+
+async function instFromID(instID: string) {
+  const resp = await client.institutionsGetById({
+    institution_id: instID,
+    country_codes: [CountryCode.Us],
+  });
+
+  return {
+    instID: resp.data.institution.institution_id,
+    instName: resp.data.institution.name,
+    instLogo: resp.data.institution.logo,
+    instColor: resp.data.institution.primary_color,
+  };
+}
+
+async function addInstColor(connectionID: string, instColor: string) {
+  await PlaidConnectionEntity.update({ connectionID }).set({ instColor }).go();
+}
+
+async function addInstLogo(connectionID: string, instLogo: string) {
+  await PlaidConnectionEntity.update({ connectionID }).set({ instLogo }).go();
 }
 
 export type PlaidConnectionEntityType = EntityItem<
