@@ -61,3 +61,17 @@ builder.queryFields(t => ({
     },
   }),
 }));
+
+builder.mutationFields((t) => ({
+    createPlaidConnection: t.field({
+        type: PlaidConnectionType, 
+        args: {
+            userID: t.arg.string({ required: true}), 
+            publicToken: t.arg.string({ required: true})
+        }, 
+        nullable: true, 
+        resolve: async (_parent, args) => {
+            return Plaid.Connection.create(args.userID, args.publicToken)
+        }
+    })
+})
