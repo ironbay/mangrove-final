@@ -1,6 +1,8 @@
 import { WebClient as Client } from "@slack/web-api";
 import { Entity, EntityItem } from "electrodb";
 import { Dynamo } from "../dynamo";
+import { config, Config } from "@serverless-stack/node/config";
+import { ulid } from "ulid";
 
 export const SlackConnectionEntity = new Entity(
   {
@@ -64,12 +66,12 @@ export const SlackConnectionEntity = new Entity(
   Dynamo.Configuration
 );
 
-function client(accessToken: string) {
+function client(accessToken?: string) {
   return new Client(accessToken);
 }
 
 async function clientFromID(connectionID: string) {
-  const [conn] = await fromID(connectionID);
+  const conn = await fromID(connectionID);
   return client(conn.accessToken);
 }
 
@@ -78,7 +80,11 @@ export async function forUser(userID: string) {
 }
 
 export async function fromID(connectionID: string) {
-  return SlackConnectionEntity.query.connection({ connectionID }).go();
+  const [conn] = await SlackConnectionEntity.query
+    .connection({ connectionID })
+    .go();
+
+  return conn;
 }
 
 export async function teamForDestination(connID: string, teamID: string) {
@@ -103,9 +109,27 @@ export async function channelForDestination(connID: string, channelID: string) {
 }
 
 export async function channels(connectionID: string) {
-  const [connection] = await fromID(connectionID);
+  const connection = await fromID(connectionID);
   const resp = await client(connection.accessToken).conversations.list();
   return resp.channels!.map(c => ({ name: c.name!, id: c.id! }));
+}
+
+export async function create(userID: string, code: string) {
+  const resp = await client().oauth.v2.access({
+    code,
+    client_id: Config.SLACK_CLIENT_ID,
+    client_secret: Config.SLACK_CLIENT_SECRET,
+  });
+
+  const created = await SlackConnectionEntity.create({
+    connectionID: ulid(),
+    userID,
+    accessToken: resp.access_token!,
+    teamID: resp.team!.id!,
+    teamName: resp.team!.name!,
+  }).go();
+
+  return fromID(created.connectionID);
 }
 
 export type SlackConnectionEntityType = EntityItem<

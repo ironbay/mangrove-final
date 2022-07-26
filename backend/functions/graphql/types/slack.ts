@@ -53,3 +53,17 @@ builder.queryFields(t => ({
     },
   }),
 }));
+
+builder.mutationFields(t => ({
+  createSlackConnection: t.field({
+    type: SlackConnectionType,
+    args: {
+      userID: t.arg.string({ required: true }),
+      code: t.arg.string({ required: true }),
+    },
+    nullable: true,
+    resolve: async (_parent, args) => {
+      return Slack.Connection.create(args.userID, args.code);
+    },
+  }),
+}));
