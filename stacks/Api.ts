@@ -4,6 +4,7 @@ import {
   Api as ApiGateway,
 } from "@serverless-stack/resources";
 import { Database } from "./Database";
+import { Parameter } from "./Parameter";
 
 export function Api(ctx: StackContext) {
   const rds = use(Database);
@@ -36,6 +37,12 @@ export function Api(ctx: StackContext) {
   ctx.stack.addOutputs({
     API_URL: api.url,
   });
+
+  Parameter.use(
+    api.getFunction("POST /")!,
+    new Parameter(ctx.stack, "SLACK_CLIENT_ID"),
+    new Parameter(ctx.stack, "SLACK_CLIENT_SECRET")
+  );
 
   return api;
 }
