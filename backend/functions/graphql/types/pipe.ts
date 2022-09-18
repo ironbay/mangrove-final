@@ -1,33 +1,46 @@
 import { builder } from "../builder";
 import { Pipe, PipeEntity } from "@mangrove/core/pipe";
-import { SourceType } from "./source";
 import { Source } from "@mangrove/core/source";
-import { Filter } from "@mangrove/core/filter";
-import { FilterType } from "./filter";
-import { SlackDestinationType } from "./destination";
-import { Destination } from "@mangrove/core/destination";
 
 export const PipeType = builder.objectRef<Pipe.PipeEntityType>("Pipe");
 
+// homepage list implementation
+// want to get the source logo but not query all the accounts for a plaid connection!!!
 PipeType.implement({
   fields: t => ({
     id: t.exposeID("pipeID"),
     name: t.exposeString("name"),
     enabled: t.exposeBoolean("enabled"),
-    sources: t.field({
-      type: [SourceType],
-      resolve: async parent => Source.forPipe(parent.pipeID),
+    plaidSources: t.field({
+      type: [PlaidSourceType],
+      resolve: async pipe => Source.Plaid.forPipe(pipe.pipeID),
     }),
-    filters: t.field({
-      type: [FilterType],
-      resolve: parent => Filter.forPipe(parent.pipeID),
-    }),
-    destinations: t.field({
-      type: [SlackDestinationType],
-      resolve: parent => Destination.forPipe(parent.pipeID),
-    }),
+    // sources: t.field({
+    //   type: [SourceType],
+    //   resolve: async parent => Source.forPipe(parent.pipeID),
+    // }),
+    // filters: t.field({
+    //   type: [FilterType],
+    //   resolve: parent => Filter.forPipe(parent.pipeID),
+    // }),
+    // destinations: t.field({
+    //   type: [SlackDestinationType],
+    //   resolve: parent => Destination.forPipe(parent.pipeID),
+    // }),
   }),
 });
+
+export const PlaidSourceType = builder
+  .objectRef<Source.Plaid.PlaidSourceEntityType>("PlaidSource")
+  .implement({
+    fields: t => ({
+      id: t.exposeID("sourceID"),
+      instLogo: t.exposeString("instLogo"),
+      instName: t.exposeString("instName"),
+      accountName: t.exposeString("accountName"),
+      accountKind: t.exposeString("accountKind"),
+    }),
+  });
 
 builder.queryFields(t => ({
   pipes: t.field({

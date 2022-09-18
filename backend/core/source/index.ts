@@ -1,7 +1,3 @@
-import * as Plaid from "./plaid";
-export * as Plaid from "./plaid";
-export * as Source from ".";
+export * as Source from "./index";
 
-export async function forPipe(pipeID: string) {
-  return Plaid.SourceEntity.query.pipe({ pipeID }).go();
-}
+export * as Plaid from "./plaid";

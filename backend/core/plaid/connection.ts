@@ -88,7 +88,6 @@ export const PlaidConnectionEntity = new Entity(
   },
   Dynamo.Configuration
 );
-
 export interface Account {
   type: "plaidAccount";
   id: string;
@@ -108,11 +107,9 @@ export type PlaidConnection = {
   id: string;
   userID: string;
   accessToken: string;
-  institution: {
-    name: string;
-    color: string;
-    logo: string;
-  };
+  name: string;
+  color: string;
+  logo: string;
 };
 
 const configuration = new Configuration({
