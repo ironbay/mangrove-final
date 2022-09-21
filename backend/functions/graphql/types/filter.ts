@@ -1,58 +1,54 @@
-import { builder } from "../builder";
-import { Filter } from "@mangrove/core/filter";
+import { builder } from '../builder'
+import { Filter } from '@mangrove/core/filter'
 
-export const FilterType = builder.objectRef<Filter.FilterType>("Filter");
+export const FilterType = builder.objectRef<Filter.FilterEntityType>('Filter')
 
 FilterType.implement({
-  fields: t => ({
-    filterID: t.exposeString("filterID"),
-    pipeID: t.exposeString("pipeID"),
-    filterKind: t.exposeString("filterKind"),
-    op: t.exposeString("op"),
-    value: t.field({
-      type: ValueType,
-      resolve: parent => ({
-        value: parent.value,
-        filterKind: parent.filterKind,
-      }),
+    fields: (t) => ({
+        id: t.exposeString('filterID'),
+        kind: t.exposeString('kind'),
+        op: t.exposeString('op'),
+        value: t.field({
+            type: FilterValueType,
+            resolve: (parent) => parent,
+        }),
     }),
-  }),
-});
+})
 
 const NumberType = builder
-  .objectRef<{ value: number; filterKind: string }>("TextType")
-  .implement({
-    fields: t => ({
-      value: t.exposeFloat("value"),
-    }),
-  });
+    .objectRef<{ value: number; kind: string }>('TextType')
+    .implement({
+        fields: (t) => ({
+            value: t.exposeFloat('value'),
+        }),
+    })
 
 const TextType = builder
-  .objectRef<{ value: string; filterKind: string }>("TextType")
-  .implement({
-    fields: t => ({
-      value: t.exposeString("value"),
-    }),
-  });
+    .objectRef<{ value: string; kind: string }>('TextType')
+    .implement({
+        fields: (t) => ({
+            value: t.exposeString('value'),
+        }),
+    })
 
 const TextContainsType = builder
-  .objectRef<{ value: string[]; filterKind: string }>("TextType")
-  .implement({
-    fields: t => ({
-      value: t.exposeStringList("value"),
-    }),
-  });
-
-const ValueType = builder.unionType("Value", {
-  types: [NumberType, TextType, TextContainsType],
-  resolveType: filter => {
-    switch (filter.filterKind) {
-      case "number":
-        return NumberType;
-      case "text":
-        return TextType;
-      case "textContains":
-        return TextContainsType;
-    }
-  },
-});
+    .objectRef<{ value: string[]; kind: string }>('TextType')
+    .implement({
+        fields: (t) => ({
+            value: t.exposeStringList('value'),
+        }),
+    })
+2
+const FilterValueType = builder.unionType('Value', {
+    types: [NumberType, TextType, TextContainsType],
+    resolveType: (filter) => {
+        switch (filter.kind) {
+            case 'number':
+                return NumberType
+            case 'text':
+                return TextType
+            case 'textContains':
+                return TextContainsType
+        }
+    },
+})

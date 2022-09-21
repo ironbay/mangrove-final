@@ -1,5 +1,7 @@
 import { builder } from '../builder'
 import { Source } from '@mangrove/core/source'
+import { FilterType } from './filter'
+import { Filter } from '@mangrove/core/filter'
 
 export const PlaidSourceType = builder
     .objectRef<Source.Plaid.PlaidSourceEntityType>('PlaidSource')
@@ -13,6 +15,10 @@ export const PlaidSourceType = builder
             account: t.field({
                 type: PlaidSourceAccountType,
                 resolve: (t) => t,
+            }),
+            filters: t.field({
+                type: [FilterType],
+                resolve: (parent) => Filter.forSource(parent.sourceID),
             }),
         }),
     })

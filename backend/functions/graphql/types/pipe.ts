@@ -5,8 +5,6 @@ import { PlaidSourceType } from './source'
 
 export const PipeType = builder.objectRef<Pipe.PipeEntityType>('Pipe')
 
-// homepage list implementation
-// want to get the source logo but not query all the accounts for a plaid connection!!!
 PipeType.implement({
     fields: (t) => ({
         id: t.exposeID('pipeID'),
@@ -16,18 +14,6 @@ PipeType.implement({
             type: [PlaidSourceType],
             resolve: async (pipe) => Source.Plaid.forPipe(pipe.pipeID),
         }),
-        // sources: t.field({
-        //   type: [SourceType],
-        //   resolve: async parent => Source.forPipe(parent.pipeID),
-        // }),
-        // filters: t.field({
-        //   type: [FilterType],
-        //   resolve: parent => Filter.forPipe(parent.pipeID),
-        // }),
-        // destinations: t.field({
-        //   type: [SlackDestinationType],
-        //   resolve: parent => Destination.forPipe(parent.pipeID),
-        // }),
     }),
 })
 
