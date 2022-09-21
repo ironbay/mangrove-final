@@ -45,7 +45,7 @@ export const PipeEntity = new Entity(
           composite: ["userID"],
         },
       },
-      user: {
+      byUser: {
         index: "gsi1",
         pk: {
           field: "gsi1pk",
@@ -62,7 +62,7 @@ export const PipeEntity = new Entity(
 );
 
 export async function forUser(userID: string) {
-  return PipeEntity.query.user({ userID }).go();
+  return PipeEntity.query.byUser({ userID }).go();
 }
 
 export async function fromID(pipeID: string) {

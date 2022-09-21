@@ -10,61 +10,55 @@ export const SlackDestinationEntity = new Entity(
     },
     attributes: {
       destinationID: {
-        type: "string",
-        required: true,
-        readOnly: true,
-      },
-      connectionID: {
-        type: "string",
-        required: true,
-        readOnly: true,
-      },
+        type: "string", 
+        required: true, 
+      }, 
       pipeID: {
-        type: "string",
+        type: "string", 
+        required: true, 
+      }, 
+      teamName: {
+        type: "string", 
         required: true,
-        readOnly: true,
-      },
-      teamID: {
+      }, 
+      teamLogo: {
         type: "string",
-        required: true,
-        readOnly: false,
-      },
-      channelID: {
-        type: "string",
-        required: true,
-        readOnly: false,
-      },
+         required: true
+      }, 
+      channelName: {
+        type: "string", 
+        required: true
+      }
     },
     indexes: {
-      destination: {
+      primary: {
         pk: {
           field: "pk",
-          composite: ["destinationID"],
-        },
+          composite: ["destinationID"]
+        }, 
         sk: {
-          field: "sk",
-          composite: [],
+          field: "sk", 
+          composite:[]
         },
-      },
-      pipe: {
-        collection: "pipes",
-        index: "gsi1pk",
+      }, 
+      byPipe: {
+        index: "gsi1", 
         pk: {
-          field: "gsi1pk",
-          composite: ["pipeID"],
-        },
+          field: "gsi1pk", 
+          composite: ["pipeID"]
+        }, 
         sk: {
           field: "gsi1sk",
-          composite: ["destinationID"],
-        },
-      },
-    },
+          composite: ["destinationID"]
+        }
+      }
+    }
   },
   Dynamo.Configuration
 );
 
 export async function forPipe(pipeID: string) {
-  return SlackDestinationEntity.query.pipe({ pipeID }).go();
+  return SlackDestinationEntity.query.byPipe({ pipeID}).go()
 }
 
 export type SlackDestinationEntityType = EntityItem<

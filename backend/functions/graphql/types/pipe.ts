@@ -2,6 +2,8 @@ import { builder } from '../builder'
 import { Pipe, PipeEntity } from '@mangrove/core/pipe'
 import { Source } from '@mangrove/core/source'
 import { PlaidSourceType } from './source'
+import { Destination } from '@mangrove/core/destination'
+import { SlackDestinationType } from './destination'
 
 export const PipeType = builder.objectRef<Pipe.PipeEntityType>('Pipe')
 
@@ -13,6 +15,10 @@ PipeType.implement({
         plaidSources: t.field({
             type: [PlaidSourceType],
             resolve: async (pipe) => Source.Plaid.forPipe(pipe.pipeID),
+        }),
+        slackDestinations: t.field({
+            type: [SlackDestinationType],
+            resolve: async (pipe) => Destination.Slack.forPipe(pipe.pipeID),
         }),
     }),
 })
