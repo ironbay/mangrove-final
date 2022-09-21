@@ -1,72 +1,61 @@
-import { Entity, EntityItem } from "electrodb";
-import { Dynamo } from "../dynamo";
+import { Entity, EntityItem } from 'electrodb'
 
-export const FilterEntity = new Entity(
-  {
+export * as Filter from "."
+
+export const FilterEntity = new Entity({
     model: {
-      entity: "NumberFilter",
-      version: "1",
-      service: "mangrove",
+        version: '1',
+        entity: 'Filter',
+        service: 'mangrove',
     },
     attributes: {
-      filterID: {
-        type: "string",
-        required: true,
-        readOnly: true,
-      },
-      pipeID: {
-        type: "string",
-        required: true,
-        readOnly: true,
-      },
-      filterKind: {
-        type: "string",
-        required: true,
-        readOnly: false,
-      },
-      op: {
-        type: "string",
-        required: true,
-        readOnly: false,
-      },
-      value: {
-        type: "any",
-        required: true,
-        readOnly: false,
-      },
+        filterID: {
+            type: 'string',
+        },
+        sourceID: {
+          type: "string"
+        }, 
+        op: {
+          type: "string", 
+          required: true, 
+        }, 
+        kind: {
+          type: "string", 
+          required: true
+        }, 
+        value: {
+          type: "any", 
+          required: true
+        }
     },
     indexes: {
-      filter: {
-        collection: "filters",
-        pk: {
-          field: "pk",
-          composite: ["filterID"],
+        primary: {
+            pk: {
+                field: 'pk',
+                composite: ['filterID'],
+            },
+            sk: {
+                field: 'sk',
+                composite: [],
+            },
         },
-        sk: {
-          field: "sk",
-          composite: [],
+        bySource: {
+            index: 'gsi1',
+            pk: {
+                field: 'gsi1pk',
+                composite: ['sourceID'],
+            },
+            sk: {
+                field: 'gsi1sk',
+                composite: ['filterID'],
+            },
         },
-      },
-      pipe: {
-        index: "gsi1",
-        pk: {
-          field: "gsi1pk",
-          composite: ["pipeID"],
-        },
-        sk: {
-          field: "gsi1sk",
-          composite: [],
-        },
-      },
     },
-  },
-  Dynamo.Configuration
-);
+})
 
-export type FilterType = EntityItem<typeof FilterEntity>;
-
-export async function forPipe(pipeID: string) {
-  return FilterEntity.query.pipe({ pipeID }).go();
+export async function forSource(sourceID: string) {
+  return FilterEntity.query.bySource({ sourceID }).go()
 }
 
-export * as Filter from ".";
+export type FilterEntityType = EntityItem<typeof FilterEntity>
+
