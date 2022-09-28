@@ -1,14 +1,14 @@
-import { StackContext, Table } from "@serverless-stack/resources";
+import { StackContext, Table, Config } from "@serverless-stack/resources";
 
 export function Dynamo(ctx: StackContext) {
   const table = new Table(ctx.stack, "table", {
     fields: {
       pk: "string",
       sk: "string",
-      gsi1pk: "string", 
-      gsi1sk: "string", 
-      gsi2pk: "string", 
-      gsi1sk: "string", 
+      gsi1pk: "string",
+      gsi1sk: "string",
+      gsi2pk: "string",
+      gsi2sk: "string",
     },
     primaryIndex: {
       partitionKey: "pk",
@@ -27,7 +27,9 @@ export function Dynamo(ctx: StackContext) {
   });
 
   return {
-    table, 
-    DYNAMO_TABLE:
-  }
+    table,
+    DYNAMO_TABLE: new Config.Parameter(ctx.stack, "DYNAMO_TABLE", {
+      value: table.tableName,
+    }),
+  };
 }
