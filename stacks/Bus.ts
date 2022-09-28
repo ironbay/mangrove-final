@@ -7,7 +7,6 @@ import {
   use,
   Config,
 } from "@serverless-stack/resources";
-import { Database } from "./Database";
 
 export function Bus(ctx: StackContext) {
   const eventBus = new EventBus(ctx.stack, "Bus");
@@ -58,26 +57,24 @@ export function Bus(ctx: StackContext) {
     });
   }
 
-  const database = use(Database);
+  //   subscribe({
+  //     id: "PlaidTxAvailable",
+  //     types: ["plaid.tx.available"],
+  //     function: {
+  //       handler: "functions/plaid/events.tx_available",
+  //       permissions: [eventBus, database],
+  //       environment: {
+  //         BUS_NAME: eventBus.eventBusName,
+  //       },
+  //     },
+  //   });
 
-  subscribe({
-    id: "PlaidTxAvailable",
-    types: ["plaid.tx.available"],
-    function: {
-      handler: "functions/plaid/events.tx_available",
-      permissions: [eventBus, database],
-      environment: {
-        BUS_NAME: eventBus.eventBusName,
-      },
-    },
-  });
-
-  subscribe({
-    id: "PlaidTxNew",
-    types: ["plaid.tx.new"],
-    function: {
-      handler: "functions/plaid/events.tx_new",
-      permissions: [eventBus, database],
-    },
-  });
+  //   subscribe({
+  //     id: "PlaidTxNew",
+  //     types: ["plaid.tx.new"],
+  //     function: {
+  //       handler: "functions/plaid/events.tx_new",
+  //       permissions: [eventBus, database],
+  //     },
+  //   });
 }
