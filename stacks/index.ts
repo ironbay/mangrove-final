@@ -1,9 +1,8 @@
 import { App } from "@serverless-stack/resources";
 import { Api } from "./Api";
-import { Cognito } from "./Cognito";
-import { Database } from "./Database";
 import { Web } from "./Web";
 import { Bus } from "./Bus";
+import { Dynamo } from "./Dynamo";
 
 export default function main(app: App) {
   app.setDefaultFunctionProps({
@@ -13,5 +12,5 @@ export default function main(app: App) {
       format: "esm",
     },
   });
-  app.stack(Database).stack(Bus).stack(Api).stack(Web);
+  app.stack(Dynamo).stack(Bus).stack(Api).stack(Web);
 }

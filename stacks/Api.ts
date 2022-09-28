@@ -3,30 +3,24 @@ import {
   use,
   Api as ApiGateway,
 } from "@serverless-stack/resources";
-import { Database } from "./Database";
-import { Parameter } from "./Parameter";
+import { Dynamo } from "./Dynamo";
 
 export function Api(ctx: StackContext) {
-  const rds = use(Database);
+  const dynamo = use(Dynamo);
+
   const api = new ApiGateway(ctx.stack, "api", {
     defaults: {
       function: {
-        permissions: [rds],
-        environment: {
-          RDS_SECRET_ARN: rds.secretArn,
-          RDS_ARN: rds.clusterArn,
-          RDS_DATABASE: rds.defaultDatabaseName,
-        },
+        permissions: [dynamo.table],
+        config: [dynamo.DYNAMO_TABLE],
       },
     },
     routes: {
       "POST /graphql": {
         type: "pothos",
-        function: {
-          handler: "functions/graphql/graphql.handler",
-        },
         schema: "backend/functions/graphql/schema.ts",
-        output: "graphql/schema.graphql",
+        output: "graphql/schema.grapqhl",
+        function: "functions/graphql/graphql.handler",
         commands: [
           "npx genql --output ./graphql/genql --schema ./graphql/schema.graphql --esm",
         ],
@@ -37,12 +31,6 @@ export function Api(ctx: StackContext) {
   ctx.stack.addOutputs({
     API_URL: api.url,
   });
-
-  //   Parameter.use(
-  //     api.getFunction("POST /")!,
-  //     new Parameter(ctx.stack, "SLACK_CLIENT_ID"),
-  //     new Parameter(ctx.stack, "SLACK_CLIENT_SECRET")
-  //   );
 
   return api;
 }
