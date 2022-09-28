@@ -3,7 +3,6 @@
   "include": ["functions", "core"],
   "compilerOptions": {
     "module": "esnext",
-    "target": "es2017",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
