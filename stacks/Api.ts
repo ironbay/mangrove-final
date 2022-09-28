@@ -38,11 +38,11 @@ export function Api(ctx: StackContext) {
     API_URL: api.url,
   });
 
-  Parameter.use(
-    api.getFunction("POST /")!,
-    new Parameter(ctx.stack, "SLACK_CLIENT_ID"),
-    new Parameter(ctx.stack, "SLACK_CLIENT_SECRET")
-  );
+  //   Parameter.use(
+  //     api.getFunction("POST /")!,
+  //     new Parameter(ctx.stack, "SLACK_CLIENT_ID"),
+  //     new Parameter(ctx.stack, "SLACK_CLIENT_SECRET")
+  //   );
 
   return api;
 }

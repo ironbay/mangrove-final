@@ -2,13 +2,7 @@ import { EntityConfiguration, Service } from "electrodb";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 export const Client = new DynamoDBClient({});
 
-import {
-  PipeEntity,
-  NumberFilterEntity,
-  TextFilterEntity,
-  TextContainsFilterEntity,
-  SourceEntity,
-} from "@mangrove/core/pipe";
+import { PipeEntity } from "@mangrove/core/pipe";
 
 const table = "xxx";
 
@@ -20,10 +14,6 @@ export const Configuration: EntityConfiguration = {
 export const MangroveService = new Service(
   {
     pipe: PipeEntity,
-    numberFilter: NumberFilterEntity,
-    textFilter: TextFilterEntity,
-    textFilterContains: TextContainsFilterEntity,
-    source: SourceEntity,
   },
   { client: Client, table }
 );

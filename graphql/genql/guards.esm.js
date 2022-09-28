@@ -15,10 +15,10 @@ export var isComment = function(obj) {
 
 
 
-var CommonDataTimes_possibleTypes = ['CommonDataTimes']
-export var isCommonDataTimes = function(obj) {
-  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isCommonDataTimes"')
-  return CommonDataTimes_possibleTypes.includes(obj.__typename)
+var Filter_possibleTypes = ['Filter']
+export var isFilter = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isFilter"')
+  return Filter_possibleTypes.includes(obj.__typename)
 }
 
 
@@ -31,10 +31,10 @@ export var isMutation = function(obj) {
 
 
 
-var NumberFilter_possibleTypes = ['NumberFilter']
-export var isNumberFilter = function(obj) {
-  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isNumberFilter"')
-  return NumberFilter_possibleTypes.includes(obj.__typename)
+var NumberType_possibleTypes = ['NumberType']
+export var isNumberType = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isNumberType"')
+  return NumberType_possibleTypes.includes(obj.__typename)
 }
 
 
@@ -47,18 +47,26 @@ export var isPipe = function(obj) {
 
 
 
-var PlaidAccount_possibleTypes = ['PlaidAccount']
-export var isPlaidAccount = function(obj) {
-  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isPlaidAccount"')
-  return PlaidAccount_possibleTypes.includes(obj.__typename)
+var PlaidSource_possibleTypes = ['PlaidSource']
+export var isPlaidSource = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isPlaidSource"')
+  return PlaidSource_possibleTypes.includes(obj.__typename)
 }
 
 
 
-var PlaidConnection_possibleTypes = ['PlaidConnection']
-export var isPlaidConnection = function(obj) {
-  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isPlaidConnection"')
-  return PlaidConnection_possibleTypes.includes(obj.__typename)
+var PlaidSourceAccountType_possibleTypes = ['PlaidSourceAccountType']
+export var isPlaidSourceAccountType = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isPlaidSourceAccountType"')
+  return PlaidSourceAccountType_possibleTypes.includes(obj.__typename)
+}
+
+
+
+var PlaidSourceInstitutionType_possibleTypes = ['PlaidSourceInstitutionType']
+export var isPlaidSourceInstitutionType = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isPlaidSourceInstitutionType"')
+  return PlaidSourceInstitutionType_possibleTypes.includes(obj.__typename)
 }
 
 
@@ -87,16 +95,32 @@ export var isSlackConnection = function(obj) {
 
 
 
-var SlackDestination_possibleTypes = ['SlackDestination']
-export var isSlackDestination = function(obj) {
-  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isSlackDestination"')
-  return SlackDestination_possibleTypes.includes(obj.__typename)
+var SlackTeam_possibleTypes = ['SlackTeam']
+export var isSlackTeam = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isSlackTeam"')
+  return SlackTeam_possibleTypes.includes(obj.__typename)
 }
 
 
 
-var StringFilter_possibleTypes = ['StringFilter']
-export var isStringFilter = function(obj) {
-  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isStringFilter"')
-  return StringFilter_possibleTypes.includes(obj.__typename)
+var TextContainsType_possibleTypes = ['TextContainsType']
+export var isTextContainsType = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isTextContainsType"')
+  return TextContainsType_possibleTypes.includes(obj.__typename)
+}
+
+
+
+var TextType_possibleTypes = ['TextType']
+export var isTextType = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isTextType"')
+  return TextType_possibleTypes.includes(obj.__typename)
+}
+
+
+
+var Value_possibleTypes = ['NumberType','TextContainsType','TextType']
+export var isValue = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isValue"')
+  return Value_possibleTypes.includes(obj.__typename)
 }

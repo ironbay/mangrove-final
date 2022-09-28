@@ -5,13 +5,15 @@ import {
   Function,
   Queue,
   use,
+  Config,
 } from "@serverless-stack/resources";
-import { Parameter } from "./Parameter";
 import { Database } from "./Database";
 
 export function Bus(ctx: StackContext) {
   const eventBus = new EventBus(ctx.stack, "Bus");
-  const BUS_NAME = new Parameter(ctx.stack, "BUS_NAME", eventBus.eventBusName);
+  const BUS_NAME = new Config.Parameter(ctx.stack, "BUS_NAME", {
+    value: eventBus.eventBusName,
+  });
 
   new Function(ctx.stack, "tesfunction", {
     handler: "functions/plaid/events.test",
@@ -25,7 +27,6 @@ export function Bus(ctx: StackContext) {
     id: string;
     function: FunctionDefinition;
     types?: string[];
-    parameters?: Parameter[];
   };
 
   function subscribe(opts: SubscribeOpts) {
@@ -34,8 +35,6 @@ export function Bus(ctx: StackContext) {
       opts.id + "Function",
       opts.function
     );
-
-    if (opts.parameters) Parameter.use(func, ...opts.parameters);
 
     eventBus.addRules(ctx.stack, {
       [`${opts.id}Rule`]: {

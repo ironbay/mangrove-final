@@ -2,8 +2,8 @@ export default {
     "scalars": [
         1,
         3,
-        6,
-        8
+        7,
+        9
     ],
     "types": {
         "Article": {
@@ -36,12 +36,18 @@ export default {
             ]
         },
         "String": {},
-        "CommonDataTimes": {
-            "created": [
+        "Filter": {
+            "id": [
                 3
             ],
-            "updated": [
+            "kind": [
                 3
+            ],
+            "op": [
+                3
+            ],
+            "value": [
+                19
             ],
             "__typename": [
                 3
@@ -61,23 +67,6 @@ export default {
                     ]
                 }
             ],
-            "addPipe": [
-                10,
-                {
-                    "enabled": [
-                        6,
-                        "Boolean!"
-                    ],
-                    "name": [
-                        3,
-                        "String!"
-                    ],
-                    "number_filters": [
-                        9,
-                        "[NumberFilterInputType!]!"
-                    ]
-                }
-            ],
             "createArticle": [
                 0,
                 {
@@ -86,6 +75,19 @@ export default {
                         "String!"
                     ],
                     "url": [
+                        3,
+                        "String!"
+                    ]
+                }
+            ],
+            "createSlackConnection": [
+                15,
+                {
+                    "code": [
+                        3,
+                        "String!"
+                    ],
+                    "userID": [
                         3,
                         "String!"
                     ]
@@ -104,42 +106,18 @@ export default {
                 3
             ]
         },
-        "Boolean": {},
-        "NumberFilter": {
-            "account": [
-                11
-            ],
-            "connection": [
-                12
-            ],
-            "id": [
-                1
-            ],
-            "operand": [
-                3
-            ],
+        "NumberType": {
             "value": [
-                8
+                7
             ],
             "__typename": [
                 3
             ]
         },
         "Float": {},
-        "NumberFilterInputType": {
-            "operand": [
-                3
-            ],
-            "value": [
-                8
-            ],
-            "__typename": [
-                3
-            ]
-        },
         "Pipe": {
             "enabled": [
-                6
+                9
             ],
             "id": [
                 1
@@ -147,26 +125,32 @@ export default {
             "name": [
                 3
             ],
-            "number_filters": [
-                7
-            ],
-            "slack_destinations": [
-                16
-            ],
-            "string_filters": [
-                17
-            ],
-            "times": [
-                4
+            "plaidSources": [
+                10
             ],
             "__typename": [
                 3
             ]
         },
-        "PlaidAccount": {
+        "Boolean": {},
+        "PlaidSource": {
+            "account": [
+                11
+            ],
+            "filters": [
+                4
+            ],
             "id": [
                 1
             ],
+            "institution": [
+                3
+            ],
+            "__typename": [
+                3
+            ]
+        },
+        "PlaidSourceAccountType": {
             "kind": [
                 3
             ],
@@ -177,20 +161,11 @@ export default {
                 3
             ]
         },
-        "PlaidConnection": {
-            "accounts": [
-                11
-            ],
-            "id": [
-                1
-            ],
-            "institution_color": [
+        "PlaidSourceInstitutionType": {
+            "logo": [
                 3
             ],
-            "institution_logo": [
-                3
-            ],
-            "institution_name": [
+            "name": [
                 3
             ],
             "__typename": [
@@ -201,50 +176,32 @@ export default {
             "articles": [
                 0
             ],
+            "pipe": [
+                8,
+                {
+                    "pipeID": [
+                        3,
+                        "String!"
+                    ]
+                }
+            ],
             "pipes": [
-                10
-            ],
-            "pipesFromPlaidConnection": [
-                10,
+                8,
                 {
-                    "id": [
-                        3,
-                        "String!"
-                    ]
-                }
-            ],
-            "pipesFromSlackConnection": [
-                10,
-                {
-                    "id": [
-                        3,
-                        "String!"
-                    ]
-                }
-            ],
-            "plaidConnection": [
-                12,
-                {
-                    "id": [
-                        3,
-                        "String!"
-                    ]
-                }
-            ],
-            "plaidConnections": [
-                12
-            ],
-            "slackConnecion": [
-                15,
-                {
-                    "id": [
+                    "userID": [
                         3,
                         "String!"
                     ]
                 }
             ],
             "slackConnections": [
-                15
+                15,
+                {
+                    "userID": [
+                        3,
+                        "String!"
+                    ]
+                }
             ],
             "__typename": [
                 3
@@ -255,7 +212,7 @@ export default {
                 1
             ],
             "name": [
-                3
+                1
             ],
             "__typename": [
                 3
@@ -268,8 +225,16 @@ export default {
             "id": [
                 1
             ],
-            "logo": [
+            "team": [
+                16
+            ],
+            "__typename": [
                 3
+            ]
+        },
+        "SlackTeam": {
+            "id": [
+                1
             ],
             "name": [
                 3
@@ -278,29 +243,31 @@ export default {
                 3
             ]
         },
-        "SlackDestination": {
-            "channel": [
-                14
-            ],
-            "connection": [
-                15
-            ],
-            "id": [
-                1
+        "TextContainsType": {
+            "value": [
+                3
             ],
             "__typename": [
                 3
             ]
         },
-        "StringFilter": {
-            "id": [
-                1
-            ],
-            "operand": [
-                3
-            ],
+        "TextType": {
             "value": [
                 3
+            ],
+            "__typename": [
+                3
+            ]
+        },
+        "Value": {
+            "on_NumberType": [
+                6
+            ],
+            "on_TextContainsType": [
+                17
+            ],
+            "on_TextType": [
+                18
             ],
             "__typename": [
                 3
