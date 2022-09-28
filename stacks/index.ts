@@ -1,7 +1,5 @@
 import { App } from "@serverless-stack/resources";
 import { Api } from "./Api";
-import { Cognito } from "./Cognito";
-import { Database } from "./Database";
 import { Web } from "./Web";
 import { Bus } from "./Bus";
 
