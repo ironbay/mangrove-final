@@ -14,22 +14,22 @@ export const SlackDestinationEntity = new Entity(
         required: true,
         readOnly: true,
       },
-      connectionID: {
-        type: "string",
-        required: true,
-        readOnly: true,
-      },
       pipeID: {
         type: "string",
         required: true,
         readOnly: true,
       },
-      teamID: {
+      connectionID: {
         type: "string",
         required: true,
         readOnly: false,
       },
       channelID: {
+        type: "string",
+        required: true,
+        readOnly: false,
+      },
+      channelName: {
         type: "string",
         required: true,
         readOnly: false,
@@ -46,9 +46,8 @@ export const SlackDestinationEntity = new Entity(
           composite: [],
         },
       },
-      pipe: {
-        collection: "pipes",
-        index: "gsi1pk",
+      byPipe: {
+        index: "gsi1",
         pk: {
           field: "gsi1pk",
           composite: ["pipeID"],
@@ -64,7 +63,7 @@ export const SlackDestinationEntity = new Entity(
 );
 
 export async function forPipe(pipeID: string) {
-  return SlackDestinationEntity.query.pipe({ pipeID }).go();
+  return SlackDestinationEntity.query.byPipe({ pipeID }).go();
 }
 
 export type SlackDestinationEntityType = EntityItem<

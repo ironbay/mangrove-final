@@ -3,6 +3,7 @@ import { Entity, EntityItem } from "electrodb";
 import { Dynamo } from "../dynamo";
 import { config, Config } from "@serverless-stack/node/config";
 import { ulid } from "ulid";
+import { Response } from "aws-sdk";
 
 export const SlackConnectionEntity = new Entity(
   {
@@ -111,7 +112,12 @@ export async function channelForDestination(connID: string, channelID: string) {
 export async function channels(connectionID: string) {
   const connection = await fromID(connectionID);
   const resp = await client(connection.accessToken).conversations.list();
-  return resp.channels!.map(c => ({ name: c.name!, id: c.id! }));
+  if (!resp.channels) return [];
+
+  return resp.channels.map(channel => ({
+    id: channel.id!,
+    name: channel.name!,
+  }));
 }
 
 export async function create(userID: string, code: string) {
