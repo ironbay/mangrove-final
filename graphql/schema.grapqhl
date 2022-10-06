@@ -20,8 +20,15 @@ type Filter {
 type Mutation {
   addComment(articleID: String!, text: String!): Comment!
   createArticle(title: String!, url: String!): Article!
+  createPipe(enabled: Boolean!, name: String!, plaidSources: [PlaidSourceInput!]!, user: String!): Pipe!
   createSlackConnection(code: String!, userID: String!): SlackConnection
   removeComment(id: String!): Comment!
+}
+
+input NumberFilterInput {
+  kind: String
+  op: String
+  value: Int
 }
 
 type NumberType {
@@ -46,6 +53,13 @@ type PlaidSource {
 type PlaidSourceAccountType {
   kind: String!
   name: String!
+}
+
+input PlaidSourceInput {
+  accountID: String
+  connectionID: String
+  numberFilters: [NumberFilterInput!]
+  pipeID: String
 }
 
 type PlaidSourceInstitutionType {

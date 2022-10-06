@@ -3,6 +3,7 @@ import { FilterNode } from "kysely";
 import { Dynamo, MangroveService } from "../dynamo";
 export * as Filter from "./filter";
 export * as Pipe from "./index";
+import { ulid } from "ulid";
 
 export type PipeEntityType = EntityItem<typeof PipeEntity>;
 export const PipeEntity = new Entity(
@@ -77,4 +78,10 @@ export async function forUser(userID: string): Promise<PipeEntityType[]> {
 export async function fromID(pipeID: string) {
   const [pipe] = await PipeEntity.query.pipe({ pipeID }).go();
   return pipe;
+}
+
+export async function create(userID: string, name: string, enabled: boolean) {
+  const id = ulid();
+  await PipeEntity.create({ pipeID: id, userID, name, enabled }).go();
+  return fromID(id);
 }

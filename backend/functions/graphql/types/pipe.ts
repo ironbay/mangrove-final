@@ -2,7 +2,7 @@ import { builder } from "../builder";
 import { Pipe, PipeEntity } from "@mangrove/core/pipe";
 import { Source } from "@mangrove/core/source";
 import { Destination } from "@mangrove/core/destination";
-import { PlaidSourceType } from "./source";
+import { PlaidSourceType, PlaidSourceInput } from "./source";
 import { SlackDestinationType } from "./destination";
 
 export const PipeType = builder.objectRef<Pipe.PipeEntityType>("Pipe");
@@ -41,6 +41,25 @@ builder.queryFields(t => ({
     },
     resolve: async (_parent, args) => {
       return Pipe.fromID(args.pipeID);
+    },
+  }),
+}));
+
+builder.mutationFields(t => ({
+  createPipe: t.field({
+    type: PipeType,
+    args: {
+      user: t.arg.string({ required: true }),
+      name: t.arg.string({ required: true }),
+      enabled: t.arg.boolean({ required: true }),
+      plaidSources: t.arg({
+        type: [PlaidSourceInput],
+        required: true,
+      }),
+    },
+    resolve: async (_parent, args) => {
+      const pipe = await Pipe.create(args.user, args.name, args.enabled);
+      return pipe;
     },
   }),
 }));
