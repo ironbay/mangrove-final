@@ -1,5 +1,6 @@
-import { Configuration, PlaidApi, PlaidEnvironments, AccountBase } from "plaid";
-import { SQL } from "@mangrove/core/sql";
+import { Configuration, PlaidApi, PlaidEnvironments, CountryCode } from "plaid";
+
+import { ulid } from "ulid";
 
 import { Entity, EntityItem } from "electrodb";
 import { Dynamo } from "../dynamo";
@@ -27,6 +28,31 @@ export const PlaidConnectionEntity = new Entity(
         required: true,
         readOnly: true,
       },
+      accessToken: {
+        type: "string",
+        required: true,
+        readOnly: true,
+      },
+      instID: {
+        type: "string",
+        required: true,
+        readOnly: true,
+      },
+      instName: {
+        type: "string",
+        required: true,
+        readOnly: false,
+      },
+      instColor: {
+        type: "string",
+        required: false,
+        readOnly: false,
+      },
+      instLogo: {
+        type: "string",
+        required: false,
+        readOnly: false,
+      },
     },
     indexes: {
       connection: {
@@ -36,14 +62,24 @@ export const PlaidConnectionEntity = new Entity(
         },
         sk: {
           field: "sk",
-          composite: [""],
+          composite: [],
+        },
+      },
+      user: {
+        index: "gsi1",
+        pk: {
+          field: "gsi1pk",
+          composite: ["userID"],
+        },
+        sk: {
+          field: "gsi1sk",
+          composite: ["connectionID"],
         },
       },
     },
   },
   Dynamo.Configuration
 );
-
 export interface Account {
   type: "plaidAccount";
   id: string;
@@ -63,11 +99,9 @@ export type PlaidConnection = {
   id: string;
   userID: string;
   accessToken: string;
-  institution: {
-    name: string;
-    color: string;
-    logo: string;
-  };
+  name: string;
+  color: string;
+  logo: string;
 };
 
 const configuration = new Configuration({
@@ -89,6 +123,10 @@ async function fromID(connectionID: string) {
   return result;
 }
 
+export async function forUser(userID: string) {
+  return PlaidConnectionEntity.query.user({ userID }).go();
+}
+
 export async function accounts(connectionID: string) {
   const connection = await fromID(connectionID);
   const resp = await client.accountsGet({
@@ -98,128 +136,69 @@ export async function accounts(connectionID: string) {
   return resp.data.accounts;
 }
 
+export async function create(userID: string, publicToken: string) {
+  const accessToken = await exchangeToken(publicToken);
+  const {
+    data: { item },
+  } = await client.itemGet({ access_token: accessToken });
+
+  const { instID, instName, instLogo, instColor } = await instFromID(
+    item.institution_id!
+  );
+
+  const base = await PlaidConnectionEntity.create({
+    connectionID: ulid(),
+    itemID: item.data.item.item_id,
+    userID,
+    accessToken,
+    instName,
+    instID,
+  }).go();
+
+  if (instColor) await addInstColor(base.connectionID, instColor);
+  if (instLogo) await addInstLogo(base.connectionID, instName);
+
+  const [created] = await PlaidConnectionEntity.query
+    .connection({
+      connectionID: base.connectionID,
+    })
+    .go();
+
+  return created;
+}
+
+async function exchangeToken(publicToken: string) {
+  const resp = await client.itemPublicTokenExchange({
+    public_token: publicToken,
+  });
+
+  return resp.data.access_token;
+}
+
+async function instFromID(instID: string) {
+  const resp = await client.institutionsGetById({
+    institution_id: instID,
+    country_codes: [CountryCode.Us],
+  });
+
+  return {
+    instID: resp.data.institution.institution_id,
+    instName: resp.data.institution.name,
+    instLogo: resp.data.institution.logo,
+    instColor: resp.data.institution.primary_color,
+  };
+}
+
+async function addInstColor(connectionID: string, instColor: string) {
+  await PlaidConnectionEntity.update({ connectionID }).set({ instColor }).go();
+}
+
+async function addInstLogo(connectionID: string, instLogo: string) {
+  await PlaidConnectionEntity.update({ connectionID }).set({ instLogo }).go();
+}
+
 export type PlaidConnectionEntityType = EntityItem<
   typeof PlaidConnectionEntity
 >;
 
-export * as PlaidConnection from ".";
-
-// export async function get_account(
-//   connection_id: string,
-//   account_id: string
-// ): Promise<Account> {
-//   const connection = await fromID(connection_id);
-
-//   const account = await client
-//     .accountsGet({
-//       access_token: connection.accessToken,
-//     })
-//     .then(resp => {
-//       return resp.data.accounts.find(a => a.account_id === account_id);
-//     });
-
-//   return {
-//     id: account!.account_id!,
-//     name: account!.official_name!,
-//     kind: account!.type,
-//   };
-// }
-
-// export async function accounts(connection_id: string) {
-//   const connection = await fromID(connection_id);
-
-//   return await client
-//     .accountsGet({
-//       access_token: connection.accessToken,
-//     })
-//     .then(resp => resp.data.accounts.map(raw => format_account(raw)));
-// }
-
-// export async function list(userID: string) {
-//   return await SQL.DB.selectFrom("plaid_connections")
-//     .selectAll()
-//     .where("userID", "=", userID)
-//     .execute();
-// }
-
-// export async function fromID(connection_id: string) {
-//   const alan = await SQL.DB.selectFrom("plaid_connections")
-//     .selectAll()
-//     .where("id", "=", connection_id)
-//     .executeTakeFirstOrThrow();
-
-//   return alan;
-// }
-
-// export async function get_account(
-//   connection_id: string,
-//   account_id: string
-// ): Promise<Account> {
-//   const connection = await fromID(connection_id);
-
-//   const account = await client
-//     .accountsGet({
-//       access_token: connection.accessToken,
-//     })
-//     .then(resp => {
-//       return resp.data.accounts.find(a => a.account_id === account_id);
-//     });
-
-//   return {
-//     id: account!.account_id!,
-//     name: account!.official_name!,
-//     kind: account!.type,
-//   };
-// }
-
-// export async function accounts(connection_id: string) {
-//   const connection = await fromID(connection_id);
-
-//   return await client
-//     .accountsGet({
-//       access_token: connection.accessToken,
-//     })
-//     .then(resp => resp.data.accounts.map(raw => format_account(raw)));
-// }
-
-// export async function list(userID: string) {
-//   return await SQL.DB.selectFrom("plaid_connections")
-//     .selectAll()
-//     .where("userID", "=", userID)
-//     .execute();
-// }
-
-// export async function fromID(connection_id: string) {
-//   const alan = await SQL.DB.selectFrom("plaid_connections")
-//     .selectAll()
-//     .where("id", "=", connection_id)
-//     .executeTakeFirstOrThrow();
-
-//   return alan;
-// }
-
->>>>>>> d690ee6 (model)
-// function decode(row: SQL.Row["plaid_connections"]): PlaidConnection {
-//   return {
-//     ...row,
-//     userID: row.userID,
-//     accessToken: row.accessToken,
-//     institution: {
-//       name: row.institutionName,
-//       color: row.institutionColor,
-//       logo: row.logo,
-//     },
-//   };
-// }
-
-// function format_account(raw: AccountBase) {
-//   return {
-//     id: raw!.account_id!,
-//     name: raw!.official_name!,
-//     kind: raw!.type,
-//   };
-// }
-<<<<<<< HEAD
->>>>>>> d690ee6 (model)
-=======
->>>>>>> d690ee6 (model)
+export * as Connection from ".";

@@ -4,6 +4,7 @@ import { Dynamo, MangroveService } from "../dynamo";
 export * as Filter from "./filter";
 export * as Pipe from "./index";
 
+export type PipeEntityType = EntityItem<typeof PipeEntity>;
 export const PipeEntity = new Entity(
   {
     model: {
@@ -61,13 +62,19 @@ export const PipeEntity = new Entity(
   Dynamo.Configuration
 );
 
-export async function forUser(userID: string) {
-  return PipeEntity.query.user({ userID }).go();
+export async function forUser(userID: string): Promise<PipeEntityType[]> {
+  return [
+    {
+      pipeID: "pipe1",
+      userID: "user123",
+      enabled: true,
+      name: "my sweet pipe",
+    },
+  ];
+  //   return PipeEntity.query.user({ userID }).go();
 }
 
 export async function fromID(pipeID: string) {
   const [pipe] = await PipeEntity.query.pipe({ pipeID }).go();
   return pipe;
 }
-
-export type PipeEntityType = EntityItem<typeof PipeEntity>;
