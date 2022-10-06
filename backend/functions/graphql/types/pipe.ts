@@ -59,6 +59,8 @@ builder.mutationFields(t => ({
     },
     resolve: async (_parent, args) => {
       const pipe = await Pipe.create(args.user, args.name, args.enabled);
+      const sources = await Source.Plaid.create(args.plaidSources);
+
       return pipe;
     },
   }),

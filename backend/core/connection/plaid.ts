@@ -1,4 +1,10 @@
-import { Configuration, PlaidApi, PlaidEnvironments, CountryCode } from "plaid";
+import {
+  Configuration,
+  PlaidApi,
+  PlaidEnvironments,
+  CountryCode,
+  AccountBase,
+} from "plaid";
 
 import { ulid } from "ulid";
 
@@ -55,7 +61,7 @@ export const PlaidConnectionEntity = new Entity(
       },
     },
     indexes: {
-      connection: {
+      byID: {
         pk: {
           field: "pk",
           composite: ["connectionID"],
@@ -81,11 +87,9 @@ export const PlaidConnectionEntity = new Entity(
   Dynamo.Configuration
 );
 export interface Account {
-  type: "plaidAccount";
   id: string;
   name: string;
   kind: string;
-  subkind: string;
 }
 
 export interface Institution {
@@ -116,11 +120,26 @@ const configuration = new Configuration({
 
 const client = new PlaidApi(configuration);
 
-async function fromID(connectionID: string) {
+export async function fromID(connectionID: string) {
   const [result] = await PlaidConnectionEntity.query
-    .connection({ connectionID })
+    .byID({ connectionID })
     .go();
+
   return result;
+}
+
+export async function account(connectionID: string, accountID: string) {
+  const resp = await accounts(connectionID);
+  const acct = resp.find(account => account.account_id === accountID);
+  return formatAccount(acct!);
+}
+
+function formatAccount(account: AccountBase): Account {
+  return {
+    id: account.account_id,
+    name: account.name,
+    kind: account.type,
+  };
 }
 
 export async function forUser(userID: string) {
