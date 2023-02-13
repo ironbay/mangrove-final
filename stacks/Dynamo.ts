@@ -1,4 +1,4 @@
-import { StackContext, Table, Config } from "@serverless-stack/resources";
+import { StackContext, Table, Config } from "@serverless-stack/resources"
 
 export function Dynamo(ctx: StackContext) {
   const table = new Table(ctx.stack, "table", {
@@ -23,13 +23,17 @@ export function Dynamo(ctx: StackContext) {
         partitionKey: "gsi2pk",
         sortKey: "gsi2sk",
       },
+      gsi3: {
+        partitionKey: "gsi3pk",
+        sortKey: "gsi3sk",
+      },
     },
-  });
+  })
 
   return {
     table,
     DYNAMO_TABLE: new Config.Parameter(ctx.stack, "DYNAMO_TABLE", {
       value: table.tableName,
     }),
-  };
+  }
 }
