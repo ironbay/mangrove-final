@@ -27,6 +27,10 @@ export function Dynamo(ctx: StackContext) {
         partitionKey: "gsi3pk",
         sortKey: "gsi3sk",
       },
+      gsi4: {
+        partitionKey: "gsi4pk",
+        sortKey: "gsi4sk",
+      },
     },
   })
 
