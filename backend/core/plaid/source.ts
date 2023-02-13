@@ -11,6 +11,10 @@ const PlaidSourceEntity = new Entity({
       type: "string",
       required: true,
     },
+    plaidConnectionID: {
+      type: "string",
+      required: true,
+    },
     timesCreated: {
       type: "string",
       required: true,
@@ -66,6 +70,16 @@ const PlaidSourceEntity = new Entity({
         composite: ["pipeID"],
       },
       sk: { field: "gsi2sk", composite: ["sourceID", "plaidAccountID"] },
+    },
+    byPlaidConnectionID: {
+      pk: {
+        field: "gsi5pk",
+        composite: ["plaidConnectionID"],
+      },
+      sk: {
+        field: "gsi5sk",
+        composite: ["sourceID"],
+      },
     },
   },
 })

@@ -1,8 +1,8 @@
 import { Entity } from "electrodb"
 
-const PlaidConnectionEntity = new Entity({
+const SlackConnectionEntity = new Entity({
   model: {
-    entity: "PlaidConnection",
+    entity: "SlackConnection",
     version: "1",
     service: "mangrove",
   },
@@ -11,35 +11,27 @@ const PlaidConnectionEntity = new Entity({
       type: "string",
       required: true,
     },
-    userID: {
-      type: "string",
-      required: true,
-    },
     timesCreated: {
       type: "string",
       required: true,
     },
-    plaidItemID: {
+    userID: {
       type: "string",
       required: true,
-    },
-    plaidTransactionCursor: {
-      type: "string",
-      required: false,
-    },
-    plaidInstID: {
-      type: "string",
-      required: true,
-    },
-    plaidInstName: {
-      type: "string",
-      required: true,
-    },
-    plaidInstColor: {
-      type: "string",
-      required: false,
     },
     accessToken: {
+      type: "string",
+      required: true,
+    },
+    refreshToken: {
+      type: "string",
+      required: true,
+    },
+    slackTeamID: {
+      type: "string",
+      required: true,
+    },
+    slackTeamName: {
       type: "string",
       required: true,
     },
@@ -65,23 +57,13 @@ const PlaidConnectionEntity = new Entity({
         composite: ["connectionID"],
       },
     },
-    byPlaidItemID: {
-      pk: {
-        field: "gsi4pk",
-        composite: ["plaidItemID"],
-      },
-      sk: {
-        field: "gsi4sk",
-        composite: ["connectionID"],
-      },
-    },
-    plaidConnectionLookup: {
+    slackConnectionLookup: {
       pk: {
         field: "gsi5pk",
-        composite: ["connectionID"],
+        composite: ["slackConnectionID"],
       },
       sk: {
-        field: "gsi1sk",
+        field: "gsi5sk",
         composite: [],
       },
     },
