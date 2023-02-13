@@ -1,17 +1,13 @@
 import { Entity } from "electrodb"
 
-const PlaidConnectionEntity = new Entity({
+const PlaidSourceEntity = new Entity({
   model: {
-    entity: "PlaidConnection",
+    entity: "PlaidSource",
     version: "1",
     service: "mangrove",
   },
   attributes: {
-    connectionID: {
-      type: "string",
-      required: true,
-    },
-    userID: {
+    sourceID: {
       type: "string",
       required: true,
     },
@@ -19,13 +15,13 @@ const PlaidConnectionEntity = new Entity({
       type: "string",
       required: true,
     },
-    plaidItemID: {
+    plaidAccountID: {
       type: "string",
       required: true,
     },
-    plaidTransactionCursor: {
+    plaidItemID: {
       type: "string",
-      required: false,
+      required: true,
     },
     plaidInstID: {
       type: "string",
@@ -39,41 +35,37 @@ const PlaidConnectionEntity = new Entity({
       type: "string",
       required: false,
     },
-    accessToken: {
+    pipeID: {
       type: "string",
       required: true,
+    },
+    filters: {
+      type: "string",
     },
   },
   indexes: {
     primary: {
       pk: {
         field: "pk",
-        composite: ["connectionID"],
-      },
-      sk: {
-        field: "sk",
-        composite: ["timesCreated"],
+        composite: ["sourceID"],
       },
     },
-    byUserID: {
+    byPlaidAccountID: {
       pk: {
-        field: "gsi3pk",
-        composite: ["userID"],
+        field: "gsi1pk",
+        composite: ["plaidAccountID"],
       },
       sk: {
-        field: "gsi3sk",
-        composite: ["connectionID"],
+        field: "gsi1sk",
+        composite: ["sourceID"],
       },
     },
-    byPlaidItemID: {
+    byPipeID: {
       pk: {
-        field: "gsi4pk",
-        composite: ["plaidItemID"],
+        field: "gsi2pk",
+        composite: ["pipeID"],
       },
-      sk: {
-        field: "gsi4sk",
-        composite: ["connectionID"],
-      },
+      sk: { field: "gsi2sk", composite: ["sourceID", "plaidAccountID"] },
     },
   },
 })
