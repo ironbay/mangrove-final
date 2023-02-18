@@ -584,7 +584,7 @@ Lockfile:
     dependencies:
       "@aws-cdk/aws-apigatewayv2-alpha" "2.24.0-alpha.0"
       "@serverless-stack/core" "1.2.6"
-      "@serverless-stack/resources" "1.2.6"
+      "sst/constructs" "1.2.6"
       aws-cdk "2.24.0"
       aws-cdk-lib "2.24.0"
       aws-sdk "^2.1110.0"
@@ -651,9 +651,9 @@ Lockfile:
       graphql "^16.5.0"
       graphql-helix "^1.12.0"
   
-  "@serverless-stack/resources@1.2.6":
+  "sst/constructs@1.2.6":
     version "1.2.6"
-    resolved "https://registry.yarnpkg.com/@serverless-stack/resources/-/resources-1.2.6.tgz#edbf121e14faef71ac9ad116851200df3ccddf5e"
+    resolved "https://registry.yarnpkg.com/sst/constructs/-/resources-1.2.6.tgz#edbf121e14faef71ac9ad116851200df3ccddf5e"
     integrity sha512-5WAW+56AXRL8XXHs4Sm0r0bnk5VD9E+Zi1OeZxZf8HzBrXyZJHvs8gEeS2b0f+ES6MoOGR6JW6hhJDqrSxTCLg==
     dependencies:
       "@aws-cdk/aws-apigatewayv2-alpha" "2.24.0-alpha.0"

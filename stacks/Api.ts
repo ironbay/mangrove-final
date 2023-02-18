@@ -1,12 +1,8 @@
-import {
-  StackContext,
-  use,
-  Api as ApiGateway,
-} from "@serverless-stack/resources";
-import { Dynamo } from "./Dynamo";
+import { StackContext, use, Api as ApiGateway } from "sst/constructs"
+import { Dynamo } from "./Dynamo"
 
 export function Api(ctx: StackContext) {
-  const dynamo = use(Dynamo);
+  const dynamo = use(Dynamo)
 
   const api = new ApiGateway(ctx.stack, "api", {
     defaults: {
@@ -26,11 +22,11 @@ export function Api(ctx: StackContext) {
         ],
       },
     },
-  });
+  })
 
   ctx.stack.addOutputs({
     API_URL: api.url,
-  });
+  })
 
-  return api;
+  return api
 }

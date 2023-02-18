@@ -1,4 +1,4 @@
-import { StackContext, Table, Config } from "@serverless-stack/resources"
+import { StackContext, Table, Config } from "sst/constructs"
 
 export function Dynamo(ctx: StackContext) {
   const table = new Table(ctx.stack, "table", {
