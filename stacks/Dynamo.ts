@@ -34,10 +34,5 @@ export function Dynamo(ctx: StackContext) {
     },
   })
 
-  return {
-    table,
-    DYNAMO_TABLE: new Config.Parameter(ctx.stack, "DYNAMO_TABLE", {
-      value: table.tableName,
-    }),
-  }
+  return table
 }

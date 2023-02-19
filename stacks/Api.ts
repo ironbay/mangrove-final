@@ -7,19 +7,20 @@ export function Api(ctx: StackContext) {
   const api = new ApiGateway(ctx.stack, "api", {
     defaults: {
       function: {
-        permissions: [dynamo.table],
-        config: [dynamo.DYNAMO_TABLE],
+        bind: [dynamo],
       },
     },
     routes: {
       "POST /graphql": {
-        type: "pothos",
-        schema: "backend/functions/graphql/schema.ts",
-        output: "graphql/schema.grapqhl",
-        function: "functions/graphql/graphql.handler",
-        commands: [
-          "npx genql --output ./graphql/genql --schema ./graphql/schema.graphql --esm",
-        ],
+        type: "graphql",
+        function: "backend/functions/graphql/graphql.handler",
+        pothos: {
+          schema: "backend/functions/graphql/schema.ts",
+          output: "graphl/schema.graphql",
+          commands: [
+            "./npx genql --output ./graphql/genql --schema ./graphql/schema.graphl --esm",
+          ],
+        },
       },
     },
   })
