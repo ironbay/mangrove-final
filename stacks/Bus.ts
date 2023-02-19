@@ -15,7 +15,7 @@ export function Bus(ctx: StackContext) {
   })
 
   new Function(ctx.stack, "tesfunction", {
-    handler: "functions/plaid/events.test",
+    handler: "backend/functions/plaid/events.test",
     permissions: [eventBus],
     environment: {
       BUS_NAME: eventBus.eventBusName,
