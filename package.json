@@ -3,11 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "sst start --profile=ironbay-dev",
-    "build": "sst build",
-    "deploy": "sst deploy --profile=ironbay-dev",
-    "remove": "sst remove --profile=ironbay-dev",
-    "console": "sst console",
+    "dev": "sst dev --profile=ironbay-dev",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
