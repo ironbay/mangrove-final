@@ -7,10 +7,15 @@ import { Web } from "./stacks/Web"
 
 export default {
   config(input) {
+    const profile = {
+      dev: "ironbay-dev",
+      production: "ironbay-production",
+    }
+
     return {
       name: "mangrove",
       region: "us-east-1",
-      profile: "ironbay-dev",
+      profile: profile[input.stage || ""] || profile.dev,
     }
   },
   stacks(app) {
