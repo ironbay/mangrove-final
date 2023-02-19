@@ -9,6 +9,12 @@ export function Dynamo(ctx: StackContext) {
       gsi1sk: "string",
       gsi2pk: "string",
       gsi2sk: "string",
+      gsi3pk: "string",
+      gsi3sk: "string",
+      gsi4pk: "string",
+      gsi4sk: "string",
+      gsi5pk: "string",
+      gsi5sk: "string",
     },
     primaryIndex: {
       partitionKey: "pk",
@@ -30,6 +36,10 @@ export function Dynamo(ctx: StackContext) {
       gsi4: {
         partitionKey: "gsi4pk",
         sortKey: "gsi4sk",
+      },
+      gsi5: {
+        partitionKey: "gsi5pk",
+        sortKey: "gsi5sk",
       },
     },
   })

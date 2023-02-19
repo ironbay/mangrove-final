@@ -1,20 +1,18 @@
-import { StackContext, use, ViteStaticSite } from "sst/constructs"
+import { StackContext, use, StaticSite } from "sst/constructs"
 import { Api } from "./Api"
 
 export function Web({ stack }: StackContext) {
   const api = use(Api)
 
-  const site = new ViteStaticSite(stack, "site", {
+  const _site = new StaticSite(stack, "web", {
     path: "web",
-    buildCommand: "npm run build",
+    buildCommand: "pnpm run build",
+    buildOutput: "dist",
     environment: {
       VITE_GRAPHQL_URL: api.url + "/graphql",
     },
+    vite: {
+      types: "types/web.d.ts",
+    },
   })
-
-  stack.addOutputs({
-    SITE_URL: site.url,
-  })
-
-  return api
 }
