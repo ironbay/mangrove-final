@@ -1,5 +1,9 @@
 {
   "name": "@mangrove/graphql",
   "version": "0.0.0",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@genql/runtime": "^2.10.0",
+    "graphql": ">=0.10.0"
+  }
 }

@@ -6,7 +6,7 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.128.0",
     "@aws-sdk/client-eventbridge": "^3.112.0",
-    "@pothos/core": "^3.11.0",
+    "@pothos/core": "^3.27.0",
     "@slack/web-api": "^6.7.1",
     "aws-sdk": "^2.1135.0",
     "electrodb": "^1.11.1",

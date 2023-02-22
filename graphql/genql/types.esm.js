@@ -47,7 +47,7 @@ export default {
                 3
             ],
             "value": [
-                19
+                20
             ],
             "__typename": [
                 3
@@ -127,6 +127,9 @@ export default {
             ],
             "plaidSources": [
                 10
+            ],
+            "slackDestinations": [
+                16
             ],
             "__typename": [
                 3
@@ -226,7 +229,21 @@ export default {
                 1
             ],
             "team": [
-                16
+                17
+            ],
+            "__typename": [
+                3
+            ]
+        },
+        "SlackDestination": {
+            "channel": [
+                14
+            ],
+            "connection": [
+                15
+            ],
+            "id": [
+                1
             ],
             "__typename": [
                 3
@@ -264,10 +281,10 @@ export default {
                 6
             ],
             "on_TextContainsType": [
-                17
+                18
             ],
             "on_TextType": [
-                18
+                19
             ],
             "__typename": [
                 3

@@ -95,6 +95,14 @@ export var isSlackConnection = function(obj) {
 
 
 
+var SlackDestination_possibleTypes = ['SlackDestination']
+export var isSlackDestination = function(obj) {
+  if (!obj || !obj.__typename) throw new Error('__typename is missing in "isSlackDestination"')
+  return SlackDestination_possibleTypes.includes(obj.__typename)
+}
+
+
+
 var SlackTeam_possibleTypes = ['SlackTeam']
 export var isSlackTeam = function(obj) {
   if (!obj || !obj.__typename) throw new Error('__typename is missing in "isSlackTeam"')
