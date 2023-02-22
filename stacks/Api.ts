@@ -16,9 +16,9 @@ export function Api(ctx: StackContext) {
         function: "backend/functions/graphql/graphql.handler",
         pothos: {
           schema: "backend/functions/graphql/schema.ts",
-          output: "graphl/schema.graphql",
+          output: "graphql/schema.graphql",
           commands: [
-            "./npx genql --output ./graphql/genql --schema ./graphql/schema.graphl --esm",
+            "cd graphql && pnpm genql --output ./genql --schema ./schema.graphql --esm",
           ],
         },
       },

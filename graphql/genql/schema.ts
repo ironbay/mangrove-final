@@ -47,6 +47,7 @@ export interface Pipe {
     id: Scalars['ID']
     name: Scalars['String']
     plaidSources: PlaidSource[]
+    slackDestinations: SlackDestination[]
     __typename: 'Pipe'
 }
 
@@ -89,6 +90,13 @@ export interface SlackConnection {
     id: Scalars['ID']
     team: SlackTeam
     __typename: 'SlackConnection'
+}
+
+export interface SlackDestination {
+    channel: SlackChannel
+    connection: SlackConnection
+    id: Scalars['ID']
+    __typename: 'SlackDestination'
 }
 
 export interface SlackTeam {
@@ -154,6 +162,7 @@ export interface PipeRequest{
     id?: boolean | number
     name?: boolean | number
     plaidSources?: PlaidSourceRequest
+    slackDestinations?: SlackDestinationRequest
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -201,6 +210,14 @@ export interface SlackConnectionRequest{
     channels?: SlackChannelRequest
     id?: boolean | number
     team?: SlackTeamRequest
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface SlackDestinationRequest{
+    channel?: SlackChannelRequest
+    connection?: SlackConnectionRequest
+    id?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -328,6 +345,14 @@ export const isSlackConnection = (obj?: { __typename?: any } | null): obj is Sla
 
 
 
+const SlackDestination_possibleTypes: string[] = ['SlackDestination']
+export const isSlackDestination = (obj?: { __typename?: any } | null): obj is SlackDestination => {
+  if (!obj?.__typename) throw new Error('__typename is missing in "isSlackDestination"')
+  return SlackDestination_possibleTypes.includes(obj.__typename)
+}
+
+
+
 const SlackTeam_possibleTypes: string[] = ['SlackTeam']
 export const isSlackTeam = (obj?: { __typename?: any } | null): obj is SlackTeam => {
   if (!obj?.__typename) throw new Error('__typename is missing in "isSlackTeam"')
@@ -423,14 +448,16 @@ export interface PipePromiseChain{
     enabled: ({get: (request?: boolean|number, defaultValue?: Scalars['Boolean']) => Promise<Scalars['Boolean']>}),
     id: ({get: (request?: boolean|number, defaultValue?: Scalars['ID']) => Promise<Scalars['ID']>}),
     name: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Promise<Scalars['String']>}),
-    plaidSources: ({get: <R extends PlaidSourceRequest>(request: R, defaultValue?: FieldsSelection<PlaidSource, R>[]) => Promise<FieldsSelection<PlaidSource, R>[]>})
+    plaidSources: ({get: <R extends PlaidSourceRequest>(request: R, defaultValue?: FieldsSelection<PlaidSource, R>[]) => Promise<FieldsSelection<PlaidSource, R>[]>}),
+    slackDestinations: ({get: <R extends SlackDestinationRequest>(request: R, defaultValue?: FieldsSelection<SlackDestination, R>[]) => Promise<FieldsSelection<SlackDestination, R>[]>})
 }
 
 export interface PipeObservableChain{
     enabled: ({get: (request?: boolean|number, defaultValue?: Scalars['Boolean']) => Observable<Scalars['Boolean']>}),
     id: ({get: (request?: boolean|number, defaultValue?: Scalars['ID']) => Observable<Scalars['ID']>}),
     name: ({get: (request?: boolean|number, defaultValue?: Scalars['String']) => Observable<Scalars['String']>}),
-    plaidSources: ({get: <R extends PlaidSourceRequest>(request: R, defaultValue?: FieldsSelection<PlaidSource, R>[]) => Observable<FieldsSelection<PlaidSource, R>[]>})
+    plaidSources: ({get: <R extends PlaidSourceRequest>(request: R, defaultValue?: FieldsSelection<PlaidSource, R>[]) => Observable<FieldsSelection<PlaidSource, R>[]>}),
+    slackDestinations: ({get: <R extends SlackDestinationRequest>(request: R, defaultValue?: FieldsSelection<SlackDestination, R>[]) => Observable<FieldsSelection<SlackDestination, R>[]>})
 }
 
 export interface PlaidSourcePromiseChain{
@@ -501,6 +528,18 @@ export interface SlackConnectionObservableChain{
     channels: ({get: <R extends SlackChannelRequest>(request: R, defaultValue?: FieldsSelection<SlackChannel, R>[]) => Observable<FieldsSelection<SlackChannel, R>[]>}),
     id: ({get: (request?: boolean|number, defaultValue?: Scalars['ID']) => Observable<Scalars['ID']>}),
     team: (SlackTeamObservableChain & {get: <R extends SlackTeamRequest>(request: R, defaultValue?: FieldsSelection<SlackTeam, R>) => Observable<FieldsSelection<SlackTeam, R>>})
+}
+
+export interface SlackDestinationPromiseChain{
+    channel: (SlackChannelPromiseChain & {get: <R extends SlackChannelRequest>(request: R, defaultValue?: FieldsSelection<SlackChannel, R>) => Promise<FieldsSelection<SlackChannel, R>>}),
+    connection: (SlackConnectionPromiseChain & {get: <R extends SlackConnectionRequest>(request: R, defaultValue?: FieldsSelection<SlackConnection, R>) => Promise<FieldsSelection<SlackConnection, R>>}),
+    id: ({get: (request?: boolean|number, defaultValue?: Scalars['ID']) => Promise<Scalars['ID']>})
+}
+
+export interface SlackDestinationObservableChain{
+    channel: (SlackChannelObservableChain & {get: <R extends SlackChannelRequest>(request: R, defaultValue?: FieldsSelection<SlackChannel, R>) => Observable<FieldsSelection<SlackChannel, R>>}),
+    connection: (SlackConnectionObservableChain & {get: <R extends SlackConnectionRequest>(request: R, defaultValue?: FieldsSelection<SlackConnection, R>) => Observable<FieldsSelection<SlackConnection, R>>}),
+    id: ({get: (request?: boolean|number, defaultValue?: Scalars['ID']) => Observable<Scalars['ID']>})
 }
 
 export interface SlackTeamPromiseChain{

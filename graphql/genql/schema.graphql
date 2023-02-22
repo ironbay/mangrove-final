@@ -33,6 +33,7 @@ type Pipe {
   id: ID!
   name: String!
   plaidSources: [PlaidSource!]!
+  slackDestinations: [SlackDestination!]!
 }
 
 type PlaidSource {
@@ -68,6 +69,12 @@ type SlackConnection {
   channels: [SlackChannel!]!
   id: ID!
   team: SlackTeam!
+}
+
+type SlackDestination {
+  channel: SlackChannel!
+  connection: SlackConnection!
+  id: ID!
 }
 
 type SlackTeam {
