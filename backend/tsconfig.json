@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "@tsconfig/node16/tsconfig.json",
   "include": ["functions", "core"],
   "compilerOptions": {
     "module": "esnext",

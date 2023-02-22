@@ -6,34 +6,34 @@ import {
   Queue,
   use,
   Config,
-} from "@serverless-stack/resources";
+} from "sst/constructs"
 
 export function Bus(ctx: StackContext) {
-  const eventBus = new EventBus(ctx.stack, "Bus");
+  const eventBus = new EventBus(ctx.stack, "Bus")
   const BUS_NAME = new Config.Parameter(ctx.stack, "BUS_NAME", {
     value: eventBus.eventBusName,
-  });
+  })
 
   new Function(ctx.stack, "tesfunction", {
-    handler: "functions/plaid/events.test",
+    handler: "backend/functions/plaid/events.test",
     permissions: [eventBus],
     environment: {
       BUS_NAME: eventBus.eventBusName,
     },
-  });
+  })
 
   type SubscribeOpts = {
-    id: string;
-    function: FunctionDefinition;
-    types?: string[];
-  };
+    id: string
+    function: FunctionDefinition
+    types?: string[]
+  }
 
   function subscribe(opts: SubscribeOpts) {
     const func = Function.fromDefinition(
       ctx.stack,
       opts.id + "Function",
       opts.function
-    );
+    )
 
     eventBus.addRules(ctx.stack, {
       [`${opts.id}Rule`]: {
@@ -54,7 +54,7 @@ export function Bus(ctx: StackContext) {
           }),
         },
       },
-    });
+    })
   }
 
   //   subscribe({
