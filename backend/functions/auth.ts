@@ -4,8 +4,10 @@ import { Config } from "sst/node/config"
 export const handler = AuthHandler({
   providers: {
     google: GoogleAdapter({
-      mode: "oidc",
+      mode: "oauth",
       clientID: Config.GOOGLE_CLIENT_ID,
+      clientSecret: Config.GOOGLE_CLIENT_SECRET,
+      scope: "https://www.googleapis.com/auth/userinfo.profile",
       onSuccess: async (tokenset) => {
         return {
           statusCode: 200,
