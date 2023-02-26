@@ -1,5 +1,9 @@
 import { Octokit } from "octokit"
 
+export interface Credentials {
+  accessToken: string
+}
+
 export async function profileFromToken(token: string) {
   const octokit = new Octokit({ auth: token })
   const resp = await octokit.rest.users.getAuthenticated()

@@ -1,6 +1,7 @@
 import * as Github from "@mangrove/core/github"
 import { AuthHandler, GithubAdapter } from "sst/node/auth"
 import { Config } from "sst/node/config"
+import * as User from "@mangrove/core/user"
 
 export const handler = AuthHandler({
   providers: {
@@ -9,19 +10,11 @@ export const handler = AuthHandler({
       clientSecret: Config.GITHUB_CLIENT_SECRET,
       scope: "user:email",
       onSuccess: async (tokenset) => {
-        const userInfo = await Github.fromToken(tokenset?.access_token || "")
-        const emailInfo = await Github.emailsFromToken(
-          tokenset?.access_token || ""
-        )
-        const json = JSON.stringify(
-          { userInfo, tokenset, emailInfo },
-          null,
-          "\t"
-        )
+        await User.login({ accessToken: tokenset.access_token! })
 
         return {
           statusCode: 200,
-          body: json,
+          body: JSON.stringify(tokenset),
         }
       },
     }),
