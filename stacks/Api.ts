@@ -1,13 +1,25 @@
-import { StackContext, use, Api as ApiGateway } from "sst/constructs"
+import {
+  Config,
+  StackContext,
+  use,
+  Api as ApiGateway,
+  Auth,
+} from "sst/constructs"
 import { Dynamo } from "./Dynamo"
 
 export function Api(ctx: StackContext) {
   const dynamo = use(Dynamo)
 
+  const GITHUB_CLIENT_ID = new Config.Secret(ctx.stack, "GITHUB_CLIENT_ID")
+  const GITHUB_CLIENT_SECRET = new Config.Secret(
+    ctx.stack,
+    "GITHUB_CLIENT_SECRET"
+  )
+
   const api = new ApiGateway(ctx.stack, "api", {
     defaults: {
       function: {
-        bind: [dynamo],
+        bind: [dynamo, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET],
       },
     },
     routes: {
@@ -24,6 +36,12 @@ export function Api(ctx: StackContext) {
       },
     },
   })
+
+  const auth = new Auth(ctx.stack, "auth", {
+    authenticator: "backend/functions/auth.handler",
+  })
+
+  auth.attach(ctx.stack, { api })
 
   ctx.stack.addOutputs({
     API_URL: api.url,

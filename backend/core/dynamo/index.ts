@@ -1,12 +1,10 @@
-import { EntityConfiguration, Service } from "electrodb"
+import { EntityConfiguration } from "electrodb"
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb"
 export const Client = new DynamoDBClient({})
-import { Config } from "sst/node/config"
+import { Table } from "sst/node/table"
 
-const table = Config.DYNAMO_TABLE
-
-export const Configuration: EntityConfiguration = {
-  table,
+export const Service: EntityConfiguration = {
+  table: Table.table.tableName,
   client: Client,
 }
 

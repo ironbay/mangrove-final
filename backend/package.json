@@ -6,13 +6,17 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.128.0",
     "@aws-sdk/client-eventbridge": "^3.112.0",
+    "@aws-sdk/smithy-client": "^3.272.0",
+    "@aws-sdk/types": "^3.272.0",
     "@pothos/core": "^3.27.0",
     "@slack/web-api": "^6.7.1",
     "aws-sdk": "^2.1135.0",
-    "electrodb": "^1.11.1",
+    "electrodb": "^2.4.1",
+    "graphql": "^16.6.0",
     "kysely": "^0.19.2",
     "kysely-data-api": "^0.0.9",
     "luxon": "^2.4.0",
+    "octokit": "^2.0.14",
     "plaid": "^10.4.0",
     "sst": "^2.0.27",
     "ulid": "^2.3.0"
