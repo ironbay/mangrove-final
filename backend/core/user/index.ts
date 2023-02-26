@@ -15,6 +15,18 @@ const UserEntity = new Entity({
       type: "string",
       required: true,
     },
+    githubAccessToken: {
+      type: "string",
+      required: true,
+    },
+    logoUrl: {
+      type: "string",
+      required: false,
+    },
+    name: {
+      type: "string",
+      required: false,
+    },
   },
   indexes: {
     primary: {

@@ -10,16 +10,16 @@ import { Dynamo } from "./Dynamo"
 export function Api(ctx: StackContext) {
   const dynamo = use(Dynamo)
 
-  const GOOGLE_CLIENT_ID = new Config.Secret(ctx.stack, "GOOGLE_CLIENT_ID")
-  const GOOGLE_CLIENT_SECRET = new Config.Secret(
+  const GITHUB_CLIENT_ID = new Config.Secret(ctx.stack, "GITHUB_CLIENT_ID")
+  const GITHUB_CLIENT_SECRET = new Config.Secret(
     ctx.stack,
-    "GOOGLE_CLIENT_SECRET"
+    "GITHUB_CLIENT_SECRET"
   )
 
   const api = new ApiGateway(ctx.stack, "api", {
     defaults: {
       function: {
-        bind: [dynamo, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET],
+        bind: [dynamo, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET],
       },
     },
     routes: {
