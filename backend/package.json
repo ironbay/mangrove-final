@@ -11,7 +11,7 @@
     "@pothos/core": "^3.27.0",
     "@slack/web-api": "^6.7.1",
     "aws-sdk": "^2.1135.0",
-    "electrodb": "^1.11.1",
+    "electrodb": "^2.4.1",
     "graphql": "^16.6.0",
     "kysely": "^0.19.2",
     "kysely-data-api": "^0.0.9",

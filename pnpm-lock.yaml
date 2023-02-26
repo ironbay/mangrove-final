@@ -29,7 +29,7 @@ importers:
       '@types/aws-lambda': ^8.10.97
       '@types/luxon': ^2.3.2
       aws-sdk: ^2.1135.0
-      electrodb: ^1.11.1
+      electrodb: ^2.4.1
       graphql: ^16.6.0
       kysely: ^0.19.2
       kysely-data-api: ^0.0.9
@@ -46,7 +46,7 @@ importers:
       '@pothos/core': 3.27.0_graphql@16.6.0
       '@slack/web-api': 6.8.1
       aws-sdk: 2.1252.0
-      electrodb: 1.12.1_tgkdcrjo6iqidewbcrr5pntcjy
+      electrodb: 2.4.1_tgkdcrjo6iqidewbcrr5pntcjy
       graphql: 16.6.0
       kysely: 0.19.12
       kysely-data-api: 0.0.9_5uwg7ukcvltip37mupxtbk26su
@@ -4160,8 +4160,8 @@ packages:
   /ee-first/1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  /electrodb/1.12.1_tgkdcrjo6iqidewbcrr5pntcjy:
-    resolution: {integrity: sha512-yrFNA6RJN4SO0PDzSP0UE2/czWsP/jtwL7rLbIBC6biymRWT9znGdGdwNAgXtx50dxmPIBL+9rjj9e0o3JQIZw==}
+  /electrodb/2.4.1_tgkdcrjo6iqidewbcrr5pntcjy:
+    resolution: {integrity: sha512-VIo7GM/Yik0iuIgOJhp3v2d/LonZ2/XhOnSIQ5g0Azp0m3qraPXMj/Gy2/N35QldYk1+/CAhhvMC+MTVvsAh8Q==}
     dependencies:
       '@aws-sdk/lib-dynamodb': 3.276.0_tgkdcrjo6iqidewbcrr5pntcjy
       jsonschema: 1.2.7

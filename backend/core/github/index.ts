@@ -7,7 +7,8 @@ export interface Credentials {
 export async function profileFromToken(token: string) {
   const octokit = new Octokit({ auth: token })
   const resp = await octokit.rest.users.getAuthenticated()
-  return resp
+
+  return resp.data
 }
 
 export async function emailFromToken(token: string) {
@@ -22,5 +23,5 @@ export async function emailFromToken(token: string) {
     .filter((emailInfo) => emailInfo.primary)
     .at(0)?.email
 
-  return primaryEmail
+  return primaryEmail!
 }
