@@ -31,11 +31,11 @@ importers:
       aws-sdk: ^2.1135.0
       electrodb: ^2.4.1
       graphql: ^16.6.0
-      kysely: ^0.19.2
+      kysely: ^0.16.11
       kysely-data-api: ^0.0.9
       luxon: ^2.4.0
       octokit: ^2.0.14
-      plaid: ^10.4.0
+      plaid: ^12.5.0
       sst: ^2.0.27
       ulid: ^2.3.0
     dependencies:
@@ -48,11 +48,11 @@ importers:
       aws-sdk: 2.1252.0
       electrodb: 2.4.1_tgkdcrjo6iqidewbcrr5pntcjy
       graphql: 16.6.0
-      kysely: 0.19.12
-      kysely-data-api: 0.0.9_5uwg7ukcvltip37mupxtbk26su
+      kysely: 0.16.11
+      kysely-data-api: 0.0.9_cs2kud7uy7ax2ash5b23jva6v4
       luxon: 2.5.2
       octokit: 2.0.14
-      plaid: 10.9.0
+      plaid: 12.5.0
       sst: 2.0.28
       ulid: 2.3.0
     devDependencies:
@@ -3202,6 +3202,10 @@ packages:
   /@types/node/14.18.36:
     resolution: {integrity: sha512-FXKWbsJ6a1hIrRxv+FoukuHnGTgEzKYGi7kilfMae96AL9UNkPFNWJEEYWzdRI9ooIkbr4AKldyuSTLql06vLQ==}
 
+  /@types/node/16.18.13:
+    resolution: {integrity: sha512-l0/3XZ153UTlNOnZK8xSNoJlQda9/WnYgiTdcKKPJSZjdjI9MU+A9oMXOesAWLSnqAaaJhj3qfQsU07Dr8OUwg==}
+    dev: false
+
   /@types/node/18.14.0:
     resolution: {integrity: sha512-5EWrvLmglK+imbCJY0+INViFWUHg1AHel1sq4ZVSfdcNqGy9Edv3UB9IIzzg+xPaUcAgZYcfVs2fBcwDeZzU0A==}
 
@@ -4979,14 +4983,14 @@ packages:
       micromatch: 4.0.5
       minimist: 1.2.8
 
-  /kysely-data-api/0.0.9_5uwg7ukcvltip37mupxtbk26su:
+  /kysely-data-api/0.0.9_cs2kud7uy7ax2ash5b23jva6v4:
     resolution: {integrity: sha512-kpNV3BglE0yqkKJa4D5C7U3aOvWADZJ6UXEbFuM1xMZMzwaa878yIS0baWIt1gfsWEx5d9aNefnW5rhzC+2cKQ==}
     peerDependencies:
       aws-sdk: ^2.1008.0
       kysely: ^0.16.6
     dependencies:
       aws-sdk: 2.1252.0
-      kysely: 0.19.12
+      kysely: 0.16.11
     dev: false
 
   /kysely-data-api/0.1.4_sdcrstsf6edfnc4acz357qq5py:
@@ -4998,9 +5002,11 @@ packages:
       aws-sdk: 2.1252.0
       kysely: 0.23.4
 
-  /kysely/0.19.12:
-    resolution: {integrity: sha512-1Td7J9o5nPywsyofr0C7jIT5HCan5OknxbmGl43n6QrrfW/4UTi+Majq5RYxAjuKjNmexFWsMpizHPcspX3SoA==}
+  /kysely/0.16.11:
+    resolution: {integrity: sha512-VUjxV0btW8EBV+ICnXfg8bycCKs7JxK0WAtoGMR0eWPn0Ziv71S7ZDV5FGuicnmY+2oMJ07KMZdbWhAhoFp2UQ==}
     engines: {node: '>=14.0.0'}
+    dependencies:
+      '@types/node': 16.18.13
     dev: false
 
   /kysely/0.23.4:
@@ -5651,8 +5657,8 @@ packages:
     dependencies:
       find-up: 3.0.0
 
-  /plaid/10.9.0:
-    resolution: {integrity: sha512-Dhe4+krfCpDem3jhEqWQLkqiKcOOOkaox2nW1nZtZimsyfyrJ0QPQQWAUdo8IJet4izpR/ecqW+eGLlLdfdl+Q==}
+  /plaid/12.5.0:
+    resolution: {integrity: sha512-dovIjyYQHHY/pd+qAAw5g/HcEoCbfR0+rE6HyS8uxKJ8Xf58Qjepa4zy+Jq9RqMSAqPgzw+GsFwUHiLQQhlE2A==}
     engines: {node: '>=10.0.0'}
     dependencies:
       axios: 0.21.4

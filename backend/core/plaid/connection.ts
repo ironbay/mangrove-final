@@ -1,4 +1,13 @@
 import { Entity } from "electrodb"
+import * as Dyanmo from "@mangrove/core/dynamo"
+import {
+  Configuration,
+  PlaidEnvironments,
+  PlaidApi,
+  Products,
+  CountryCode,
+} from "plaid"
+import { Config } from "sst/node/config"
 
 const PlaidConnectionEntity = new Entity({
   model: {
@@ -56,6 +65,7 @@ const PlaidConnectionEntity = new Entity({
       },
     },
     byUserID: {
+      index: "gsi3",
       pk: {
         field: "gsi3pk",
         composite: ["userID"],
@@ -66,6 +76,7 @@ const PlaidConnectionEntity = new Entity({
       },
     },
     byPlaidItemID: {
+      index: "gsi4",
       pk: {
         field: "gsi4pk",
         composite: ["plaidItemID"],
@@ -76,6 +87,7 @@ const PlaidConnectionEntity = new Entity({
       },
     },
     plaidConnectionLookup: {
+      index: "gsi5",
       pk: {
         field: "gsi5pk",
         composite: ["connectionID"],
@@ -87,3 +99,77 @@ const PlaidConnectionEntity = new Entity({
     },
   },
 })
+
+const plaidConfig = new Configuration({
+  basePath: PlaidEnvironments.sandbox,
+  baseOptions: {
+    headers: {
+      "PLAID-CLIENT-ID": Config.PLAID_CLIENT_ID,
+      "PLAID-SECRET": Config.PLAID_CLIENT_SECRET,
+    },
+  },
+})
+
+const plaidSandboxConfig = new Configuration({
+  basePath: PlaidEnvironments.sandbox,
+  baseOptions: {
+    headers: {
+      "PLAID-CLIENT-ID": Config.PLAID_CLIENT_ID,
+      "PLAID-SECRET": Config.PLAID_CLIENT_SECRET_SANDBOX,
+    },
+  },
+})
+
+const plaidClient = new PlaidApi(plaidConfig)
+const plaidSandboxClient = new PlaidApi(plaidSandboxConfig)
+
+export async function createLinkToken(userID: string) {
+  const resp = await plaidClient.linkTokenCreate({
+    user: {
+      client_user_id: userID,
+    },
+    client_name: "Mangrove",
+    products: [Products.Transactions],
+    country_codes: [CountryCode.Us],
+    language: "en",
+    webhook: "https://google.com",
+    redirect_uri:
+      "https://9vrhcfnv57.execute-api.us-east-1.amazonaws.com/plaid/auth/callback",
+  })
+
+  return resp
+}
+
+export async function listInstitutions() {
+  const resp = await plaidClient
+    .institutionsGet({
+      count: 500,
+      offset: 0,
+      country_codes: [CountryCode.Us],
+    })
+    .catch((e) => console.log(e))
+    .then((resp) => {
+      if (resp) {
+        return resp.data.institutions
+      }
+    })
+
+  return resp
+}
+
+export async function sandboxTokenExchange(publicToken: string) {
+  const resp = await plaidSandboxClient.itemPublicTokenExchange({
+    public_token: publicToken,
+  })
+
+  return resp
+}
+
+export async function sandboxCreatePublicToken(userID: string) {
+  const resp = await plaidSandboxClient.sandboxPublicTokenCreate({
+    institution_id: "ins_109903",
+    initial_products: [Products.Transactions],
+  })
+
+  return resp.data
+}
