@@ -1,6 +1,7 @@
 import { Entity } from "electrodb"
 import * as Dynamo from "@mangrove/core/dynamo"
 import * as Bus from "@mangrove/core/bus"
+import crypto from "crypto"
 
 import {
   Configuration,
@@ -58,6 +59,10 @@ const PlaidConnectionEntity = new Entity(
         required: true,
       },
       plaidInstColor: {
+        type: "string",
+        required: false,
+      },
+      plaidInstLogo: {
         type: "string",
         required: false,
       },
@@ -155,8 +160,6 @@ export async function createLinkToken(userID: string) {
   return resp
 }
 
-// sync
-
 export async function listInstitutions() {
   const resp = await plaidClient
     .institutionsGet({
@@ -184,18 +187,75 @@ export async function connect(input: TokenExchange) {
     public_token: input.publicToken,
   })
 
-  Bus.publish("plaid.connected", {
-    userID: input.userID,
-    accessToken: resp.data.access_token,
-  })
+  const existing = await PlaidConnectionEntity.query
+    .byPlaidItemID({
+      plaidItemID: resp.data.item_id,
+    })
+    .go()
 
-  return resp
+  const itemResp = await getItem({ accessToken: resp.data.access_token })
+
+  const instResp = await getInst({ instID: itemResp.item.institution_id! })
+
+  if (!existing.data[0]) {
+    const plaidConnection = await PlaidConnectionEntity.create({
+      connectionID: crypto.randomUUID(),
+      timesCreated: new Date().toISOString(),
+      userID: input.userID,
+      accessToken: resp.data.access_token,
+      plaidItemID: itemResp.item.item_id,
+      plaidInstID: instResp.institution.institution_id,
+      plaidInstName: instResp.institution.name,
+      plaidInstColor: instResp.institution.primary_color || "",
+      plaidInstLogo: instResp.institution.logo || "",
+    }).go()
+
+    Bus.publish("plaid.connected", {
+      userID: input.userID,
+      accessToken: resp.data.access_token,
+    })
+
+    return plaidConnection.data
+  }
+
+  const update = await PlaidConnectionEntity.update({
+    connectionID: existing.data[0].connectionID,
+  })
+    .set({
+      accessToken: resp.data.access_token,
+      plaidInstID: instResp.institution.institution_id,
+      plaidInstName: instResp.institution.name,
+      plaidInstColor: instResp.institution.primary_color || "",
+      plaidInstLogo: instResp.institution.logo || "",
+    })
+    .go({ response: "all_new" })
+
+  Bus.publish("plaid.connected", {
+    userID: update.data.userID!,
+    accessToken: update.data.accessToken!,
+  })
 }
 
 export async function sandboxCreatePublicToken(userID: string) {
   const resp = await plaidSandboxClient.sandboxPublicTokenCreate({
     institution_id: "ins_109903",
     initial_products: [Products.Transactions],
+  })
+
+  return resp.data
+}
+
+export async function getItem(input: { accessToken: string }) {
+  const resp = await plaidSandboxClient.itemGet({
+    access_token: input.accessToken,
+  })
+  return resp.data
+}
+
+export async function getInst(input: { instID: string }) {
+  const resp = await plaidSandboxClient.institutionsGetById({
+    institution_id: input.instID,
+    country_codes: [CountryCode.Us],
   })
 
   return resp.data
