@@ -9,72 +9,67 @@ import {
 } from "sst/constructs"
 
 export function Bus(ctx: StackContext) {
-  const eventBus = new EventBus(ctx.stack, "Bus")
+  const bus = new EventBus(ctx.stack, "Bus")
   const BUS_NAME = new Config.Parameter(ctx.stack, "BUS_NAME", {
-    value: eventBus.eventBusName,
+    value: bus.eventBusName,
   })
 
-  new Function(ctx.stack, "tesfunction", {
-    handler: "backend/functions/plaid/events.test",
-    permissions: [eventBus],
-    environment: {
-      BUS_NAME: eventBus.eventBusName,
+  bus.addRules(ctx.stack, {
+    "plaid.connected": {
+      pattern: {
+        detailType: ["plaid.connected"],
+      },
+      targets: {
+        queue: new Queue(ctx.stack, "plaid-connected-queue", {
+          consumer: "backend/functions/events/plaid.connected",
+        }),
+      },
     },
   })
 
-  type SubscribeOpts = {
-    id: string
-    function: FunctionDefinition
-    types?: string[]
-  }
+  // new Function(ctx.stack, "tesfunction", {
+  //   handler: "backend/functions/plaid/events.test",
+  //   permissions: [eventBus],
+  //   environment: {
+  //     BUS_NAME: eventBus.eventBusName,
+  //   },
+  // })
 
-  function subscribe(opts: SubscribeOpts) {
-    const func = Function.fromDefinition(
-      ctx.stack,
-      opts.id + "Function",
-      opts.function
-    )
+  // type SubscribeOpts = {
+  //   id: string
+  //   function: FunctionDefinition
+  //   types?: string[]
+  // }
 
-    eventBus.addRules(ctx.stack, {
-      [`${opts.id}Rule`]: {
-        pattern: {
-          detailType: opts.types,
-          source: ["mangrove"],
-        },
-        targets: {
-          queue: new Queue(ctx.stack, `${opts.id}Queue`, {
-            consumer: {
-              function: func,
-              cdk: {
-                eventSource: {
-                  batchSize: 1,
-                },
-              },
-            },
-          }),
-        },
-      },
-    })
-  }
+  // function subscribe(opts: SubscribeOpts) {
+  //   const func = Function.fromDefinition(
+  //     ctx.stack,
+  //     opts.id + "Function",
+  //     opts.function
+  //   )
 
-  //   subscribe({
-  //     id: "PlaidTxAvailable",
-  //     types: ["plaid.tx.available"],
-  //     function: {
-  //       handler: "functions/plaid/events.tx_available",
-  //       permissions: [eventBus, database],
-  //       environment: {
-  //         BUS_NAME: eventBus.eventBusName,
+  //   eventBus.addRules(ctx.stack, {
+  //     [`${opts.id}Rule`]: {
+  //       pattern: {
+  //         detailType: opts.types,
+  //         source: ["mangrove"],
+  //       },
+  //       targets: {
+  //         queue: new Queue(ctx.stack, `${opts.id}Queue`, {
+  //           consumer: {
+  //             function: func,
+  //             cdk: {
+  //               eventSource: {
+  //                 batchSize: 1,
+  //               },
+  //             },
+  //           },
+  //         }),
   //       },
   //     },
-  //   });
-
-  //   subscribe({
-  //     id: "PlaidTxNew",
-  //     types: ["plaid.tx.new"],
-  //     function: {
-  //       handler: "functions/plaid/events.tx_new",
-  //       permissions: [eventBus, database],
-  //     },
-  //   });
+  //   })
+  // }
+  return {
+    bus,
+  }
 }

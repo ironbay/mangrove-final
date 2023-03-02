@@ -1,90 +1,62 @@
-import { SQSEvent, SQSRecord } from "aws-lambda";
+import { EventBus } from "sst/node/event-bus"
 import {
   EventBridgeClient,
   PutEventsCommand,
-} from "@aws-sdk/client-eventbridge";
-import { ulid } from "ulid";
+} from "@aws-sdk/client-eventbridge"
+import { Handler } from "sst/context"
 
-const client = new EventBridgeClient({});
-
-export interface Events {}
-
-export type EventType = keyof Events;
-
-export type Payload<T extends keyof Events, P extends Record<string, any>> = {
-  id: string;
-  source: "mangrove";
-  type: T;
-  properties: P;
-};
-
-export type FromType<T extends EventType> = Payload<T, Events[T]>;
-
-export interface Event {
-  id: string;
-  source: string;
-  type: string;
-  properties: Record<string, any>;
+export interface Events {
+  test: {
+    foo: string
+  }
 }
 
-async function doPublish(event: Event) {
-  const resp = await client.send(
-    new PutEventsCommand({
-      Entries: [
-        {
-          DetailType: event.type,
-          Detail: JSON.stringify(event),
-          Source: "mangrove",
-          EventBusName: process.env.BUS_NAME,
-        },
-      ],
-    })
-  );
+type EventTypes = keyof Events
 
-  return resp;
-}
+const client = new EventBridgeClient({})
 
-export async function publish<Type extends EventType>(
+export async function publish<Type extends EventTypes>(
   type: Type,
   properties: Events[Type]
 ) {
-  const event = {
-    id: ulid(),
-    source: "mangrove",
-    type,
-    properties,
-  };
-
-  return await doPublish(event);
+  console.log("Publishing event", type)
+  await client.send(
+    new PutEventsCommand({
+      Entries: [
+        {
+          EventBusName: EventBus.Bus.eventBusName,
+          Source: "sqr",
+          Detail: JSON.stringify({
+            type,
+            properties,
+          }),
+          DetailType: type,
+        },
+      ],
+    })
+  )
 }
 
-export function createHandler<T extends EventType>(
-  cb: (event: FromType<T>, record: SQSRecord) => Promise<void>
+export function subscribe<Type extends EventTypes>(
+  _type: Type,
+  handler: (properties: Events[Type]) => Promise<void>
 ) {
-  const result = async (event: SQSEvent) => {
-    const promises = [];
-    for (const record of event.Records) {
-      const msg = JSON.parse(record.body);
-      async function run() {
-        try {
-          await cb(msg.detail as FromType<T>, record);
-          return { type: "success" };
-        } catch (e) {
-          console.error(e);
-          return { type: "error", messageId: record.messageId };
-        }
+  return Handler("sqs", async (evt) => {
+    const failed: string[] = []
+    for (const record of evt.Records) {
+      const { detail } = JSON.parse(record.body)
+      try {
+        await handler(detail.properties)
+      } catch (err) {
+        console.error(err)
+        failed.push(record.messageId)
       }
-      promises.push(run());
-      const results = await Promise.all(promises);
-      return {
-        batchItemFailures: results
-          .filter(i => i.type === "error")
-          .map(i => ({ itemIdentifier: i })),
-      };
     }
-  };
 
-  return result;
+    return {
+      batchItemFailures: failed.map((f) => ({
+        itemIdentifier: f,
+      })),
+    }
+  })
 }
-
-export * as Bus from ".";

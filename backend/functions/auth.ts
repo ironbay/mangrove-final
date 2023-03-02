@@ -1,5 +1,5 @@
 import * as Github from "@mangrove/core/github"
-import { AuthHandler, GithubAdapter } from "sst/node/auth"
+import { AuthHandler, GithubAdapter, OauthAdapter } from "sst/node/auth"
 import { Config } from "sst/node/config"
 import * as User from "@mangrove/core/user"
 

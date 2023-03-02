@@ -1,9 +1,9 @@
-import { Configuration, PlaidApi, PlaidEnvironments, CountryCode } from "plaid";
+import { Configuration, PlaidApi, PlaidEnvironments, CountryCode } from "plaid"
 
-import { ulid } from "ulid";
+import { ulid } from "ulid"
 
-import { Entity, EntityItem } from "electrodb";
-import { Dynamo } from "../dynamo";
+import { Entity, EntityItem } from "electrodb"
+import { Dynamo } from "../dynamo"
 
 export const PlaidConnectionEntity = new Entity(
   {
@@ -78,31 +78,31 @@ export const PlaidConnectionEntity = new Entity(
       },
     },
   },
-  Dynamo.Configuration
-);
+  Dynamo.Service
+)
 export interface Account {
-  type: "plaidAccount";
-  id: string;
-  name: string;
-  kind: string;
-  subkind: string;
+  type: "plaidAccount"
+  id: string
+  name: string
+  kind: string
+  subkind: string
 }
 
 export interface Institution {
-  id: string;
-  name: string;
-  color: string;
-  logo: string;
+  id: string
+  name: string
+  color: string
+  logo: string
 }
 
 export type PlaidConnection = {
-  id: string;
-  userID: string;
-  accessToken: string;
-  name: string;
-  color: string;
-  logo: string;
-};
+  id: string
+  userID: string
+  accessToken: string
+  name: string
+  color: string
+  logo: string
+}
 
 const configuration = new Configuration({
   basePath: PlaidEnvironments.production,
@@ -112,39 +112,39 @@ const configuration = new Configuration({
       "PLAID-SECRET": "xxx_plaid_secret",
     },
   },
-});
+})
 
-const client = new PlaidApi(configuration);
+const client = new PlaidApi(configuration)
 
 async function fromID(connectionID: string) {
   const [result] = await PlaidConnectionEntity.query
     .connection({ connectionID })
-    .go();
-  return result;
+    .go()
+  return result
 }
 
 export async function forUser(userID: string) {
-  return PlaidConnectionEntity.query.user({ userID }).go();
+  return PlaidConnectionEntity.query.user({ userID }).go()
 }
 
 export async function accounts(connectionID: string) {
-  const connection = await fromID(connectionID);
+  const connection = await fromID(connectionID)
   const resp = await client.accountsGet({
     access_token: connection.accessToken,
-  });
+  })
 
-  return resp.data.accounts;
+  return resp.data.accounts
 }
 
 export async function create(userID: string, publicToken: string) {
-  const accessToken = await exchangeToken(publicToken);
+  const accessToken = await exchangeToken(publicToken)
   const {
     data: { item },
-  } = await client.itemGet({ access_token: accessToken });
+  } = await client.itemGet({ access_token: accessToken })
 
   const { instID, instName, instLogo, instColor } = await instFromID(
     item.institution_id!
-  );
+  )
 
   const base = await PlaidConnectionEntity.create({
     connectionID: ulid(),
@@ -153,52 +153,50 @@ export async function create(userID: string, publicToken: string) {
     accessToken,
     instName,
     instID,
-  }).go();
+  }).go()
 
-  if (instColor) await addInstColor(base.connectionID, instColor);
-  if (instLogo) await addInstLogo(base.connectionID, instName);
+  if (instColor) await addInstColor(base.connectionID, instColor)
+  if (instLogo) await addInstLogo(base.connectionID, instName)
 
   const [created] = await PlaidConnectionEntity.query
     .connection({
       connectionID: base.connectionID,
     })
-    .go();
+    .go()
 
-  return created;
+  return created
 }
 
 async function exchangeToken(publicToken: string) {
   const resp = await client.itemPublicTokenExchange({
     public_token: publicToken,
-  });
+  })
 
-  return resp.data.access_token;
+  return resp.data.access_token
 }
 
 async function instFromID(instID: string) {
   const resp = await client.institutionsGetById({
     institution_id: instID,
     country_codes: [CountryCode.Us],
-  });
+  })
 
   return {
     instID: resp.data.institution.institution_id,
     instName: resp.data.institution.name,
     instLogo: resp.data.institution.logo,
     instColor: resp.data.institution.primary_color,
-  };
+  }
 }
 
 async function addInstColor(connectionID: string, instColor: string) {
-  await PlaidConnectionEntity.update({ connectionID }).set({ instColor }).go();
+  await PlaidConnectionEntity.update({ connectionID }).set({ instColor }).go()
 }
 
 async function addInstLogo(connectionID: string, instLogo: string) {
-  await PlaidConnectionEntity.update({ connectionID }).set({ instLogo }).go();
+  await PlaidConnectionEntity.update({ connectionID }).set({ instLogo }).go()
 }
 
-export type PlaidConnectionEntityType = EntityItem<
-  typeof PlaidConnectionEntity
->;
+export type PlaidConnectionEntityType = EntityItem<typeof PlaidConnectionEntity>
 
-export * as Connection from ".";
+export * as Connection from "."
