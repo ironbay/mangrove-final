@@ -16,7 +16,11 @@ export const institutions = ApiHandler(async (event) => {
 
 export const sandboxPublicToken = ApiHandler(async (event) => {
   const publicToken = await Plaid.sandboxCreatePublicToken("usr123")
-  const access = await Plaid.sandboxTokenExchange(publicToken.public_token)
+
+  const access = await Plaid.connect({
+    publicToken: publicToken.public_token,
+    userID: "user123",
+  })
 
   return {
     body: JSON.stringify(access.data),

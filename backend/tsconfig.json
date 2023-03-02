@@ -2,9 +2,9 @@
   "extends": "@tsconfig/node16/tsconfig.json",
   "compilerOptions": {
     "module": "esnext",
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
+    // "moduleResolution": "node",
+    // "allowSyntheticDefaultImports": true,
+    // "baseUrl": ".",
     "paths": {
       "@mangrove/core/*": ["./core/*"]
     }

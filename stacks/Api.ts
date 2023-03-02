@@ -6,9 +6,11 @@ import {
   Auth,
 } from "sst/constructs"
 import { Dynamo } from "./Dynamo"
+import { Bus } from "./Bus"
 
 export function Api(ctx: StackContext) {
   const dynamo = use(Dynamo)
+  const bus = use(Bus)
 
   const GITHUB_CLIENT_ID = new Config.Secret(ctx.stack, "GITHUB_CLIENT_ID")
   const GITHUB_CLIENT_SECRET = new Config.Secret(
@@ -30,6 +32,7 @@ export function Api(ctx: StackContext) {
     defaults: {
       function: {
         bind: [
+          bus.bus,
           dynamo,
           GITHUB_CLIENT_ID,
           GITHUB_CLIENT_SECRET,
