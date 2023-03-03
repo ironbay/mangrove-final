@@ -66,8 +66,18 @@ export function Api(ctx: StackContext) {
         type: "function",
         function: "backend/functions/plaid/auth.sandboxPublicToken",
       },
+      "GET /plaid/sandboxFireWebhook": {
+        type: "function",
+        function: "backend/functions/plaid/auth.sandboxFireWebhook",
+      },
+      "POST /plaid/webhook": {
+        type: "function",
+        function: "backend/functions/plaid/auth.hook",
+      },
     },
   })
+
+  api.bind([api])
 
   const auth = new Auth(ctx.stack, "auth", {
     authenticator: "backend/functions/auth.handler",

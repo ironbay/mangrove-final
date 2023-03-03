@@ -15,14 +15,37 @@ export const institutions = ApiHandler(async (event) => {
 })
 
 export const sandboxPublicToken = ApiHandler(async (event) => {
-  const publicToken = await Plaid.sandboxCreatePublicToken("usr123")
+  const userID = "efb9cc5d-b910-4b93-a1b4-8d166cd98c7b"
+  const publicToken = await Plaid.sandboxCreatePublicToken(userID)
 
   const created = await Plaid.connect({
     publicToken: publicToken.public_token,
-    userID: "user123",
+    userID,
   })
 
   return {
     body: JSON.stringify(created!.userID),
+  }
+})
+
+export const sandboxFireWebhook = ApiHandler(async (event) => {
+  const userID = "efb9cc5d-b910-4b93-a1b4-8d166cd98c7b"
+  const connection = await Plaid.byUserID(userID)
+
+  const fired = await Plaid.sandboxFireWebhook({
+    accessToken: connection?.accessToken!,
+  }).catch((e) => e)
+
+  return {
+    body: "ok",
+  }
+})
+
+export const hook = ApiHandler(async (event) => {
+  console.log("wow!!!!")
+  console.log(event)
+
+  return {
+    body: JSON.stringify(event, null, 4),
   }
 })

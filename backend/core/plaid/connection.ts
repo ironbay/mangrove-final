@@ -1,6 +1,7 @@
 import { Entity } from "electrodb"
 import * as Dynamo from "@mangrove/core/dynamo"
 import * as Bus from "@mangrove/core/bus"
+import { Api } from "sst/node/api"
 import crypto from "crypto"
 
 import {
@@ -9,6 +10,8 @@ import {
   PlaidApi,
   Products,
   CountryCode,
+  WebhookType,
+  SandboxItemFireWebhookRequestWebhookCodeEnum,
 } from "plaid"
 
 import { Config } from "sst/node/config"
@@ -65,6 +68,10 @@ const PlaidConnectionEntity = new Entity(
       plaidInstLogo: {
         type: "string",
         required: false,
+      },
+      plaidWebhook: {
+        type: "string",
+        required: true,
       },
       accessToken: {
         type: "string",
@@ -204,6 +211,7 @@ export async function connect(input: TokenExchange) {
       userID: input.userID,
       accessToken: resp.data.access_token,
       plaidItemID: itemResp.item.item_id,
+      plaidWebhook: itemResp.item.webhook!,
       plaidInstID: instResp.institution.institution_id,
       plaidInstName: instResp.institution.name,
       plaidInstColor: instResp.institution.primary_color || "",
@@ -236,10 +244,21 @@ export async function connect(input: TokenExchange) {
   })
 }
 
+export async function byUserID(userID: string) {
+  const resp = await PlaidConnectionEntity.query
+    .byUserID({ userID: userID })
+    .go()
+
+  return resp.data.at(0)
+}
+
 export async function sandboxCreatePublicToken(userID: string) {
   const resp = await plaidSandboxClient.sandboxPublicTokenCreate({
     institution_id: "ins_109903",
     initial_products: [Products.Transactions],
+    options: {
+      webhook: Api.api.url + "/plaid/webhook",
+    },
   })
 
   return resp.data
@@ -259,4 +278,13 @@ export async function getInst(input: { instID: string }) {
   })
 
   return resp.data
+}
+
+export async function sandboxFireWebhook(input: { accessToken: string }) {
+  const resp = await plaidSandboxClient.sandboxItemFireWebhook({
+    access_token: input.accessToken,
+    webhook_code: SandboxItemFireWebhookRequestWebhookCodeEnum.DefaultUpdate,
+  })
+
+  return resp
 }
