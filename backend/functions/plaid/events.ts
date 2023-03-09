@@ -1,31 +1,15 @@
-import { createHandler } from "@mangrove/core/bus"
-import { Plaid } from "@mangrove/core/plaid"
-import { Bus } from "@mangrove/core/bus"
-import { Pipe } from "@mangrove/core/pipe"
+import * as Bus from "@mangrove/core/bus"
 
-export async function test(first: any, ...args: any) {
-  await Bus.publish("plaid.tx.available", {
-    connID: "plaid_123",
-    num_transactions: 22,
-  })
-}
-
-export const tx_available = createHandler<"plaid.tx.available">(
-  async (event, _record) => {
-    await Plaid.Tx.sync(event.properties.connID)
+export const connectionCreated = Bus.subscribe(
+  "plaid.connection.created",
+  async (evt) => {
+    console.log("user created", evt.userID)
   }
 )
 
-export const tx_new = createHandler<"plaid.tx.new">(async (event, record) => {
-  console.log("i was called")
-  //   const ran = await Pipe.run(event.properties);
-  // run the pipes
-  //   PlaidConnection.pipes();
-})
+export const txAvailable = Bus.subscribe(
+  "plaid.tx.available",
+  async (evt) => {}
+)
 
-// export const tx_available = createHandler<"plaid.tx.available">(
-//   async (event, record) => {
-//     console.log(event);
-//     console.log(record);
-//   }
-// );
+export const txNew = Bus.subscribe("plaid.tx.new", async (evt) => {})

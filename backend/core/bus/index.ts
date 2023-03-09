@@ -41,6 +41,7 @@ export function subscribe<Type extends EventTypes>(
   _type: Type,
   handler: (properties: Events[Type]) => Promise<void>
 ) {
+  console.log("Publishing event...")
   return Handler("sqs", async (evt) => {
     const failed: string[] = []
     for (const record of evt.Records) {

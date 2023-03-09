@@ -42,10 +42,9 @@ export const sandboxFireWebhook = ApiHandler(async (event) => {
 })
 
 export const hook = ApiHandler(async (event) => {
-  console.log("wow!!!!")
-  console.log(event)
+  Plaid.incomingWebhook(JSON.parse(event.body!))
 
   return {
-    body: JSON.stringify(event, null, 4),
+    statusCode: 200,
   }
 })

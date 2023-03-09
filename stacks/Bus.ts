@@ -15,13 +15,33 @@ export function Bus(ctx: StackContext) {
   })
 
   bus.addRules(ctx.stack, {
-    "plaid.connected": {
+    "plaid.connection.created": {
       pattern: {
-        detailType: ["plaid.connected"],
+        detailType: ["plaid.connection.created"],
       },
       targets: {
-        queue: new Queue(ctx.stack, "plaid-connected-queue", {
-          consumer: "backend/functions/events/plaid.connected",
+        queue: new Queue(ctx.stack, "plaid-connection-created-queue", {
+          consumer: "backend/functions/events/connectionCreated",
+        }),
+      },
+    },
+    "plaid.tx.available": {
+      pattern: {
+        detailType: ["plaid.tx.available"],
+      },
+      targets: {
+        queue: new Queue(ctx.stack, "plaid-tx-available-queue", {
+          consumer: "backend/functions/plaid/events/txAvailable",
+        }),
+      },
+    },
+    "plaid.tx.new": {
+      pattern: {
+        detailType: ["plaid.tx.new"],
+      },
+      targets: {
+        queue: new Queue(ctx.stack, "plaid-tx-new-queue", {
+          consumer: "backend/functions/plaid/events/txNew",
         }),
       },
     },
