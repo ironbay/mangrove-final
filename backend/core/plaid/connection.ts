@@ -10,18 +10,20 @@ import {
   PlaidApi,
   Products,
   CountryCode,
-  WebhookType,
   SandboxItemFireWebhookRequestWebhookCodeEnum,
+  SyncUpdatesAvailableWebhook,
 } from "plaid"
 
 import { Config } from "sst/node/config"
 
 declare module "@mangrove/core/bus" {
   export interface Events {
-    "plaid.connected": {
+    "plaid.connection.created": {
       userID: string
       accessToken: string
     }
+    "plaid.tx.available": SyncUpdatesAvailableWebhook
+    "plaid.tx.new": any
   }
 }
 
@@ -218,7 +220,7 @@ export async function connect(input: TokenExchange) {
       plaidInstLogo: instResp.institution.logo || "",
     }).go()
 
-    Bus.publish("plaid.connected", {
+    Bus.publish("plaid.connection.created", {
       userID: input.userID,
       accessToken: resp.data.access_token,
     })
@@ -238,7 +240,7 @@ export async function connect(input: TokenExchange) {
     })
     .go({ response: "all_new" })
 
-  Bus.publish("plaid.connected", {
+  Bus.publish("plaid.connection.created", {
     userID: update.data.userID!,
     accessToken: update.data.accessToken!,
   })
@@ -287,4 +289,11 @@ export async function sandboxFireWebhook(input: { accessToken: string }) {
   })
 
   return resp
+}
+
+export async function incomingWebhook(data: string) {
+  if (JSON.parse(data).webhook_code !== "SYNC_UPDATES_AVAILABLE") return
+  const parsed = (await JSON.parse(data)) as SyncUpdatesAvailableWebhook
+  await Bus.publish("plaid.tx.available", parsed)
+  return
 }
