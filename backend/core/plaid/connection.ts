@@ -129,6 +129,128 @@ const PlaidConnectionEntity = new Entity(
   Dynamo.Service
 )
 
+const PlaidTransactionEntity = new Entity(
+  {
+    model: {
+      entity: "PlaidTransactionEntity",
+      version: "1",
+      service: "mangrove",
+    },
+    attributes: {
+      transactionID: {
+        type: "string",
+        required: true,
+      },
+      plaidTransactionID: {
+        type: "string",
+        required: true,
+      },
+      plaidAccountID: {
+        type: "string",
+        required: true,
+      },
+      amount: {
+        type: "number",
+        required: true,
+      },
+      currencyCode: {
+        type: "string",
+        required: false,
+      },
+      unofficialCurrencyCode: {
+        type: "string",
+        required: false,
+      },
+      category: {
+        type: "list",
+        required: true,
+        items: {
+          type: "string",
+        },
+      },
+      categoryID: {
+        type: "string",
+        required: true,
+      },
+      timesCreated: {
+        type: "string",
+        required: true,
+      },
+      timesPosted: {
+        type: "string",
+        required: true,
+      },
+      locationAddress: {
+        type: "string",
+        required: false,
+      },
+      locationCity: {
+        type: "string",
+        required: false,
+      },
+      locationRegion: {
+        type: "string",
+        required: false,
+      },
+      locationPostalCode: {
+        type: "string",
+        required: false,
+      },
+      locationCountry: {
+        type: "string",
+        required: false,
+      },
+      locationLat: {
+        type: "number",
+        required: false,
+      },
+      locationLon: {
+        type: "number",
+        required: false,
+      },
+      merchantName: {
+        type: "string",
+        required: true,
+      },
+      plaidMerchantName: {
+        type: "string",
+        required: true,
+      },
+      pending: {
+        type: "boolean",
+        required: true,
+      },
+      paymentChannel: {
+        type: "string",
+        required: true,
+      },
+    },
+    indexes: {
+      primary: {
+        pk: {
+          field: "pk",
+          composite: ["transactionID"],
+        },
+        sk: {
+          field: "sk",
+          composite: ["transactionID"],
+        },
+      },
+    },
+  },
+  Dynamo.Service
+)
+
+export async function syncTx(input: { accessToken: string; cursor: string }) {
+  const resp = await plaidSandboxClient.transactionsSync({
+    access_token: input.accessToken,
+    count: 250,
+    cursor: input.cursor,
+  })
+
+  // save
+}
+
 const plaidConfig = new Configuration({
   basePath: PlaidEnvironments.sandbox,
   baseOptions: {
@@ -254,6 +376,16 @@ export async function byUserID(userID: string) {
   return resp.data.at(0)
 }
 
+export async function byPlaidItemID(input: string) {
+  const resp = await PlaidConnectionEntity.query
+    .byPlaidItemID({
+      plaidItemID: input,
+    })
+    .go()
+
+  return resp.data.at(0)
+}
+
 export async function sandboxCreatePublicToken(userID: string) {
   const resp = await plaidSandboxClient.sandboxPublicTokenCreate({
     institution_id: "ins_109903",
@@ -291,9 +423,22 @@ export async function sandboxFireWebhook(input: { accessToken: string }) {
   return resp
 }
 
-export async function incomingWebhook(data: string) {
-  if (JSON.parse(data).webhook_code !== "SYNC_UPDATES_AVAILABLE") return
-  const parsed = (await JSON.parse(data)) as SyncUpdatesAvailableWebhook
-  await Bus.publish("plaid.tx.available", parsed)
-  return
+export async function txAvailable(input: SyncUpdatesAvailableWebhook) {
+  const item = await byPlaidItemID(input.item_id)
+
+  //
 }
+
+export async function fetchTx(input: { accessToken: string; cursor: string }) {
+  const resp = await plaidSandboxClient.transactionsSync({
+    access_token: input.accessToken,
+    cursor: input.cursor,
+  })
+}
+
+// incoming webhook comes in
+// webhook with item_id
+// get the next cursor saved for the item
+// get the tx transactions/sync using the saved cursor for the item
+// list of added, then next cursor
+// save all the tx

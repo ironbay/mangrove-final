@@ -1,5 +1,6 @@
 import { ApiHandler } from "sst/node/api"
 import * as Plaid from "@mangrove/core/plaid/connection"
+import { SyncUpdatesAvailableWebhook } from "plaid"
 
 export const callback = ApiHandler(async (event) => {
   return {
@@ -42,7 +43,11 @@ export const sandboxFireWebhook = ApiHandler(async (event) => {
 })
 
 export const hook = ApiHandler(async (event) => {
-  Plaid.incomingWebhook(JSON.parse(event.body!))
+  const parsed: { webhook_code: string } = JSON.parse(event.body!)
+
+  if (parsed.webhook_code === "SYNC_UPDATES_AVAILABLE") {
+    await Plaid.txAvailable(parsed as SyncUpdatesAvailableWebhook)
+  }
 
   return {
     statusCode: 200,
