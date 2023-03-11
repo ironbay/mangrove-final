@@ -74,6 +74,10 @@ export function Api(ctx: StackContext) {
         type: "function",
         function: "backend/functions/plaid/auth.hook",
       },
+      "GET /recurse": {
+        type: "function",
+        function: "backend/functions/plaid/auth.recurse",
+      },
     },
   })
 
