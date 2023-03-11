@@ -36,6 +36,7 @@ importers:
       luxon: ^2.4.0
       octokit: ^2.0.14
       plaid: ^12.5.0
+      remeda: ^1.8.1
       sst: ^2.0.27
       ulid: ^2.3.0
     dependencies:
@@ -53,6 +54,7 @@ importers:
       luxon: 2.5.2
       octokit: 2.0.14
       plaid: 12.5.0
+      remeda: 1.8.1
       sst: 2.0.28
       ulid: 2.3.0
     devDependencies:
@@ -5835,8 +5837,8 @@ packages:
   /reinterval/1.1.0:
     resolution: {integrity: sha512-QIRet3SYrGp0HUHO88jVskiG6seqUGC5iAG7AwI/BV4ypGcuqk9Du6YQBUOUqm9c8pw1eyLoIaONifRua1lsEQ==}
 
-  /remeda/1.6.2:
-    resolution: {integrity: sha512-4/gci8Crgp6l0ATZEvu/FxHJPjDUMZZ1vhSIROHNNx/cXi77ar/7Cj2Z8Bysd0Vs824QFRfcIKqOxqH+pKDW1Q==}
+  /remeda/1.8.1:
+    resolution: {integrity: sha512-X7MpoWqenIx9Ts6DJ92mn0ottXvPUXbkeJr7AyGYYFxAkCtjIwgMpLo7mNMpFHyqFnerR4d2HPBVZkL/mSbrGQ==}
 
   /remove-trailing-separator/1.1.0:
     resolution: {integrity: sha512-/hS+Y0u3aOfIETiaiirUFwDBDzmXPvO+jAfKTitUngIPzdKc6Z0LoFjM/CK5PL4C+eKwHohlHAb6H0VFfmmUsw==}
@@ -6115,7 +6117,7 @@ packages:
       ora: 6.1.2
       promptly: 3.2.0
       react: 17.0.2
-      remeda: 1.6.2
+      remeda: 1.8.1
       undici: 5.20.0
       uuid: 9.0.0
       ws: 8.12.1

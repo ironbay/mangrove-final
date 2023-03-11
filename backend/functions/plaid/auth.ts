@@ -53,3 +53,10 @@ export const hook = ApiHandler(async (event) => {
     statusCode: 200,
   }
 })
+
+export const recurse = ApiHandler(async (event) => {
+  const resp = await Plaid.recurse(0)
+  return {
+    statusCode: 200,
+  }
+})

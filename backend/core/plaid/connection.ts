@@ -1,8 +1,9 @@
-import { Entity } from "electrodb"
+import { Entity, EntityItem, EntityRecord, UpdateEntityItem } from "electrodb"
 import * as Dynamo from "@mangrove/core/dynamo"
 import * as Bus from "@mangrove/core/bus"
 import { Api } from "sst/node/api"
 import crypto from "crypto"
+import * as R from "remeda"
 
 import {
   Configuration,
@@ -23,7 +24,9 @@ declare module "@mangrove/core/bus" {
       accessToken: string
     }
     "plaid.tx.available": SyncUpdatesAvailableWebhook
-    "plaid.tx.new": any
+    "plaid.tx.new": {
+      transactionID: string
+    }
   }
 }
 
@@ -163,14 +166,14 @@ const PlaidTransactionEntity = new Entity(
       },
       category: {
         type: "list",
-        required: true,
+        required: false,
         items: {
           type: "string",
         },
       },
       categoryID: {
         type: "string",
-        required: true,
+        required: false,
       },
       timesCreated: {
         type: "string",
@@ -214,7 +217,7 @@ const PlaidTransactionEntity = new Entity(
       },
       plaidMerchantName: {
         type: "string",
-        required: true,
+        required: false,
       },
       pending: {
         type: "boolean",
@@ -429,11 +432,80 @@ export async function txAvailable(input: SyncUpdatesAvailableWebhook) {
   //
 }
 
-export async function fetchTx(input: { accessToken: string; cursor: string }) {
-  const resp = await plaidSandboxClient.transactionsSync({
-    access_token: input.accessToken,
-    cursor: input.cursor,
-  })
+export async function fetchTx(input: {
+  connectionID: string
+  accessToken: string
+  cursor: string | undefined
+}) {
+  const nextTx: EntityItem<typeof PlaidTransactionEntity>[] = []
+
+  fetch({ cursor: input.cursor, hasMore: true })
+
+  async function fetch(args: {
+    cursor: string | undefined
+    hasMore: boolean
+  }): Promise<void> {
+    if (!args.hasMore) {
+      await PlaidConnectionEntity.update({
+        connectionID: input.connectionID,
+      })
+        .set({ plaidTransactionCursor: args.cursor })
+        .go()
+
+      for (const tx of nextTx) {
+        await Bus.publish("plaid.tx.new", { transactionID: tx.transactionID })
+      }
+
+      return
+    }
+
+    const resp = await plaidSandboxClient.transactionsSync({
+      access_token: input.accessToken,
+      cursor: input.cursor,
+    })
+
+    const toAdd: EntityItem<typeof PlaidTransactionEntity>[] =
+      resp.data.added.map((tx) => ({
+        transactionID: crypto.randomUUID(),
+        plaidTransactionID: tx.transaction_id,
+        plaidAccountID: tx.account_id,
+        amount: tx.amount,
+        currencyCode: tx.iso_currency_code || undefined,
+        unofficialCurrencyCode: tx.unofficial_currency_code || undefined,
+        category: tx.category || [],
+        categoryID: tx.category_id || undefined,
+        timesCreated: new Date().toString(),
+        timesPosted: tx.date,
+        locationAddress: tx.location.address || undefined,
+        locationCity: tx.location.city || undefined,
+        locationRegion: tx.location.region || undefined,
+        locationPostalCode: tx.location.postal_code || undefined,
+        locationCountry: tx.location.country || undefined,
+        locationLat: tx.location.lat || undefined,
+        locationLon: tx.location.lon || undefined,
+        merchantName: tx.name,
+        plaidMerchantName: tx.merchant_name || undefined,
+        pending: tx.pending,
+        paymentChannel: tx.payment_channel,
+      }))
+
+    nextTx.concat(toAdd)
+    await PlaidTransactionEntity.put(toAdd).go()
+
+    return fetch({
+      cursor: resp.data.next_cursor,
+      hasMore: resp.data.has_more,
+    })
+  }
+}
+
+export async function recurse(num: number): Promise<number> {
+  if (num < 4) {
+    console.log("num", num)
+    return recurse(num + 1)
+  }
+
+  return 0
 }
 
 // incoming webhook comes in
