@@ -45,17 +45,13 @@ export const sandboxFireWebhook = ApiHandler(async (event) => {
 export const hook = ApiHandler(async (event) => {
   const parsed: { webhook_code: string } = JSON.parse(event.body!)
 
+  console.log(parsed)
+  console.log("hello")
+
   if (parsed.webhook_code === "SYNC_UPDATES_AVAILABLE") {
     await Plaid.txAvailable(parsed as SyncUpdatesAvailableWebhook)
   }
 
-  return {
-    statusCode: 200,
-  }
-})
-
-export const recurse = ApiHandler(async (event) => {
-  const resp = await Plaid.recurse(0)
   return {
     statusCode: 200,
   }

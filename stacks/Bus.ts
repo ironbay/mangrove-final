@@ -31,7 +31,7 @@ export function Bus(ctx: StackContext) {
       },
       targets: {
         queue: new Queue(ctx.stack, "plaid-tx-available-queue", {
-          consumer: "backend/functions/plaid/events/txAvailable",
+          consumer: "backend/functions/plaid/events.txAvailable",
         }),
       },
     },
@@ -41,7 +41,7 @@ export function Bus(ctx: StackContext) {
       },
       targets: {
         queue: new Queue(ctx.stack, "plaid-tx-new-queue", {
-          consumer: "backend/functions/plaid/events/txNew",
+          consumer: "backend/functions/plaid/events.txNew",
         }),
       },
     },

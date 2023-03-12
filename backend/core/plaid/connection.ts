@@ -13,6 +13,7 @@ import {
   CountryCode,
   SandboxItemFireWebhookRequestWebhookCodeEnum,
   SyncUpdatesAvailableWebhook,
+  Transaction,
 } from "plaid"
 
 import { Config } from "sst/node/config"
@@ -24,9 +25,7 @@ declare module "@mangrove/core/bus" {
       accessToken: string
     }
     "plaid.tx.available": SyncUpdatesAvailableWebhook
-    "plaid.tx.new": {
-      transactionID: string
-    }
+    "plaid.tx.new": Transaction
   }
 }
 
@@ -125,118 +124,6 @@ const PlaidConnectionEntity = new Entity(
         sk: {
           field: "gsi1sk",
           composite: [],
-        },
-      },
-    },
-  },
-  Dynamo.Service
-)
-
-const PlaidTransactionEntity = new Entity(
-  {
-    model: {
-      entity: "PlaidTransactionEntity",
-      version: "1",
-      service: "mangrove",
-    },
-    attributes: {
-      transactionID: {
-        type: "string",
-        required: true,
-      },
-      plaidTransactionID: {
-        type: "string",
-        required: true,
-      },
-      plaidAccountID: {
-        type: "string",
-        required: true,
-      },
-      amount: {
-        type: "number",
-        required: true,
-      },
-      currencyCode: {
-        type: "string",
-        required: false,
-      },
-      unofficialCurrencyCode: {
-        type: "string",
-        required: false,
-      },
-      category: {
-        type: "list",
-        required: false,
-        items: {
-          type: "string",
-        },
-      },
-      categoryID: {
-        type: "string",
-        required: false,
-      },
-      timesCreated: {
-        type: "string",
-        required: true,
-      },
-      timesPosted: {
-        type: "string",
-        required: true,
-      },
-      locationAddress: {
-        type: "string",
-        required: false,
-      },
-      locationCity: {
-        type: "string",
-        required: false,
-      },
-      locationRegion: {
-        type: "string",
-        required: false,
-      },
-      locationPostalCode: {
-        type: "string",
-        required: false,
-      },
-      locationCountry: {
-        type: "string",
-        required: false,
-      },
-      locationLat: {
-        type: "number",
-        required: false,
-      },
-      locationLon: {
-        type: "number",
-        required: false,
-      },
-      merchantName: {
-        type: "string",
-        required: true,
-      },
-      plaidMerchantName: {
-        type: "string",
-        required: false,
-      },
-      pending: {
-        type: "boolean",
-        required: true,
-      },
-      paymentChannel: {
-        type: "string",
-        required: true,
-      },
-    },
-    indexes: {
-      primary: {
-        pk: {
-          field: "pk",
-          composite: ["transactionID"],
-        },
-        sk: {
-          field: "sk",
-          composite: ["transactionID"],
         },
       },
     },
@@ -420,7 +307,8 @@ export async function getInst(input: { instID: string }) {
 export async function sandboxFireWebhook(input: { accessToken: string }) {
   const resp = await plaidSandboxClient.sandboxItemFireWebhook({
     access_token: input.accessToken,
-    webhook_code: SandboxItemFireWebhookRequestWebhookCodeEnum.DefaultUpdate,
+    webhook_code:
+      SandboxItemFireWebhookRequestWebhookCodeEnum.SyncUpdatesAvailable,
   })
 
   return resp
@@ -428,8 +316,19 @@ export async function sandboxFireWebhook(input: { accessToken: string }) {
 
 export async function txAvailable(input: SyncUpdatesAvailableWebhook) {
   const item = await byPlaidItemID(input.item_id)
+  const transactions = await fetchTx({
+    connectionID: item?.connectionID!,
+    accessToken: item?.accessToken!,
+    cursor: item!.plaidTransactionCursor,
+  })
 
-  //
+  console.log("---", transactions)
+
+  const publishes = Promise.all(
+    transactions.map((tx) => Bus.publish("plaid.tx.new", tx))
+  )
+
+  await Promise.all([publishes])
 }
 
 export async function fetchTx(input: {
@@ -437,80 +336,39 @@ export async function fetchTx(input: {
   accessToken: string
   cursor: string | undefined
 }) {
-  const nextTx: EntityItem<typeof PlaidTransactionEntity>[] = []
-
-  fetch({ cursor: input.cursor, hasMore: true })
-
   async function fetch(args: {
-    cursor: string | undefined
     hasMore: boolean
-  }): Promise<void> {
-    if (!args.hasMore) {
-      await PlaidConnectionEntity.update({
-        connectionID: input.connectionID,
-      })
-        .set({ plaidTransactionCursor: args.cursor })
-        .go()
+    cursor: string | undefined
+  }): Promise<Transaction[]> {
+    const resp = await plaidSandboxClient.transactionsSync({
+      count: 100,
+      access_token: input.accessToken,
+      cursor: args.cursor,
+    })
 
-      for (const tx of nextTx) {
-        await Bus.publish("plaid.tx.new", { transactionID: tx.transactionID })
-      }
-
-      return
+    if (resp.data.has_more) {
+      return [
+        ...resp.data.added,
+        ...(await fetch({
+          hasMore: resp.data.has_more,
+          cursor: resp.data.next_cursor,
+        })),
+      ]
     }
 
-    const resp = await plaidSandboxClient.transactionsSync({
-      access_token: input.accessToken,
-      cursor: input.cursor,
+    await PlaidConnectionEntity.update({
+      connectionID: input.connectionID,
     })
+      .set({ plaidTransactionCursor: args.cursor })
+      .go()
 
-    const toAdd: EntityItem<typeof PlaidTransactionEntity>[] =
-      resp.data.added.map((tx) => ({
-        transactionID: crypto.randomUUID(),
-        plaidTransactionID: tx.transaction_id,
-        plaidAccountID: tx.account_id,
-        amount: tx.amount,
-        currencyCode: tx.iso_currency_code || undefined,
-        unofficialCurrencyCode: tx.unofficial_currency_code || undefined,
-        category: tx.category || [],
-        categoryID: tx.category_id || undefined,
-        timesCreated: new Date().toString(),
-        timesPosted: tx.date,
-        locationAddress: tx.location.address || undefined,
-        locationCity: tx.location.city || undefined,
-        locationRegion: tx.location.region || undefined,
-        locationPostalCode: tx.location.postal_code || undefined,
-        locationCountry: tx.location.country || undefined,
-        locationLat: tx.location.lat || undefined,
-        locationLon: tx.location.lon || undefined,
-        merchantName: tx.name,
-        plaidMerchantName: tx.merchant_name || undefined,
-        pending: tx.pending,
-        paymentChannel: tx.payment_channel,
-      }))
-
-    nextTx.concat(toAdd)
-    await PlaidTransactionEntity.put(toAdd).go()
-
-    return fetch({
-      cursor: resp.data.next_cursor,
-      hasMore: resp.data.has_more,
-    })
-  }
-}
-
-export async function recurse(num: number): Promise<number> {
-  if (num < 4) {
-    console.log("num", num)
-    return recurse(num + 1)
+    return resp.data.added
   }
 
-  return 0
-}
+  const transactions = await fetch({
+    hasMore: true,
+    cursor: input.cursor,
+  })
 
-// incoming webhook comes in
-// webhook with item_id
-// get the next cursor saved for the item
-// get the tx transactions/sync using the saved cursor for the item
-// list of added, then next cursor
-// save all the tx
+  return transactions
+}

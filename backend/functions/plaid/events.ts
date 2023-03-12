@@ -12,4 +12,6 @@ export const txAvailable = Bus.subscribe(
   async (evt) => {}
 )
 
-export const txNew = Bus.subscribe("plaid.tx.new", async (evt) => {})
+export const txNew = Bus.subscribe("plaid.tx.new", async (evt) => {
+  console.log("oh my lord...", evt)
+})
