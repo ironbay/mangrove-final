@@ -3,7 +3,6 @@ import * as Dynamo from "@mangrove/core/dynamo"
 import * as Bus from "@mangrove/core/bus"
 import { Api } from "sst/node/api"
 import crypto from "crypto"
-import * as R from "remeda"
 
 import {
   Configuration,
