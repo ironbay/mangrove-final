@@ -131,16 +131,6 @@ const PlaidConnectionEntity = new Entity(
   Dynamo.Service
 )
 
-export async function syncTx(input: { accessToken: string; cursor: string }) {
-  const resp = await plaidSandboxClient.transactionsSync({
-    access_token: input.accessToken,
-    count: 250,
-    cursor: input.cursor,
-  })
-
-  // save
-}
-
 const plaidConfig = new Configuration({
   basePath: PlaidEnvironments.sandbox,
   baseOptions: {
@@ -321,8 +311,6 @@ export async function txAvailable(input: SyncUpdatesAvailableWebhook) {
     accessToken: item?.accessToken!,
     cursor: item!.plaidTransactionCursor,
   })
-
-  console.log("---", transactions)
 
   const publishes = Promise.all(
     transactions.map((tx) => Bus.publish("plaid.tx.new", tx))
