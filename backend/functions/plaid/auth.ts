@@ -29,11 +29,11 @@ export const sandboxPublicToken = ApiHandler(async (event) => {
   }
 })
 
-export const sandboxFireWebhook = ApiHandler(async (event) => {
+export const sandboxFireWebhook = ApiHandler(async (_event) => {
   const userID = "efb9cc5d-b910-4b93-a1b4-8d166cd98c7b"
   const connection = await Plaid.byUserID(userID)
 
-  const fired = await Plaid.sandboxFireWebhook({
+  Plaid.sandboxFireWebhook({
     accessToken: connection?.accessToken!,
   }).catch((e) => e)
 
