@@ -1,4 +1,5 @@
 import * as Bus from "@mangrove/core/bus"
+import * as Source from "@mangrove/core/plaid/source"
 
 export const connectionCreated = Bus.subscribe(
   "plaid.connection.created",
@@ -14,4 +15,5 @@ export const txAvailable = Bus.subscribe(
 
 export const txNew = Bus.subscribe("plaid.tx.new", async (evt) => {
   console.log("New Tx...", evt)
+  await Source.matchSources(evt)
 })
