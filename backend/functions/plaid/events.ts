@@ -14,4 +14,6 @@ export const txAvailable = Bus.subscribe(
 
 export const txNew = Bus.subscribe("plaid.tx.new", async (evt) => {
   console.log("New Tx...", evt)
+
+  // plaid match, then emit an event and then have consumers for those (slack jut now)
 })
