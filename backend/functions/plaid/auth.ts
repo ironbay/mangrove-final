@@ -1,6 +1,7 @@
 import { ApiHandler } from "sst/node/api"
 import * as Plaid from "@mangrove/core/plaid/connection"
 import { SyncUpdatesAvailableWebhook } from "plaid"
+import { Transaction } from "@mangrove/core/plaid"
 
 export const callback = ApiHandler(async (event) => {
   return {
@@ -46,7 +47,7 @@ export const hook = ApiHandler(async (event) => {
   const parsed: { webhook_code: string } = JSON.parse(event.body!)
 
   if (parsed.webhook_code === "SYNC_UPDATES_AVAILABLE") {
-    await Plaid.txAvailable(parsed as SyncUpdatesAvailableWebhook)
+    await Transaction.publishAvailable(parsed as SyncUpdatesAvailableWebhook)
   }
 
   return {

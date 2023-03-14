@@ -5,7 +5,7 @@ import * as R from "remeda"
 import * as Bus from "@mangrove/core/bus"
 import { txAvailable } from "./connection"
 
-const PlaidSourceEntity = new Entity(
+export const PlaidSourceEntity = new Entity(
   {
     model: {
       entity: "PlaidSource",
@@ -71,6 +71,8 @@ const PlaidSourceEntity = new Entity(
         },
       },
       byPipeID: {
+        index: "gsi2",
+        collection: "pipes",
         pk: {
           field: "gsi2pk",
           composite: ["pipeID"],
@@ -89,12 +91,12 @@ const PlaidSourceEntity = new Entity(
       },
     },
   },
-  Dynamo.Service
+  Dynamo.Config
 )
 
 declare module "@mangrove/core/bus" {
   export interface Events {
-    "pipe.match": {
+    "plaid.source.match": {
       tx: Transaction
       pipeID: string
     }
@@ -132,11 +134,11 @@ export async function matchSources(tx: Transaction) {
     })
     .go()
 
-  R.pipe(
+  return R.pipe(
     sources.data,
     (x) => R.filter(x, (source) => isMatch({ source, tx })),
     R.forEach((source) =>
-      Bus.publish("pipe.match", {
+      Bus.publish("plaid.source.match", {
         tx,
         pipeID: source.pipeID,
       })

@@ -23,8 +23,11 @@ declare module "@mangrove/core/bus" {
       userID: string
       accessToken: string
     }
-    "plaid.tx.available": SyncUpdatesAvailableWebhook
     "plaid.tx.new": Transaction
+    "plaid.tx.match": {
+      tx: Transaction
+      pipeID: string
+    }
   }
 }
 
@@ -127,7 +130,7 @@ const PlaidConnectionEntity = new Entity(
       },
     },
   },
-  Dynamo.Service
+  Dynamo.Config
 )
 
 const plaidConfig = new Configuration({
@@ -151,7 +154,7 @@ const plaidSandboxConfig = new Configuration({
 })
 
 const plaidClient = new PlaidApi(plaidConfig)
-const plaidSandboxClient = new PlaidApi(plaidSandboxConfig)
+export const sandboxClient = new PlaidApi(plaidSandboxConfig)
 
 export async function createLinkToken(userID: string) {
   const resp = await plaidClient.linkTokenCreate({
@@ -303,7 +306,7 @@ export async function sandboxFireWebhook(input: { accessToken: string }) {
   return resp
 }
 
-export async function txAvailable(input: SyncUpdatesAvailableWebhook) {
+export async function txFetch(input: SyncUpdatesAvailableWebhook) {
   const item = await byPlaidItemID(input.item_id)
   const transactions = await fetchTx({
     connectionID: item?.connectionID!,
@@ -358,4 +361,17 @@ export async function fetchTx(input: {
   })
 
   return transactions
+}
+
+export async function setCursor(input: {
+  connectionID: string
+  cursor: string
+}) {
+  const update = await PlaidConnectionEntity.update({
+    connectionID: input.connectionID,
+  })
+    .set({ plaidTransactionCursor: input.cursor })
+    .go()
+
+  return update.data
 }

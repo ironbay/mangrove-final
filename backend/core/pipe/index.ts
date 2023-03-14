@@ -1,7 +1,9 @@
-import { Entity } from "electrodb"
+import { Entity, EntityItem } from "electrodb"
 import * as Dynamo from "@mangrove/core/dynamo"
+import { Transaction } from "plaid"
+import { Target } from "../slack"
 
-const PipeEntity = new Entity(
+export const PipeEntity = new Entity(
   {
     model: {
       entity: "Pipe",
@@ -34,6 +36,8 @@ const PipeEntity = new Entity(
         },
       },
       pipeLookup: {
+        index: "gsi2",
+        collection: "pipes",
         pk: {
           field: "gsi2pk",
           composite: ["pipeID"],
@@ -55,5 +59,24 @@ const PipeEntity = new Entity(
       },
     },
   },
-  Dynamo.Service
+  Dynamo.Config
 )
+
+export type PipeType = EntityItem<typeof PipeEntity>
+
+export async function handlePlaidMatch(input: {
+  pipeID: string
+  tx: Transaction
+}) {
+  const pipes = await Dynamo.Mangrove.collections
+    .pipes({ pipeID: input.pipeID })
+    .go()
+
+  const pipe = pipes.data.pipe.at(0)
+
+  await Promise.all(
+    pipes.data.slackTarget.map((target) => {
+      Target.publishPlaidTx({ target, pipe: pipe!, tx: input.tx })
+    })
+  )
+}

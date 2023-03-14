@@ -78,7 +78,7 @@ export const PlaidConnectionEntity = new Entity(
       },
     },
   },
-  Dynamo.Service
+  Dynamo.Config
 )
 export interface Account {
   type: "plaidAccount"

@@ -1,3 +1,3 @@
-export * as Plaid from "./index";
-
-import * from "./connection"
+export * as Connection from "./connection"
+export * as Transaction from "./transaction"
+export * as Source from "./source"
