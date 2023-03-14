@@ -1,5 +1,5 @@
-import { Entity, EntityItem } from "electrodb";
-import { Dynamo } from "../dynamo";
+import { Entity, EntityItem } from "electrodb"
+import { Dynamo } from "../dynamo"
 
 export const FilterEntity = new Entity(
   {
@@ -64,9 +64,9 @@ export const FilterEntity = new Entity(
       },
     },
   },
-  Dynamo.Configuration
-);
+  Dynamo.Config
+)
 
 export function fromPipe(pipeID: string) {
-  return FilterEntity.query.pipe({ pipeID }).go();
+  return FilterEntity.query.pipe({ pipeID }).go()
 }

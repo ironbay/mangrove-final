@@ -1,4 +1,5 @@
 import { EventBus } from "sst/node/event-bus"
+
 import {
   EventBridgeClient,
   PutEventsCommand,
@@ -61,3 +62,5 @@ export function subscribe<Type extends EventTypes>(
     }
   })
 }
+
+export * as Bus from "."

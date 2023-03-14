@@ -71,7 +71,7 @@ const UserEntity = new Entity(
       },
     },
   },
-  Dynamo.Service
+  Dynamo.Config
 )
 
 export async function login(input: Github.Credentials) {

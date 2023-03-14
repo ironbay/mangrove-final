@@ -1,5 +1,6 @@
-import * as Bus from "@mangrove/core/bus"
+import { Bus } from "@mangrove/core/bus"
 import * as Source from "@mangrove/core/plaid/source"
+import { Transaction } from "@mangrove/core/plaid"
 
 export const connectionCreated = Bus.subscribe(
   "plaid.connection.created",
@@ -8,12 +9,10 @@ export const connectionCreated = Bus.subscribe(
   }
 )
 
-export const txAvailable = Bus.subscribe(
-  "plaid.tx.available",
-  async (evt) => {}
-)
+export const txAvailable = Bus.subscribe("plaid.tx.available", async (evt) => {
+  await Transaction.fetch(evt)
+})
 
 export const txNew = Bus.subscribe("plaid.tx.new", async (evt) => {
-  console.log("New Tx...", evt)
   await Source.matchSources(evt)
 })

@@ -45,7 +45,31 @@ export function Bus(ctx: StackContext) {
         }),
       },
     },
+    "plaid.source.match": {
+      pattern: {
+        detailType: ["plaid.source.match"],
+      },
+      targets: {
+        queue: new Queue(ctx.stack, "plaid-source-match-queue", {
+          consumer: "backend/functions/plaid/events.sourceMatch",
+        }),
+      },
+    },
+    "slack.target.publish.plaid": {
+      pattern: {
+        detailType: ["slack.target.publish.plaid"],
+      },
+      targets: {
+        queue: new Queue(ctx.stack, "slack-target-publish-plaid", {
+          consumer: "backend/functions/slack/events.publishPlaid",
+        }),
+      },
+    },
   })
+
+  // tx available => there are new tx to fetch
+  // tx new => here's a new tx
+  // pipe match => heres a tx that matched a pipe
 
   // new Function(ctx.stack, "tesfunction", {
   //   handler: "backend/functions/plaid/events.test",
