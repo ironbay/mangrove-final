@@ -25,7 +25,6 @@ importers:
       '@aws-sdk/smithy-client': ^3.272.0
       '@aws-sdk/types': ^3.272.0
       '@pothos/core': ^3.27.0
-      '@slack/oauth': ^2.6.0
       '@slack/web-api': ^6.8.1
       '@types/aws-lambda': ^8.10.97
       '@types/luxon': ^2.3.2
@@ -47,7 +46,6 @@ importers:
       '@aws-sdk/smithy-client': 3.272.0
       '@aws-sdk/types': 3.272.0
       '@pothos/core': 3.27.0_graphql@16.6.0
-      '@slack/oauth': 2.6.0
       '@slack/web-api': 6.8.1
       aws-sdk: 2.1252.0
       electrodb: 2.4.1_tgkdcrjo6iqidewbcrr5pntcjy
@@ -3145,20 +3143,6 @@ packages:
       '@types/node': 18.14.0
     dev: false
 
-  /@slack/oauth/2.6.0:
-    resolution: {integrity: sha512-t75jfYUoVVq4x9TnJrNn5VQRfr9n/3Fvuq3M6gf3URmKCvm/kQyZGp0Ff8AK/dzdYYWKDfSVD9GQImhF578MZA==}
-    engines: {node: '>=12.13.0', npm: '>=6.12.0'}
-    dependencies:
-      '@slack/logger': 3.0.0
-      '@slack/web-api': 6.8.1
-      '@types/jsonwebtoken': 8.5.9
-      '@types/node': 18.14.0
-      jsonwebtoken: 9.0.0
-      lodash.isstring: 4.0.1
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
   /@slack/types/2.8.0:
     resolution: {integrity: sha512-ghdfZSF0b4NC9ckBA8QnQgC9DJw2ZceDq0BIjjRSv6XAZBXJdWgxIsYz0TYnWSiqsKZGH2ZXbj9jYABZdH3OSQ==}
     engines: {node: '>= 12.13.0', npm: '>= 6.12.0'}
@@ -3201,12 +3185,6 @@ packages:
 
   /@types/is-stream/1.1.0:
     resolution: {integrity: sha512-jkZatu4QVbR60mpIzjINmtS1ZF4a/FqdTUTBeQDVOQ2PYyidtwFKr0B5G6ERukKwliq+7mIXvxyppwzG5EgRYg==}
-    dependencies:
-      '@types/node': 18.14.0
-    dev: false
-
-  /@types/jsonwebtoken/8.5.9:
-    resolution: {integrity: sha512-272FMnFGzAVMGtu9tkr29hRL6bZj4Zs1KZNeHLnKqAvp06tAIcarTMwOh8/8bz4FmKRcMxZhZNeUAQsNLoiPhg==}
     dependencies:
       '@types/node': 18.14.0
     dev: false
@@ -5133,10 +5111,6 @@ packages:
 
   /lodash.isplainobject/4.0.6:
     resolution: {integrity: sha512-oSXzaWypCMHkPC3NvBEaPHf0KsA5mvPrOPgQWDsbg8n7orZ290M0BmC/jgRZ4vcJ6DTAhjrsSYgdsW/F+MFOBA==}
-
-  /lodash.isstring/4.0.1:
-    resolution: {integrity: sha512-0wJxfxH1wgO3GrbuP+dTTk7op+6L41QCXbGINEmD+ny/G/eCqGzxyCsh7159S+mgDDcoarnBw6PC1PS5+wUGgw==}
-    dev: false
 
   /lodash.pad/4.5.1:
     resolution: {integrity: sha512-mvUHifnLqM+03YNzeTBS1/Gr6JRFjd3rRx88FHWUvamVaT9k2O/kXha3yBSOwB9/DTQrSTLJNHvLBBt2FdX7Mg==}

@@ -1,9 +1,6 @@
 import { Entity } from "electrodb"
 import { Dynamo } from "../dynamo"
-import { InstallProvider, InstallURLOptions, Installation } from "@slack/oauth"
-
 import { Config } from "sst/node/config"
-import { Api } from "sst/node/api"
 import { WebClient } from "@slack/web-api"
 import crypto from "crypto"
 
@@ -82,52 +79,8 @@ const SlackConnectionEntity = new Entity(
   Dynamo.Config
 )
 
-const installer = new InstallProvider({
-  clientId: Config.SLACK_CLIENT_ID,
-  clientSecret: Config.SLACK_CLIENT_SECRET,
-  stateSecret: "secret",
-})
-
-const redirectURI = Api.api.url + "/slack/auth/callback"
-
 function client(token?: string) {
   return new WebClient(token)
-}
-
-export async function authURL(input: { userID: string }) {
-  const metaData = JSON.stringify({
-    userID: input.userID,
-  })
-
-  return installer.generateInstallUrl({
-    scopes: ["chat:write", "team:read", "channels:read", "channels:join"],
-    redirectUri: redirectURI,
-    metadata: metaData,
-  })
-}
-
-export async function authFinish(input: { userID: string }) {
-  const exchange = await tokenExchange({ code: "", userID: "" })
-  const created = await create({
-    userID: input.userID,
-    accessToken: exchange.access_token!,
-    slackTeamName: exchange.team?.name!,
-    slackTeamID: exchange.team?.id!,
-    refreshToken: exchange.refresh_token!,
-  })
-
-  return created
-}
-
-export async function tokenExchange(input: { code: string; userID: string }) {
-  const resp = await client().oauth.v2.access({
-    code: input.code,
-    client_id: Config.SLACK_CLIENT_ID,
-    client_secret: Config.SLACK_CLIENT_SECRET,
-    redirect_uri: redirectURI,
-  })
-
-  return resp
 }
 
 export async function create(input: {
