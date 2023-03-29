@@ -28,6 +28,16 @@ export function Api(ctx: StackContext) {
     "PLAID_CLIENT_SECRET_SANDBOX"
   )
 
+  const SLACK_CLIENT_ID = new Config.Secret(ctx.stack, "SLACK_CLIENT_ID")
+  const SLACK_CLIENT_SECRET = new Config.Secret(
+    ctx.stack,
+    "SLACK_CLIENT_SECRET"
+  )
+  const SLACK_SIGNING_SECRET = new Config.Secret(
+    ctx.stack,
+    "SLACK_SIGNING_SECRET"
+  )
+
   const api = new ApiGateway(ctx.stack, "api", {
     defaults: {
       function: {
@@ -39,6 +49,9 @@ export function Api(ctx: StackContext) {
           PLAID_CLIENT_ID,
           PLAID_CLIENT_SECRET,
           PLAID_CLIENT_SECRET_SANDBOX,
+          SLACK_CLIENT_ID,
+          SLACK_CLIENT_SECRET,
+          SLACK_SIGNING_SECRET,
         ],
       },
     },

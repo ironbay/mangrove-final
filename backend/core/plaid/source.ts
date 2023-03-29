@@ -61,6 +61,7 @@ export const PlaidSourceEntity = new Entity(
         },
       },
       byPlaidAccountID: {
+        index: "gsi1",
         pk: {
           field: "gsi1pk",
           composite: ["plaidAccountID"],
@@ -80,6 +81,7 @@ export const PlaidSourceEntity = new Entity(
         sk: { field: "gsi2sk", composite: ["sourceID", "plaidAccountID"] },
       },
       byPlaidConnectionID: {
+        index: "gsi5",
         pk: {
           field: "gsi5pk",
           composite: ["plaidConnectionID"],

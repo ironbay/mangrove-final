@@ -44,10 +44,11 @@ export const PipeEntity = new Entity(
         },
         sk: {
           field: "gsi2sk",
-          composite: ["pipeID"],
+          composite: [],
         },
       },
       byUserID: {
+        index: "gsi3",
         pk: {
           field: "gsi3pk",
           composite: ["userID"],
