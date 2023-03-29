@@ -77,6 +77,7 @@ export const SlackTargetEntity = new Entity(
         },
       },
       bySlackConnectionID: {
+        index: "gsi5",
         pk: {
           field: "gsi5pk",
           composite: ["slackConnectionID"],

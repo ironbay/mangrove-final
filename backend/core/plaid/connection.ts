@@ -124,7 +124,7 @@ const PlaidConnectionEntity = new Entity(
           composite: ["connectionID"],
         },
         sk: {
-          field: "gsi1sk",
+          field: "gsi5sk",
           composite: [],
         },
       },
