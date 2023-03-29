@@ -16,8 +16,6 @@ export const institutions = ApiHandler(async (event) => {
   }
 })
 
-console.log("this is some code...")
-
 export const sandboxPublicToken = ApiHandler(async (event) => {
   const userID = "efb9cc5d-b910-4b93-a1b4-8d166cd98c7b"
   const publicToken = await Plaid.sandboxCreatePublicToken(userID)
