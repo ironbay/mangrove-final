@@ -1,7 +1,11 @@
 import { Issuer } from "openid-client"
-import { useSession } from "sst/node/auth"
 import { Config } from "sst/node/config"
-import { AuthHandler, GithubAdapter, OauthAdapter } from "sst/node/future/auth"
+import {
+  AuthHandler,
+  GithubAdapter,
+  OauthAdapter,
+  useSession,
+} from "sst/node/future/auth"
 
 declare module "sst/node/future/auth" {
   export interface SessionTypes {
@@ -13,7 +17,8 @@ declare module "sst/node/future/auth" {
 
 export const handler = AuthHandler({
   clients: async () => ({
-    local: "https://localhost",
+    // local: "https://gzo8h80da7.execute-api.us-east-1.amazonaws.com",
+    local: "https://ph0jx8k451.execute-api.us-east-1.amazonaws.com",
   }),
   providers: {
     github: GithubAdapter({
@@ -32,19 +37,17 @@ export const handler = AuthHandler({
       scope: "chat:write team:read channels:read channels:join",
     }),
   },
-  async onAuthorize(input) {
-    console.log("---")
-    console.log("---")
-    console.log(Config.GITHUB_CLIENT_ID)
-    console.log(Config.GITHUB_CLIENT_SECRET)
-    console.log(input)
-    console.log("on authorize")
-  },
+  async onAuthorize(input) {},
   async onSuccess(input) {
     const session = useSession()
-    console.log("----", session)
+    console.log("session: ", session)
+    console.log("tokenset", input.tokenset)
 
-    if (input.provider === "github") {
+    if (session.type === "user") {
+      console.log("the user is: ", session.properties.userID)
+    }
+
+    if (input.provider === "github" || input.provider === "slack") {
       return {
         type: "user",
         properties: {
@@ -56,7 +59,6 @@ export const handler = AuthHandler({
     throw new Error("Unkown provider")
   },
   async onError() {
-    console.log("why")
     return {
       statusCode: 400,
       headers: {
