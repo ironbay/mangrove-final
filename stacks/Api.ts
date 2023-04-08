@@ -28,6 +28,7 @@ export function Api(ctx: StackContext) {
         secrets.GITHUB_CLIENT_SECRET,
         secrets.SLACK_CLIENT_ID,
         secrets.SLACK_CLIENT_SECRET,
+        dynamo,
       ],
     },
   })
@@ -61,6 +62,10 @@ export function Api(ctx: StackContext) {
             "cd graphql && pnpm genql --output ./genql --schema ./schema.graphql --esm",
           ],
         },
+      },
+      "GET /slack/listChannels": {
+        type: "function",
+        function: "backend/functions/slack/api.listChannels",
       },
       "GET /session/test": {
         type: "function",

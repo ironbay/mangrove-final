@@ -1,7 +1,7 @@
 import { Entity } from "electrodb"
 import * as Dynamo from "@mangrove/core/dynamo"
-import * as Github from "@mangrove/core/github"
-import crypto from "crypto"
+import { Octokit } from "@octokit/rest"
+import { ulid } from "ulid"
 
 const UserEntity = new Entity(
   {
@@ -16,14 +16,6 @@ const UserEntity = new Entity(
         required: true,
       },
       email: {
-        type: "string",
-        required: true,
-      },
-      githubAccessToken: {
-        type: "string",
-        required: true,
-      },
-      githubID: {
         type: "string",
         required: true,
       },
@@ -47,17 +39,6 @@ const UserEntity = new Entity(
           composite: [],
         },
       },
-      byGithubID: {
-        index: "gsi1",
-        pk: {
-          field: "gsi1pk",
-          composite: ["githubID"],
-        },
-        sk: {
-          field: "gsi1sk",
-          composite: [],
-        },
-      },
       userLookup: {
         index: "gsi3",
         pk: {
@@ -69,42 +50,50 @@ const UserEntity = new Entity(
           composite: [],
         },
       },
+      byEmail: {
+        index: "gsi4",
+        pk: {
+          field: "gsi4pk",
+          composite: ["email"],
+        },
+        sk: {
+          field: "gsi4sk",
+          composite: [],
+        },
+      },
     },
   },
   Dynamo.Config
 )
 
-export async function login(input: Github.Credentials) {
-  const profile = await Github.profileFromToken(input.accessToken)
-  const email = await Github.emailFromToken(input.accessToken)
-  const githubID = profile.id.toString()
-
-  const existing = await UserEntity.query
-    .byGithubID({
-      githubID,
-    })
-    .go()
-
-  if (!existing.data.at(0)) {
-    const user = await UserEntity.create({
-      userID: crypto.randomUUID(),
-      email,
-      githubID,
-      githubAccessToken: input.accessToken,
-      logoUrl: profile.avatar_url,
-    }).go()
-
-    return user.data
+export async function githubLogin(accessToken: string) {
+  const octo = new Octokit({
+    auth: accessToken,
+  })
+  const emails = await octo.request("GET /user/emails")
+  const primaryEmail = emails.data.find((email) => email.primary)?.email
+  if (!primaryEmail) throw new Error("No email found")
+  const existingUser = await byEmail(primaryEmail)
+  if (existingUser) {
+    return existingUser
   }
 
-  const updateResult = await UserEntity.update({
-    userID: existing.data[0].userID,
-  })
-    .set({
-      githubAccessToken: input.accessToken,
-      logoUrl: profile.avatar_url,
-    })
-    .go({ response: "all_new" })
+  const id = ulid()
 
-  return updateResult.data!
+  const currentUser = await octo.users.getAuthenticated()
+
+  const created = await UserEntity.create({
+    userID: id,
+    email: primaryEmail,
+    logoUrl: currentUser.data.avatar_url,
+    name: currentUser.data.name || undefined,
+  }).go()
+
+  return created
+}
+
+export async function byEmail(email: string) {
+  const resp = await UserEntity.query.byEmail({ email }).go()
+  if (!resp.data.length) return null
+  return resp.data.at(0)
 }

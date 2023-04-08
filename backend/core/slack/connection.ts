@@ -28,10 +28,6 @@ const SlackConnectionEntity = new Entity(
         type: "string",
         required: true,
       },
-      refreshToken: {
-        type: "string",
-        required: true,
-      },
       slackTeamID: {
         type: "string",
         required: true,
@@ -88,7 +84,6 @@ export async function create(input: {
   accessToken: string
   slackTeamName: string
   slackTeamID: string
-  refreshToken: string
 }) {
   const resp = await SlackConnectionEntity.create({
     connectionID: crypto.randomUUID(),
@@ -96,26 +91,30 @@ export async function create(input: {
     accessToken: input.accessToken,
     slackTeamName: input.slackTeamName,
     slackTeamID: input.slackTeamID,
-    refreshToken: input.refreshToken,
     timesCreated: Date.now().toString(),
   }).go()
 
   return resp.data
 }
 
-export async function refreshToken(input: { refreshToken: string }) {
-  const resp = await client().oauth.v2.access({
-    client_id: Config.SLACK_CLIENT_ID,
-    client_secret: Config.SLACK_CLIENT_SECRET,
-    grant_type: "refresh_token",
-    refresh_token: input.refreshToken,
-  })
-
-  const update = await SlackConnectionEntity.update({ connectionID: "123" })
-    .set({
-      refreshToken: resp.refresh_token,
-    })
-    .go({ response: "all_new" })
-
-  return update
+export async function listChannels(accessToken: string) {
+  const resp = await client(accessToken).conversations.list()
+  return resp
 }
+
+// export async function refreshToken(input: { refreshToken: string }) {
+//   const resp = await client().oauth.v2.access({
+//     client_id: Config.SLACK_CLIENT_ID,
+//     client_secret: Config.SLACK_CLIENT_SECRET,
+//     grant_type: "refresh_token",
+//     refresh_token: input.refreshToken,
+//   })
+
+//   const update = await SlackConnectionEntity.update({ connectionID: "123" })
+//     .set({
+//       refreshToken: resp.refresh_token,
+//     })
+//     .go({ response: "all_new" })
+
+//   return update
+// }
