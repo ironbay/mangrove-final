@@ -28,6 +28,7 @@ export function Api(ctx: StackContext) {
         secrets.GITHUB_CLIENT_SECRET,
         secrets.SLACK_CLIENT_ID,
         secrets.SLACK_CLIENT_SECRET,
+        dynamo,
       ],
     },
   })

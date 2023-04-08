@@ -20,7 +20,7 @@
     "openid-client": "^5.4.0",
     "plaid": "^12.5.0",
     "remeda": "^1.8.1",
-    "sst": "^2.0.27",
+    "sst": "^2.5.1",
     "ulid": "^2.3.0"
   },
   "devDependencies": {
