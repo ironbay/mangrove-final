@@ -63,6 +63,10 @@ export function Api(ctx: StackContext) {
           ],
         },
       },
+      "GET /slack/listChannels": {
+        type: "function",
+        function: "backend/functions/slack/api.listChannels",
+      },
       "GET /session/test": {
         type: "function",
         function: "backend/functions/session/test.callback",

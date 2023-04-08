@@ -97,6 +97,11 @@ export async function create(input: {
   return resp.data
 }
 
+export async function listChannels(accessToken: string) {
+  const resp = await client(accessToken).conversations.list()
+  return resp
+}
+
 // export async function refreshToken(input: { refreshToken: string }) {
 //   const resp = await client().oauth.v2.access({
 //     client_id: Config.SLACK_CLIENT_ID,

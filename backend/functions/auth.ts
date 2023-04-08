@@ -45,7 +45,7 @@ export const handler = AuthHandler({
       }),
       clientID: Config.SLACK_CLIENT_ID,
       clientSecret: Config.SLACK_CLIENT_SECRET,
-      scope: "chat:write team:read channels:read channels:join",
+      scope: "chat:write team:read channels:read channels:join groups:read",
     }),
   },
   async onAuthorize(input) {},
@@ -63,6 +63,7 @@ export const handler = AuthHandler({
     if (input.provider === "slack") {
       if (session.type !== "user") throw new Error("User not logged in")
       const tokenSet = input.tokenset as TokenSet & SlackTokenSetMetaData
+      console.log(tokenSet)
       await Slack.Connection.create({
         userID: session.properties.userID,
         slackTeamID: tokenSet.team.id,
