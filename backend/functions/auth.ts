@@ -1,5 +1,7 @@
 import { Issuer } from "openid-client"
 import { Config } from "sst/node/config"
+import * as User from "@mangrove/core/user"
+
 import {
   AuthHandler,
   GithubAdapter,
@@ -45,6 +47,10 @@ export const handler = AuthHandler({
 
     if (session.type === "user") {
       console.log("the user is: ", session.properties.userID)
+    }
+
+    if (input.provider === "github") {
+      await User.githubLogin(input.tokenset.access_token!)
     }
 
     if (input.provider === "github" || input.provider === "slack") {
