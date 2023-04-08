@@ -1,7 +1,7 @@
 import { Entity, EntityItem } from "electrodb"
 import * as Dynamo from "@mangrove/core/dynamo"
 import { Transaction } from "plaid"
-import { Target } from "../slack"
+import Slack from "../slack"
 
 export const PipeEntity = new Entity(
   {
@@ -77,7 +77,7 @@ export async function handlePlaidMatch(input: {
 
   await Promise.all(
     pipes.data.slackTarget.map((target) => {
-      Target.publishPlaidTx({ target, pipe: pipe!, tx: input.tx })
+      Slack.Target.publishPlaidTx({ target, pipe: pipe!, tx: input.tx })
     })
   )
 }

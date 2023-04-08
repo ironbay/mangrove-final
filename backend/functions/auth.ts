@@ -1,5 +1,6 @@
-import { Issuer } from "openid-client"
+import { Issuer, TokenSet } from "openid-client"
 import { Config } from "sst/node/config"
+import Slack from "@mangrove/core/slack"
 import * as User from "@mangrove/core/user"
 
 import {
@@ -8,12 +9,20 @@ import {
   OauthAdapter,
   useSession,
 } from "sst/node/future/auth"
+import { SessionTypes } from "sst/node/auth"
 
 declare module "sst/node/future/auth" {
   export interface SessionTypes {
     user: {
       userID: string
     }
+  }
+}
+
+type SlackTokenSetMetaData = {
+  team: {
+    id: string
+    name: string
   }
 }
 
@@ -42,8 +51,6 @@ export const handler = AuthHandler({
   async onAuthorize(input) {},
   async onSuccess(input) {
     const session = useSession()
-    console.log("session: ", session)
-    console.log("tokenset", input.tokenset)
 
     if (session.type === "user") {
       console.log("the user is: ", session.properties.userID)
@@ -51,6 +58,17 @@ export const handler = AuthHandler({
 
     if (input.provider === "github") {
       await User.githubLogin(input.tokenset.access_token!)
+    }
+
+    if (input.provider === "slack") {
+      if (session.type !== "user") throw new Error("User not logged in")
+      const tokenSet = input.tokenset as TokenSet & SlackTokenSetMetaData
+      await Slack.Connection.create({
+        userID: session.properties.userID,
+        slackTeamID: tokenSet.team.id,
+        slackTeamName: tokenSet.team.name,
+        accessToken: tokenSet.access_token!,
+      })
     }
 
     if (input.provider === "github" || input.provider === "slack") {
