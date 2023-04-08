@@ -1,23 +1,30 @@
-import * as Github from "@mangrove/core/github"
-import { AuthHandler, GithubAdapter, OauthAdapter } from "sst/node/auth"
 import { Issuer } from "openid-client"
 import { Config } from "sst/node/config"
-import * as User from "@mangrove/core/user"
+import {
+  AuthHandler,
+  GithubAdapter,
+  OauthAdapter,
+  useSession,
+} from "sst/node/future/auth"
+
+declare module "sst/node/future/auth" {
+  export interface SessionTypes {
+    user: {
+      userID: string
+    }
+  }
+}
 
 export const handler = AuthHandler({
+  clients: async () => ({
+    // local: "https://gzo8h80da7.execute-api.us-east-1.amazonaws.com",
+    local: "https://ph0jx8k451.execute-api.us-east-1.amazonaws.com",
+  }),
   providers: {
     github: GithubAdapter({
       clientID: Config.GITHUB_CLIENT_ID,
       clientSecret: Config.GITHUB_CLIENT_SECRET,
       scope: "user:email",
-      onSuccess: async (tokenset) => {
-        await User.login({ accessToken: tokenset.access_token! })
-
-        return {
-          statusCode: 200,
-          body: JSON.stringify(tokenset),
-        }
-      },
     }),
     slack: OauthAdapter({
       issuer: new Issuer({
@@ -28,12 +35,36 @@ export const handler = AuthHandler({
       clientID: Config.SLACK_CLIENT_ID,
       clientSecret: Config.SLACK_CLIENT_SECRET,
       scope: "chat:write team:read channels:read channels:join",
-      onSuccess: async (tokenSet) => {
-        return {
-          statusCode: 200,
-          body: tokenSet.scope || "no scope",
-        }
-      },
     }),
+  },
+  async onAuthorize(input) {},
+  async onSuccess(input) {
+    const session = useSession()
+    console.log("session: ", session)
+    console.log("tokenset", input.tokenset)
+
+    if (session.type === "user") {
+      console.log("the user is: ", session.properties.userID)
+    }
+
+    if (input.provider === "github" || input.provider === "slack") {
+      return {
+        type: "user",
+        properties: {
+          userID: "usr123",
+        },
+      }
+    }
+
+    throw new Error("Unkown provider")
+  },
+  async onError() {
+    return {
+      statusCode: 400,
+      headers: {
+        "Content-Type": "text/plain",
+      },
+      body: "Auth failed",
+    }
   },
 })

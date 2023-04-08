@@ -1,10 +1,6 @@
-import {
-  Config,
-  StackContext,
-  use,
-  Api as ApiGateway,
-  Auth,
-} from "sst/constructs"
+import { Config, StackContext, use, Api as ApiGateway } from "sst/constructs"
+import { Auth } from "sst/constructs/future"
+
 import { Dynamo } from "./Dynamo"
 import { Bus } from "./Bus"
 
@@ -12,46 +8,45 @@ export function Api(ctx: StackContext) {
   const dynamo = use(Dynamo)
   const bus = use(Bus)
 
-  const GITHUB_CLIENT_ID = new Config.Secret(ctx.stack, "GITHUB_CLIENT_ID")
-  const GITHUB_CLIENT_SECRET = new Config.Secret(
+  const secrets = Config.Secret.create(
     ctx.stack,
-    "GITHUB_CLIENT_SECRET"
-  )
-
-  const PLAID_CLIENT_ID = new Config.Secret(ctx.stack, "PLAID_CLIENT_ID")
-  const PLAID_CLIENT_SECRET = new Config.Secret(
-    ctx.stack,
-    "PLAID_CLIENT_SECRET"
-  )
-  const PLAID_CLIENT_SECRET_SANDBOX = new Config.Secret(
-    ctx.stack,
-    "PLAID_CLIENT_SECRET_SANDBOX"
-  )
-
-  const SLACK_CLIENT_ID = new Config.Secret(ctx.stack, "SLACK_CLIENT_ID")
-  const SLACK_CLIENT_SECRET = new Config.Secret(
-    ctx.stack,
-    "SLACK_CLIENT_SECRET"
-  )
-  const SLACK_SIGNING_SECRET = new Config.Secret(
-    ctx.stack,
+    "GITHUB_CLIENT_ID",
+    "GITHUB_CLIENT_SECRET",
+    "PLAID_CLIENT_ID",
+    "PLAID_CLIENT_SECRET",
+    "PLAID_CLIENT_SECRET_SANDBOX",
+    "SLACK_CLIENT_ID",
+    "SLACK_CLIENT_SECRET",
     "SLACK_SIGNING_SECRET"
   )
+
+  const auth = new Auth(ctx.stack, "auth", {
+    authenticator: {
+      handler: "backend/functions/auth.handler",
+      bind: [
+        secrets.GITHUB_CLIENT_ID,
+        secrets.GITHUB_CLIENT_SECRET,
+        secrets.SLACK_CLIENT_ID,
+        secrets.SLACK_CLIENT_SECRET,
+      ],
+    },
+  })
 
   const api = new ApiGateway(ctx.stack, "api", {
     defaults: {
       function: {
         bind: [
+          auth,
           bus.bus,
           dynamo,
-          GITHUB_CLIENT_ID,
-          GITHUB_CLIENT_SECRET,
-          PLAID_CLIENT_ID,
-          PLAID_CLIENT_SECRET,
-          PLAID_CLIENT_SECRET_SANDBOX,
-          SLACK_CLIENT_ID,
-          SLACK_CLIENT_SECRET,
-          SLACK_SIGNING_SECRET,
+          secrets.GITHUB_CLIENT_ID,
+          secrets.GITHUB_CLIENT_SECRET,
+          secrets.PLAID_CLIENT_ID,
+          secrets.PLAID_CLIENT_SECRET,
+          secrets.PLAID_CLIENT_SECRET_SANDBOX,
+          secrets.SLACK_CLIENT_ID,
+          secrets.SLACK_CLIENT_SECRET,
+          secrets.SLACK_SIGNING_SECRET,
         ],
       },
     },
@@ -66,6 +61,10 @@ export function Api(ctx: StackContext) {
             "cd graphql && pnpm genql --output ./genql --schema ./schema.graphql --esm",
           ],
         },
+      },
+      "GET /session/test": {
+        type: "function",
+        function: "backend/functions/session/test.callback",
       },
       "GET /plaid/auth/callback": {
         type: "function",
@@ -90,16 +89,9 @@ export function Api(ctx: StackContext) {
     },
   })
 
-  api.bind([api])
-
-  const auth = new Auth(ctx.stack, "auth", {
-    authenticator: "backend/functions/auth.handler",
-  })
-
-  auth.attach(ctx.stack, { api })
-
   ctx.stack.addOutputs({
     API_URL: api.url,
+    AUTH_URL: auth.url,
   })
 
   return api
