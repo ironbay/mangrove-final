@@ -1,4 +1,5 @@
 import { Issuer } from "openid-client"
+import { useSession } from "sst/node/auth"
 import { Config } from "sst/node/config"
 import {
   AuthHandler,
