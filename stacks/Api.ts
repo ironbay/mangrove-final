@@ -52,6 +52,14 @@ export function Api(ctx: StackContext) {
       },
     },
     routes: {
+      "GET /{proxy+}": {
+        type: "function",
+        function: "backend/functions/trpc.handler",
+      },
+      "POST /{proxy+}": {
+        type: "function",
+        function: "backend/functions/trpc.handler",
+      },
       "GET /slack/listChannels": {
         type: "function",
         function: "backend/functions/slack/api.listChannels",

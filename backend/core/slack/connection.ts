@@ -3,6 +3,7 @@ import { Dynamo } from "../dynamo"
 import { Config } from "sst/node/config"
 import { WebClient } from "@slack/web-api"
 import crypto from "crypto"
+import { assertUser, useActor } from "../actor"
 
 const SlackConnectionEntity = new Entity(
   {
@@ -97,24 +98,10 @@ export async function create(input: {
   return resp.data
 }
 
-export async function listChannels(team: string) {
-  const resp = await client("123").conversations.list()
-  return resp
+export async function listChannels(slackTeamID: string) {
+  const user = assertUser()
+
+  return `The current user is ${user.properties.userID} and they want a list of channels for ${slackTeamID}`
+  // const resp = await client("123").conversations.list()
+  // return resp
 }
-
-// export async function refreshToken(input: { refreshToken: string }) {
-//   const resp = await client().oauth.v2.access({
-//     client_id: Config.SLACK_CLIENT_ID,
-//     client_secret: Config.SLACK_CLIENT_SECRET,
-//     grant_type: "refresh_token",
-//     refresh_token: input.refreshToken,
-//   })
-
-//   const update = await SlackConnectionEntity.update({ connectionID: "123" })
-//     .set({
-//       refreshToken: resp.refresh_token,
-//     })
-//     .go({ response: "all_new" })
-
-//   return update
-// }
