@@ -52,6 +52,8 @@ export const handler = AuthHandler({
   async onSuccess(input) {
     const session = useSession()
 
+    console.log(session)
+
     if (session.type === "user") {
       console.log("the user is: ", session.properties.userID)
     }
