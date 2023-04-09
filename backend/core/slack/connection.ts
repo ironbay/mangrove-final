@@ -41,7 +41,7 @@ const SlackConnectionEntity = new Entity(
       primary: {
         pk: {
           field: "pk",
-          composite: ["connectionID"],
+          composite: ["userID", "slackTeamID"],
         },
         sk: {
           field: "sk",
@@ -85,7 +85,7 @@ export async function create(input: {
   slackTeamName: string
   slackTeamID: string
 }) {
-  const resp = await SlackConnectionEntity.create({
+  const resp = await SlackConnectionEntity.put({
     connectionID: crypto.randomUUID(),
     userID: input.userID,
     accessToken: input.accessToken,
