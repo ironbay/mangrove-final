@@ -10,6 +10,7 @@
     "@aws-sdk/types": "^3.272.0",
     "@octokit/rest": "^19.0.7",
     "@slack/web-api": "^6.8.1",
+    "@trpc/server": "^10.19.1",
     "aws-sdk": "^2.1135.0",
     "electrodb": "^2.4.1",
     "graphql": "^16.6.0",
@@ -20,7 +21,8 @@
     "plaid": "^12.5.0",
     "remeda": "^1.8.1",
     "sst": "2.5.1",
-    "ulid": "^2.3.0"
+    "ulid": "^2.3.0",
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.97",
