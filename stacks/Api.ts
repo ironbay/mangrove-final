@@ -52,17 +52,6 @@ export function Api(ctx: StackContext) {
       },
     },
     routes: {
-      "POST /graphql": {
-        type: "graphql",
-        function: "backend/functions/graphql/graphql.handler",
-        pothos: {
-          schema: "backend/functions/graphql/schema.ts",
-          output: "graphql/schema.graphql",
-          commands: [
-            "cd graphql && pnpm genql --output ./genql --schema ./schema.graphql --esm",
-          ],
-        },
-      },
       "GET /slack/listChannels": {
         type: "function",
         function: "backend/functions/slack/api.listChannels",
