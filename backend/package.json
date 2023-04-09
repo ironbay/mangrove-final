@@ -21,7 +21,8 @@
     "plaid": "^12.5.0",
     "remeda": "^1.8.1",
     "sst": "2.5.1",
-    "ulid": "^2.3.0"
+    "ulid": "^2.3.0",
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.97",

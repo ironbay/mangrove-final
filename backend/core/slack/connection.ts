@@ -97,8 +97,8 @@ export async function create(input: {
   return resp.data
 }
 
-export async function listChannels(accessToken: string) {
-  const resp = await client(accessToken).conversations.list()
+export async function listChannels(team: string) {
+  const resp = await client("123").conversations.list()
   return resp
 }
 
