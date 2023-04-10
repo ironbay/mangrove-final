@@ -17,6 +17,7 @@
     "typescript": "^4.9.5"
   },
   "workspaces": [
+    "solid",
     "backend",
     "web",
     "graphql"
