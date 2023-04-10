@@ -29,7 +29,7 @@ type SlackTokenSetMetaData = {
 export const handler = AuthHandler({
   clients: async () => ({
     // local: "https://gzo8h80da7.execute-api.us-east-1.amazonaws.com",
-    local: "https://ph0jx8k451.execute-api.us-east-1.amazonaws.com",
+    local: "https://59517f89m2.execute-api.us-east-1.amazonaws.com",
   }),
   providers: {
     github: GithubAdapter({

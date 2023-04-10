@@ -22,7 +22,7 @@ export function Api(ctx: StackContext) {
 
   const auth = new Auth(ctx.stack, "auth", {
     authenticator: {
-      handler: "backend/functions/auth.handler",
+      handler: "packages/backend/functions/auth.handler",
       bind: [
         secrets.GITHUB_CLIENT_ID,
         secrets.GITHUB_CLIENT_SECRET,
@@ -54,39 +54,39 @@ export function Api(ctx: StackContext) {
     routes: {
       "GET /{proxy+}": {
         type: "function",
-        function: "backend/functions/trpc.handler",
+        function: "packages/backend/functions/trpc.handler",
       },
       "POST /{proxy+}": {
         type: "function",
-        function: "backend/functions/trpc.handler",
+        function: "packages/backend/functions/trpc.handler",
       },
       "GET /slack/listChannels": {
         type: "function",
-        function: "backend/functions/slack/api.listChannels",
+        function: "packages/backend/functions/slack/api.listChannels",
       },
       "GET /session/test": {
         type: "function",
-        function: "backend/functions/session/test.callback",
+        function: "packages/backend/functions/session/test.callback",
       },
       "GET /plaid/auth/callback": {
         type: "function",
-        function: "backend/functions/plaid/auth.callback",
+        function: "packages/backend/functions/plaid/auth.callback",
       },
       "GET /plaid/institutions": {
         type: "function",
-        function: "backend/functions/plaid/auth.institutions",
+        function: "packages/backend/functions/plaid/auth.institutions",
       },
       "GET /plaid/sandboxPublicToken": {
         type: "function",
-        function: "backend/functions/plaid/auth.sandboxPublicToken",
+        function: "packages/backend/functions/plaid/auth.sandboxPublicToken",
       },
       "GET /plaid/sandboxFireWebhook": {
         type: "function",
-        function: "backend/functions/plaid/auth.sandboxFireWebhook",
+        function: "packages/backend/functions/plaid/auth.sandboxFireWebhook",
       },
       "POST /plaid/webhook": {
         type: "function",
-        function: "backend/functions/plaid/auth.hook",
+        function: "packages/backend/functions/plaid/auth.hook",
       },
     },
   })
