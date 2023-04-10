@@ -19,6 +19,7 @@
   "workspaces": [
     "backend",
     "web",
-    "graphql"
+    "graphql", 
+    "solid"
   ]
 }
