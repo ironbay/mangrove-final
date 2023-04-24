@@ -1,19 +1,15 @@
-import {
-  createSignal,
-  onCleanup,
-  type Component,
-  type ParentProps,
-  Show,
-  For,
-  Switch,
-  Match,
-} from "solid-js"
-
+import { createSignal, onCleanup, Switch, Match } from "solid-js"
 import { styled } from "@macaron-css/solid"
 
 const Button = styled("button", {
   base: {
-    border: "2px solid red",
+    backgroundColor: "gainsboro",
+    borderRadius: "9999px",
+    fontSize: "13px",
+    padding: "10px 15px",
+    ":hover": {
+      backgroundColor: "lightgray",
+    },
   },
 })
 
@@ -29,8 +25,8 @@ function App() {
 
   return (
     <div>
+      <Button onClick={startInterval}>button</Button>
       <div>count: {count()}</div>
-      <Button onClick={startInterval}>ok</Button>
       <Switch fallback={<div>nothing yet...</div>}>
         <Match when={count() < 5}>Less than 5</Match>
         <Match when={count() < 10}>Less than 10</Match>
